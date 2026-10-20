@@ -30,7 +30,7 @@
 
 ## Download
 
-Get it from **[diskat.cc](https://diskat.cc)** or the [Releases](../../releases) page. It is a single self-contained file (Windows 10/11 x64), no .NET install needed.
+Download it from **[diskat.cc](https://diskat.cc/download)**. It is a single self-contained file (Windows 10/11 x64), no .NET install needed.
 
 > The exe is not code-signed yet, so Windows SmartScreen may show "Windows protected your PC" the first time.
 > Click **More info** then **Run anyway**, or right-click the file > Properties > **Unblock**.
@@ -80,17 +80,27 @@ Store tiles are generated from the logo with `powershell -STA -File packaging\ma
 
 ### Website (diskat.cc)
 
-The landing page in `website/` is plain HTML/CSS/JS (no build step), served by a Cloudflare Worker with static assets.
-Short links such as `/download` and `/github` are defined in `website/_redirects`.
+The landing page in `website/` is plain HTML/CSS/JS, served by a Cloudflare Worker with static assets (`wrangler.jsonc`).
+`/download` is handled by `worker/index.js`, which streams `Diskat.exe` from the R2 bucket `diskat-downloads`.
+`/changelog` and `/license` are generated from `CHANGELOG.md` and `LICENSE` by `node tools/build-pages.js`.
 
 ```powershell
 npx wrangler dev      # preview at http://localhost:8787
 npx wrangler deploy   # publish to https://diskat.cc
 ```
 
+Publishing a new version:
+
+```powershell
+npx wrangler r2 object put diskat-downloads/releases/v1.1.0/Diskat.exe --file dist\Diskat.exe --remote
+# then set LATEST_VERSION in wrangler.jsonc, update CHANGELOG.md, and run:
+node tools/build-pages.js
+npx wrangler deploy
+```
+
 ## Contributing
 
-Issues and pull requests are welcome.
+Issues and pull requests are welcome. For questions or support, email fat@diskat.cc.
 
 **Translations.** App strings live in `Core/Lang/Strings.<code>.cs` (English is the source and the fallback for missing keys); website strings live in `website/assets/i18n/<code>.js`. To add a language, copy the English files, translate the values, register the language in `Core/Loc.cs` and `website/assets/app.js`, then run:
 

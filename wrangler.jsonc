@@ -1,12 +1,23 @@
 ﻿{
-  // Cloudflare Worker serving the static landing page in ./website at https://diskat.cc
+  // diskat.cc: static site in ./website plus a small Worker (worker/index.js) that serves
+  // Diskat.exe from the R2 bucket "diskat-downloads" at /download.
   // Deploy: npx wrangler deploy   (the diskat.cc zone must be in the same Cloudflare account)
   "name": "diskat-website",
+  "main": "worker/index.js",
   "compatibility_date": "2025-09-01",
   "assets": {
     "directory": "./website",
+    "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "html_handling": "auto-trailing-slash"
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": ["/download", "/download/*"]
+  },
+  "r2_buckets": [
+    { "binding": "DOWNLOADS", "bucket_name": "diskat-downloads" }
+  ],
+  "vars": {
+    // Version that /download points to. Upload releases/v<version>/Diskat.exe to R2 first.
+    "LATEST_VERSION": "1.0.0"
   },
   "routes": [
     { "pattern": "diskat.cc", "custom_domain": true }

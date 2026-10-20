@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Changelog · Diskat</title>
+  <meta name="description" content="Every Diskat release and what changed in it.">
+  <link rel="canonical" href="https://diskat.cc/changelog">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/assets/style.css?v=5">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<h1>Changelog</h1>
+<p>All notable changes to Diskat are documented here. The format is based on <a href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and the project uses <a href="https://semver.org/">Semantic Versioning</a>.</p>
+<h2 id="1.0.0-2026-10-20">1.0.0 - 2026-10-20</h2>
+<p>First public release.</p>
+<h3 id="download">Download</h3>
+<ul>
+<li>Windows 10/11, 64-bit: <a href="https://diskat.cc/download/v1.0.0/Diskat.exe">Diskat.exe</a> (60.7 MB, portable). SHA-256: <code>5f24ff3a3a53255f97fcd8c9b3e870d15db72cedb973c09fe2b1be11004e2590</code></li>
+</ul>
+<h3 id="added">Added</h3>
+<ul>
+<li><strong>Parallel scanner</strong>: multi-threaded directory enumeration with no per-file allocations; about 2 million files in 15 seconds on an SSD.</li>
+<li><strong>Live results</strong> while scanning: sizes update every 200 ms and the heaviest folders are re-sorted to the top every second.</li>
+<li><strong>Folder tree</strong> with size, "% of parent" bar, file and folder counts and modified date; sortable by any column.</li>
+<li><strong>Space map</strong> (squarified treemap, two levels deep): click to select, double-click to drill in, ↑ to go back up.</li>
+<li><strong>Largest files</strong> tab listing the top 500 files of the scan, with multi-select delete.</li>
+<li><strong>Delete</strong> to the Recycle Bin (<code>Del</code>) or permanently (<code>Shift+Del</code>), always behind a confirmation dialog that shows the full path and size.</li>
+<li><strong>Rescan</strong> a single folder with <code>F5</code> without rescanning the whole drive.</li>
+<li><strong>Run as Admin</strong> button to include protected system folders.</li>
+<li><strong>11 interface languages</strong>: English (default), Vietnamese, Simplified Chinese, Japanese, Korean, Spanish, Portuguese, German, French, Russian and Indonesian, picked from a menu and remembered between runs.</li>
+<li>Drive cards with used / free space for every ready drive.</li>
+<li>Command-line argument to scan a folder on startup: <code>Diskat.exe "D:\Projects"</code>.</li>
+<li>Single self-contained <code>Diskat.exe</code> (no .NET install needed) and an MSIX package for the Microsoft Store.</li>
+</ul>
+<h3 id="safety">Safety</h3>
+<ul>
+<li>Junctions and symbolic links are shown but never followed, so nothing is counted twice and scans can't loop.</li>
+<li>Protected from deletion: drive roots, <code>Windows</code> (and everything inside it), <code>Program Files</code>, <code>Program Files (x86)</code>, <code>ProgramData</code>, <code>ProgramData\Microsoft</code>, the <code>Users</code> folder, every user profile root, <code>AppData\Roaming</code> and <code>AppData\Local</code>. Checks are applied to the real path too, so a <code>subst</code> drive or a junction can't be used to get around them.</li>
+<li>Permanent delete clears read-only attributes only inside the folder being deleted and never walks through junctions or symlinks.</li>
+<li>Names ending in a dot or a space (which Windows APIs silently rewrite, e.g. <code>foo.</code> becomes <code>foo</code>) are skipped by the scanner and refused for deletion, so the wrong item can never be deleted.</li>
+<li>The confirmation dialog warns when a folder wasn't fully scanned (scan stopped or access denied), because its real size may be larger than shown.</li>
+<li>Only one delete or rescan runs at a time; keyboard shortcuts are blocked while it runs.</li>
+</ul>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>

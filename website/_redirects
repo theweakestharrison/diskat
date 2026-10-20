@@ -1,13 +1,6 @@
-# Short links used by the landing page (repo: https://github.com/theweakestharrison/diskat).
-# /download and /license point to /soon until the first GitHub release (with Diskat.exe)
-# and the LICENSE commit are published; then switch them to the commented lines below.
+# Short links to the GitHub repository (https://github.com/theweakestharrison/diskat).
+# /download is served by worker/index.js from R2; /changelog, /license and /privacy are pages in this folder.
 
-/github     https://github.com/theweakestharrison/diskat                          302
-/issues     https://github.com/theweakestharrison/diskat/issues                   302
-/releases   https://github.com/theweakestharrison/diskat/releases                 302
-/changelog  https://github.com/theweakestharrison/diskat/blob/main/CHANGELOG.md   302
-/download   /soon   302
-/license    /soon   302
-
-# /download   https://github.com/theweakestharrison/diskat/releases/latest/download/Diskat.exe   302
-# /license    https://github.com/theweakestharrison/diskat/blob/main/LICENSE                     302
+/github     https://github.com/theweakestharrison/diskat            302
+/issues     https://github.com/theweakestharrison/diskat/issues     302
+/releases   https://github.com/theweakestharrison/diskat/releases   302

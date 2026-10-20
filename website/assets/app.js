@@ -1,7 +1,10 @@
-// Diskat landing page: language menu (11 languages), interactive disk-map demo, screenshot tabs.
-// No tracking, no third-party requests. Translations live in /assets/i18n/<code>.js and load on demand.
+// Diskat landing page: language menu (11 languages, English by default). No tracking, no third-party requests.
+// Translations live in /assets/i18n/<code>.js and load on demand.
 (function () {
   "use strict";
+
+  // Bump together with ?v= in the HTML whenever CSS/JS/translations change (assets are cached for 7 days)
+  var ASSET_VERSION = "5";
 
   var LANGS = [
     { code: "en", name: "English", html: "en" },
@@ -16,28 +19,19 @@
     { code: "ru", name: "Русский", html: "ru" },
     { code: "id", name: "Bahasa Indonesia", html: "id" }
   ];
-  // Bump together with ?v= in the HTML whenever CSS/JS/translations change (assets are cached for 7 days)
-  var ASSET_VERSION = "3";
   var I18N = (window.DISKAT_I18N = window.DISKAT_I18N || {});
 
-  // English text comes from the HTML itself; these keys are only used from script
-  var EN_EXTRA = {
-    "demo.gone": "↺ in Recycle Bin",
-    "demo.toast": "Windows is protected. Diskat never deletes system folders.",
+  // English text comes from the HTML itself; the meta tags are the only strings set from script
+  var english = {
     "meta.title": document.title,
-    "meta.desc": document.querySelector('meta[name="description"]').content
+    "meta.desc2": document.querySelector('meta[name="description"]').content
   };
-
-  var nodes = Array.prototype.slice.call(document.querySelectorAll("[data-i18n]"));
-  var english = {};
-  nodes.forEach(function (n) {
+  document.querySelectorAll("[data-i18n]").forEach(function (n) {
     var k = n.getAttribute("data-i18n");
     if (!(k in english)) english[k] = n.innerHTML;
   });
-  Object.keys(EN_EXTRA).forEach(function (k) { english[k] = EN_EXTRA[k]; });
 
   var current = "en";
-
   function t(key) {
     var d = I18N[current];
     return (d && d[key]) || english[key] || key;
@@ -54,6 +48,10 @@
     });
   }
 
+  var sel = document.getElementById("langsel");
+  var toggle = sel.querySelector("button");
+  var menu = document.getElementById("lang-menu");
+
   function apply(code) {
     current = code;
     var lang = LANGS.filter(function (l) { return l.code === code; })[0] || LANGS[0];
@@ -62,9 +60,14 @@
     });
     document.documentElement.lang = lang.html;
     document.title = t("meta.title");
-    document.querySelector('meta[name="description"]').content = t("meta.desc");
-    var hero = document.querySelector('#screens .shotpane img');
+    document.querySelector('meta[name="description"]').content = t("meta.desc2");
+    // The app has a Vietnamese screenshot; every other language shows the English one
+    var hero = document.getElementById("hero-shot");
     if (hero) hero.src = code === "vi" ? "/assets/overview-vi.png" : "/assets/overview.png";
+    // Numbers in the language's own format (1,952,417 / 1.952.417 / 1 952 417)
+    document.querySelectorAll("[data-num]").forEach(function (b) {
+      try { b.textContent = new Intl.NumberFormat(lang.html).format(Number(b.getAttribute("data-num"))); } catch (e) { /* keep as is */ }
+    });
     document.getElementById("lang-current").textContent = code.toUpperCase();
     menu.querySelectorAll("button").forEach(function (b) {
       b.setAttribute("aria-checked", String(b.getAttribute("data-code") === code));
@@ -78,10 +81,6 @@
     }, function () { apply("en"); });
   }
 
-  // ----- Language menu -----
-  var sel = document.getElementById("langsel");
-  var toggle = sel.querySelector("button");
-  var menu = document.getElementById("lang-menu");
   LANGS.forEach(function (l) {
     var li = document.createElement("li");
     var b = document.createElement("button");
@@ -111,72 +110,4 @@
   }
   var first = initialLang();
   if (first !== "en") setLang(first, false); else apply("en");
-
-  // ----- Interactive disk map demo -----
-  var TOTAL = 476, USED = 452, freed = 0;
-  var freedEl = document.getElementById("freed");
-  var pctEl = document.getElementById("used-pct");
-  var bar = document.getElementById("bar");
-  var toast = document.getElementById("toast");
-  var toastTimer;
-
-  function fmt(gb) {
-    if (gb <= 0) return "0 B";
-    return (gb >= 100 ? gb.toFixed(0) : gb.toFixed(1)) + " GB";
-  }
-  function update() {
-    var pct = Math.round((USED - freed) / TOTAL * 100);
-    pctEl.textContent = pct + "%";
-    bar.style.setProperty("--used", pct + "%");
-    bar.classList.toggle("ok", pct < 80);
-    freedEl.textContent = fmt(freed);
-  }
-  function showToast(msg) {
-    toast.textContent = msg;
-    toast.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 2800);
-  }
-  function remove(tile) {
-    if (tile.classList.contains("gone")) return;
-    if (tile.getAttribute("data-locked")) {
-      tile.classList.remove("shake");
-      void tile.offsetWidth; // restart the animation
-      tile.classList.add("shake");
-      showToast(t("demo.toast"));
-      return;
-    }
-    tile.classList.add("gone");
-    var hint = tile.querySelector(".hint");
-    hint.setAttribute("data-i18n", "demo.gone");
-    hint.innerHTML = t("demo.gone");
-    freed += parseFloat(tile.getAttribute("data-gb"));
-    update();
-  }
-  document.querySelectorAll("#treemap .tile").forEach(function (tile) {
-    tile.addEventListener("click", function () { remove(tile); });
-    tile.addEventListener("keydown", function (e) { if (e.key === "Delete") { e.preventDefault(); remove(tile); } });
-  });
-  document.getElementById("reset").addEventListener("click", function () {
-    document.querySelectorAll("#treemap .tile.gone").forEach(function (tile) {
-      tile.classList.remove("gone");
-      var hint = tile.querySelector(".hint");
-      hint.setAttribute("data-i18n", "demo.hint");
-      hint.innerHTML = t("demo.hint");
-    });
-    freed = 0;
-    update();
-  });
-  update();
-
-  // ----- Screenshot tabs -----
-  var tabs = document.querySelectorAll(".tab");
-  var panes = document.querySelectorAll(".shotpane");
-  tabs.forEach(function (tab) {
-    tab.addEventListener("click", function () {
-      var idx = Number(tab.getAttribute("data-shot"));
-      tabs.forEach(function (x) { x.setAttribute("aria-selected", String(x === tab)); });
-      panes.forEach(function (p, i) { p.classList.toggle("active", i === idx); });
-    });
-  });
 })();

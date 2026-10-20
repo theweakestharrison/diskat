@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 First public release.
 
+### Download
+- Windows 10/11, 64-bit: [Diskat.exe](https://diskat.cc/download/v1.0.0/Diskat.exe) (60.7 MB, portable). SHA-256: `5f24ff3a3a53255f97fcd8c9b3e870d15db72cedb973c09fe2b1be11004e2590`
+
 ### Added
 - **Parallel scanner**: multi-threaded directory enumeration with no per-file allocations; about 2 million files in 15 seconds on an SSD.
 - **Live results** while scanning: sizes update every 200 ms and the heaviest folders are re-sorted to the top every second.

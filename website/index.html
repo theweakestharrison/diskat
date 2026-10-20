@@ -4,31 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Diskat · Free, open-source disk space analyzer for Windows</title>
-  <meta name="description" content="Something is eating your disk. Diskat sniffs it out: a free, open-source disk space analyzer for Windows that scans millions of files in seconds and lets you clean up safely.">
+  <meta name="description" content="See what's filling up your disk. Diskat is a free, open-source disk space analyzer for Windows: it scans a drive in seconds and helps you delete what you don't need, safely.">
   <link rel="canonical" href="https://diskat.cc/">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" href="/assets/logo-256.png">
   <link rel="preload" href="/assets/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <meta name="theme-color" content="#0b0e1c">
+  <meta name="theme-color" content="#f3f5f9">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://diskat.cc/">
-  <meta property="og:title" content="Diskat · Something is eating your disk">
-  <meta property="og:description" content="Free, open-source disk space analyzer for Windows. Scan fast, find the fattest folders, delete safely.">
+  <meta property="og:title" content="Diskat · See what's filling up your disk">
+  <meta property="og:description" content="Free, open-source disk space analyzer for Windows. Scan a drive in seconds, find the biggest folders, delete safely.">
   <meta property="og:image" content="https://diskat.cc/assets/og.png">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="/assets/style.css?v=3">
+  <link rel="stylesheet" href="/assets/style.css?v=5">
 </head>
 <body>
 
 <header class="nav">
-  <div class="wrap">
-    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="34" height="34">Diskat</a>
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
     <nav class="nav-links" aria-label="Main">
+      <a href="#how" data-i18n="nav.how">How it works</a>
       <a href="#features" data-i18n="nav.features">Features</a>
       <a href="#safety" data-i18n="nav.safety">Safety</a>
       <a href="#compare" data-i18n="nav.compare">Compare</a>
-      <a href="#changelog" data-i18n="nav.changelog">Changelog</a>
       <a href="#faq" data-i18n="nav.faq">FAQ</a>
     </nav>
     <div class="nav-right">
@@ -39,149 +39,102 @@
         </button>
         <ul role="menu" id="lang-menu"></ul>
       </div>
-      <a class="btn btn-ghost btn-sm" href="/github">GitHub</a>
+      <a class="btn btn-primary btn-sm nav-dl" href="/download" data-i18n="nav.download">Download</a>
     </div>
   </div>
 </header>
 
 <main>
-  <!-- ===== Hero + bản đồ ổ đĩa tương tác ===== -->
+  <!-- ===== Hero: what it is, what it looks like, where to get it ===== -->
   <section class="hero">
     <div class="wrap">
-      <div class="hero-top">
-        <div>
-          <div class="path"><b>C:\</b><span data-i18n="hero.path">95% full · 24 GB left</span></div>
-          <h1><span data-i18n="hero.t1">Something is eating your disk.</span><span class="line2" data-i18n="hero.t2">Diskat sniffs it out.</span></h1>
-        </div>
-        <div class="hero-side">
-          <p class="lead" data-i18n="hero.lead">A free, open-source disk space analyzer for Windows. It scans millions of files in seconds, puts the fattest folders on top and lets you clean up without fear.</p>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow" data-i18n="hero.eyebrow">Disk space analyzer for Windows</span>
+          <h1 data-i18n="hero.title">See what's filling up your disk.</h1>
+          <p class="lead" data-i18n="hero.lead2">Diskat scans a drive in seconds and lists the biggest folders and files first. Delete what you don't need, straight to the Recycle Bin.</p>
           <div class="cta">
             <a class="btn btn-primary" href="/download">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
-              <span><span data-i18n="cta.download">Download for Windows</span><small>Diskat.exe · 61 MB · v1.0.0</small></span>
+              <span><span data-i18n="cta.download">Download for Windows</span><small>v1.0.0 · Diskat.exe · 61 MB</small></span>
             </a>
             <a class="btn btn-ghost" href="/github">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 00-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.19-3.08-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 015.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.08 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0012 .5z"/></svg>
-              <span data-i18n="cta.source">Source code</span>
+              <span data-i18n="cta.github">View on GitHub</span>
             </a>
           </div>
-          <p class="meta" data-i18n="hero.meta">Windows 10 / 11 · 64-bit · portable, nothing to install · MIT license</p>
+          <p class="trust" data-i18n="hero.trust">Free and open source (MIT) · No ads, no tracking · Windows 10 and 11, 64-bit</p>
         </div>
+        <figure class="stage">
+          <div class="mat">
+            <div class="tiles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="window"><img id="hero-shot" src="/assets/overview.png" width="1602" height="901" alt="Diskat showing a drive: folders sorted by size on the left, a colored space map on the right"></div>
+          </div>
+          <figcaption data-i18n="hero.caption">Diskat after scanning a drive: the folder tree on the left, the space map on the right.</figcaption>
+        </figure>
       </div>
-
-      <div class="drive" id="demo">
-        <div class="drive-head">
-          <span class="disk">C:\ <b id="used-pct">95%</b></span>
-          <div class="usage"><div class="bar" id="bar"><i></i></div></div>
-          <span class="freed"><span data-i18n="demo.freed">Freed</span> <b id="freed" aria-live="polite">0 B</b></span>
-          <button class="reset" id="reset" type="button" data-i18n="demo.reset">↺ Restore all</button>
-        </div>
-        <div class="treemap" id="treemap">
-          <button type="button" class="tile t-games" data-gb="122"><span class="name">Games</span><span class="size">122 GB</span><span class="hint" data-i18n="demo.hint">Del → Recycle Bin</span></button>
-          <button type="button" class="tile t-backups" data-gb="94.2"><span class="name">Backups</span><span class="size">94.2 GB</span><span class="hint" data-i18n="demo.hint">Del → Recycle Bin</span></button>
-          <button type="button" class="tile t-videos" data-gb="57.9"><span class="name">Videos</span><span class="size">57.9 GB</span><span class="hint" data-i18n="demo.hint">Del → Recycle Bin</span></button>
-          <button type="button" class="tile t-windows locked" data-gb="26.4" data-locked="1">
-            <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
-            <span class="name">Windows</span><span class="size">26.4 GB</span><span class="hint" data-i18n="demo.locked">Protected</span>
-          </button>
-          <button type="button" class="tile t-downloads small" data-gb="17.3"><span class="name">Downloads</span><span class="size">17.3 GB</span><span class="hint" data-i18n="demo.hint">Del → Recycle Bin</span></button>
-          <button type="button" class="tile t-projects small" data-gb="12.3"><span class="name">node_modules</span><span class="size">12.3 GB</span><span class="hint" data-i18n="demo.hint">Del → Recycle Bin</span></button>
-          <button type="button" class="tile t-cache small" data-gb="6.32"><span class="name">AppCache</span><span class="size">6.32 GB</span><span class="hint" data-i18n="demo.hint">Del → Recycle Bin</span></button>
-          <button type="button" class="tile t-photos small" data-gb="5.4"><span class="name">Photos</span><span class="size">5.40 GB</span><span class="hint" data-i18n="demo.hint">Del → Recycle Bin</span></button>
-        </div>
+      <div class="facts">
+        <div class="fact"><b data-num="1952417">1,952,417</b><span data-i18n="fact.scan">files scanned in 12.5 s</span></div>
+        <div class="fact"><b>0</b><span data-i18n="fact.net">network requests</span></div>
+        <div class="fact"><b>11</b><span data-i18n="fact.langs">languages</span></div>
+        <div class="fact"><b>1</b><span data-i18n="fact.exe">portable .exe, nothing to install</span></div>
       </div>
-      <p class="demo-note" data-i18n="demo.note">↑ Try it: click a tile to “delete” it. It's a toy, nothing on your PC is touched.</p>
     </div>
   </section>
 
-  <!-- ===== Nhật ký quét ===== -->
-  <section class="logsec">
+  <!-- ===== How it works ===== -->
+  <section id="how" class="white">
     <div class="wrap">
-      <div class="term">
-        <div class="term-bar"><i></i><i></i><i></i></div>
-<pre><span class="c">12:40:01</span>  <span class="p">scan</span>   C:\
-<span class="c">12:40:13</span>  <span class="ok">done</span>   <span class="num">1,952,417</span> <span data-i18n="term.files">files</span> · <span class="num">412,323</span> <span data-i18n="term.folders">folders</span> · <span class="num">429 GB</span>
-<span class="c">12:40:13</span>  <span class="ok">speed</span>  <span class="num">12.5 s</span> · <span class="num">155,000</span> <span data-i18n="term.rate">files per second</span>
-<span class="c">12:40:13</span>  <span class="ok">net</span>    <span class="num">0</span> <span data-i18n="term.net">requests · 0 bytes of telemetry</span>
-<span class="c">12:40:14</span>  <span class="p">ready</span>  <span class="caret"></span></pre>
+      <div class="head">
+        <span class="eyebrow" data-i18n="nav.how">How it works</span>
+        <h2 data-i18n="how.title">Free up space in three steps</h2>
       </div>
-      <p class="note center" data-i18n="term.note">Real numbers from a full scan of a 476 GB laptop SSD, without admin rights.</p>
+      <div class="steps">
+        <div class="step">
+          <span class="n" data-i18n="how.n1">Step 1</span>
+          <h3 data-i18n="how.s1.t">Pick a drive</h3>
+          <p data-i18n="how.s1.d">Click a drive card or choose any folder. The scan starts right away.</p>
+          <div class="crop"><img loading="lazy" src="/assets/step-pick.png" width="800" height="500" alt="Drive cards and the folder bar at the top of Diskat"></div>
+        </div>
+        <div class="step">
+          <span class="n" data-i18n="how.n2">Step 2</span>
+          <h3 data-i18n="how.s2.t">See what's big</h3>
+          <p data-i18n="how.s2.d">The biggest folders move to the top as the scan runs, and the space map shows where the room went.</p>
+          <div class="crop"><img loading="lazy" src="/assets/step-see.png" width="712" height="445" alt="The space map: each folder is a colored block sized by how much space it uses"></div>
+        </div>
+        <div class="step">
+          <span class="n" data-i18n="how.n3">Step 3</span>
+          <h3 data-i18n="how.s3.t">Delete safely</h3>
+          <p data-i18n="how.s3.d">Select it and press Del. It goes to the Recycle Bin, and system folders stay locked.</p>
+          <div class="crop"><img loading="lazy" src="/assets/step-delete.png" width="640" height="400" alt="The confirmation dialog before a folder is moved to the Recycle Bin"></div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- ===== Tính năng ===== -->
+  <!-- ===== Features ===== -->
   <section id="features">
     <div class="wrap">
       <div class="head">
-        <div>
-          <div class="path"><b>C:\Diskat\</b>features</div>
-          <h2 data-i18n="feat.title">Small app. Sharp claws.</h2>
-        </div>
-        <p class="lead" data-i18n="feat.lead">Everything you need to find what's taking up space and get rid of it. Nothing you don't.</p>
+        <span class="eyebrow" data-i18n="nav.features">Features</span>
+        <h2 data-i18n="feat.title2">Everything you need to clean up a drive</h2>
       </div>
-      <div class="bento">
-        <div class="cell map">
-          <span class="tag">38%</span><span class="dot"></span>
-          <h3 data-i18n="f.map.t">A map of your whole disk</h3>
-          <p data-i18n="f.map.d">Every file and folder becomes a tile sized by the space it takes. Big tiles are your problem. Click to select, double-click to dive in.</p>
-          <div class="shot"><img loading="lazy" src="/assets/folder-map.png" width="1602" height="901" alt="Diskat space map of a Downloads folder"></div>
-        </div>
-        <div class="cell scan">
-          <span class="tag">21%</span><span class="dot"></span>
-          <h3 data-i18n="f.scan.t">Fast, parallel scanning</h3>
-          <p data-i18n="f.scan.d">Many threads read folders at once with almost no memory per file. Results stream in while it scans.</p>
-        </div>
-        <div class="cell tree">
-          <span class="tag">14%</span><span class="dot"></span>
-          <h3 data-i18n="f.tree.t">Fattest folders first</h3>
-          <p data-i18n="f.tree.d">A folder tree sorted by size, with “% of parent” bars. Drive it entirely from the keyboard.</p>
-        </div>
-        <div class="cell files">
-          <span class="tag">11%</span><span class="dot"></span>
-          <h3 data-i18n="f.files.t">The 500 biggest files</h3>
-          <p data-i18n="f.files.d">Forgotten ISOs, videos and backups from anywhere on the drive, in one list.</p>
-        </div>
-        <div class="cell del">
-          <span class="tag">9%</span><span class="dot"></span>
-          <h3 data-i18n="f.del.t">Delete without leaving</h3>
-          <p data-i18n="f.del.d"><kbd>Del</kbd> sends it to the Recycle Bin, <kbd>Shift+Del</kbd> erases it. Totals update instantly, no rescan.</p>
-        </div>
-        <div class="cell admin">
-          <span class="tag">7%</span><span class="dot"></span>
-          <h3 data-i18n="f.admin.t">Run as Admin</h3>
-          <p data-i18n="f.admin.d">One click to measure protected system folders too.</p>
-        </div>
+      <div class="features">
+        <div class="feature"><span class="swatch c4"></span><h3 data-i18n="f.scan.t">Fast, parallel scanning</h3><p data-i18n="f.scan.d">Many threads read folders at once with almost no memory per file. Results stream in while it scans.</p></div>
+        <div class="feature"><span class="swatch c1"></span><h3 data-i18n="f.map.t">A map of your whole disk</h3><p data-i18n="f.map.d">Every file and folder becomes a tile sized by the space it takes. Big tiles are your problem. Click to select, double-click to dive in.</p></div>
+        <div class="feature"><span class="swatch c2"></span><h3 data-i18n="f.tree.t">Fattest folders first</h3><p data-i18n="f.tree.d">A folder tree sorted by size, with “% of parent” bars. Drive it entirely from the keyboard.</p></div>
+        <div class="feature"><span class="swatch c7"></span><h3 data-i18n="f.files.t">The 500 biggest files</h3><p data-i18n="f.files.d">Forgotten ISOs, videos and backups from anywhere on the drive, in one list.</p></div>
+        <div class="feature"><span class="swatch c6"></span><h3 data-i18n="f.del.t">Delete without leaving</h3><p data-i18n="f.del.d"><kbd>Del</kbd> sends it to the Recycle Bin, <kbd>Shift+Del</kbd> erases it. Totals update instantly, no rescan.</p></div>
+        <div class="feature"><span class="swatch c3"></span><h3 data-i18n="f.admin.t">Run as Admin</h3><p data-i18n="f.admin.d">One click to measure protected system folders too.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- ===== Ảnh chụp thật ===== -->
-  <section id="screens">
-    <div class="wrap">
-      <div class="head">
-        <div>
-          <div class="path"><b>C:\Diskat\</b>screenshots</div>
-          <h2 data-i18n="gal.title">The real thing.</h2>
-        </div>
-        <div class="tabs" role="tablist">
-          <button class="tab" role="tab" aria-selected="true" data-shot="0" data-i18n="gal.t1">Overview</button>
-          <button class="tab" role="tab" aria-selected="false" data-shot="1" data-i18n="gal.t2">Largest files</button>
-          <button class="tab" role="tab" aria-selected="false" data-shot="2" data-i18n="gal.t3">Folder map</button>
-          <button class="tab" role="tab" aria-selected="false" data-shot="3" data-i18n="gal.t4">Safe delete</button>
-        </div>
-      </div>
-      <figure class="shotpane active"><div class="frame"><img loading="lazy" src="/assets/overview.png" width="1602" height="901" alt="Whole drive overview"></div><figcaption data-i18n="gal.c1">Scan a whole drive and see the heaviest folders first.</figcaption></figure>
-      <figure class="shotpane"><div class="frame"><img loading="lazy" src="/assets/largest-files.png" width="1602" height="901" alt="Largest files list"></div><figcaption data-i18n="gal.c2">The biggest files anywhere on the drive, with their folders.</figcaption></figure>
-      <figure class="shotpane"><div class="frame"><img loading="lazy" src="/assets/folder-map.png" width="1602" height="901" alt="Space map of the Downloads folder"></div><figcaption data-i18n="gal.c3">The space map shows every file and folder by size.</figcaption></figure>
-      <figure class="shotpane"><div class="frame"><img loading="lazy" src="/assets/safe-delete.png" width="1602" height="901" alt="Delete confirmation dialog"></div><figcaption data-i18n="gal.c4">Every delete is confirmed, and goes to the Recycle Bin by default.</figcaption></figure>
-    </div>
-  </section>
-
-  <!-- ===== An toàn ===== -->
-  <section id="safety">
+  <!-- ===== Safety ===== -->
+  <section id="safety" class="white">
     <div class="wrap safety">
-      <div>
-        <div class="path"><b>C:\Diskat\</b>safety</div>
+      <div class="safety-copy">
+        <span class="eyebrow" data-i18n="nav.safety">Safety</span>
         <h2 data-i18n="safe.title">Your files don't have nine lives.</h2>
         <p class="lead" data-i18n="safe.lead">So Diskat treats every delete like it matters. These are always locked:</p>
         <div class="locks">
@@ -193,24 +146,22 @@
           <span class="lockchip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>AppData</span>
         </div>
         <ul class="rules">
-          <li><span class="n">01</span><span><b data-i18n="safe.r1.t">Recycle Bin first.</b> <span data-i18n="safe.r1.d">Del moves things to the Recycle Bin. Permanent delete needs Shift+Del and a dialog that defaults to Cancel.</span></span></li>
-          <li><span class="n">02</span><span><b data-i18n="safe.r2.t">Links are never followed.</b> <span data-i18n="safe.r2.d">Junctions and symlinks are shown but never walked through, so nothing is counted twice or deleted by accident.</span></span></li>
-          <li><span class="n">03</span><span><b data-i18n="safe.r3.t">Tricky names are refused.</b> <span data-i18n="safe.r3.d">Names ending in a dot or space make Windows touch a different item, so Diskat won't delete them.</span></span></li>
-          <li><span class="n">04</span><span><b data-i18n="safe.r4.t">Honest numbers.</b> <span data-i18n="safe.r4.d">If a folder wasn't fully scanned, the delete dialog tells you its real size may be bigger.</span></span></li>
+          <li><span><b data-i18n="safe.r1.t">Recycle Bin first.</b> <span data-i18n="safe.r1.d">Del moves things to the Recycle Bin. Permanent delete needs Shift+Del and a dialog that defaults to Cancel.</span></span></li>
+          <li><span><b data-i18n="safe.r2.t">Links are never followed.</b> <span data-i18n="safe.r2.d">Junctions and symlinks are shown but never walked through, so nothing is counted twice or deleted by accident.</span></span></li>
+          <li><span><b data-i18n="safe.r3.t">Tricky names are refused.</b> <span data-i18n="safe.r3.d">Names ending in a dot or space make Windows touch a different item, so Diskat won't delete them.</span></span></li>
+          <li><span><b data-i18n="safe.r4.t">Honest numbers.</b> <span data-i18n="safe.r4.d">If a folder wasn't fully scanned, the delete dialog tells you its real size may be bigger.</span></span></li>
         </ul>
       </div>
-      <div class="frame"><img loading="lazy" src="/assets/safe-delete.png" width="1602" height="901" alt="Diskat asking for confirmation before moving a folder to the Recycle Bin"></div>
+      <div class="window"><img loading="lazy" src="/assets/safe-delete.png" width="1602" height="901" alt="Diskat asking for confirmation before moving a folder to the Recycle Bin"></div>
     </div>
   </section>
 
-  <!-- ===== So sánh ===== -->
+  <!-- ===== Compare ===== -->
   <section id="compare">
     <div class="wrap">
       <div class="head">
-        <div>
-          <div class="path"><b>C:\Diskat\</b>compare</div>
-          <h2 data-i18n="cmp.title">Other cats in the alley.</h2>
-        </div>
+        <span class="eyebrow" data-i18n="nav.compare">Compare</span>
+        <h2 data-i18n="cmp.title">Other cats in the alley.</h2>
         <p class="lead" data-i18n="cmp.lead">There are great tools out there. Here is an honest look at where Diskat fits.</p>
       </div>
       <div class="table-wrap">
@@ -264,40 +215,33 @@
       </div>
       <p class="note" data-i18n="cmp.note">“Not stated” means the vendor's website doesn't say. Checked on the official sites in October 2026; tell us if anything is out of date.</p>
       <div class="pick">
-        <div class="cell"><h3 data-i18n="pick.us.t">Pick Diskat if…</h3><p data-i18n="pick.us.d">you want a clean, fast, free tool you can trust with deletes, that you or your company can use and audit without buying a license.</p></div>
-        <div class="cell"><h3 data-i18n="pick.other.t">Pick another tool if…</h3><p data-i18n="pick.other.d">you need the fastest full-drive NTFS scan (WizTree), duplicate finding, permission audits or file recovery (WinDirStat), or PDF reports (TreeSize).</p></div>
+        <div><h3 data-i18n="pick.us.t">Pick Diskat if…</h3><p data-i18n="pick.us.d">you want a clean, fast, free tool you can trust with deletes, that you or your company can use and audit without buying a license.</p></div>
+        <div><h3 data-i18n="pick.other.t">Pick another tool if…</h3><p data-i18n="pick.other.d">you need the fastest full-drive NTFS scan (WizTree), duplicate finding, permission audits or file recovery (WinDirStat), or PDF reports (TreeSize).</p></div>
       </div>
       <p class="note" data-i18n="cmp.limits">Current Diskat limitations: sizes are logical (not size on disk), hard links are counted once per link, Windows x64 only.</p>
     </div>
   </section>
 
-  <!-- ===== Changelog ===== -->
-  <section id="changelog">
+  <!-- ===== Changelog preview ===== -->
+  <section id="changelog" class="white">
     <div class="wrap">
       <div class="head">
-        <div>
-          <div class="path"><b>C:\Diskat\</b>CHANGELOG.md</div>
-          <h2 data-i18n="log.title">What's new.</h2>
-        </div>
+        <span class="eyebrow" data-i18n="nav.changelog">Changelog</span>
+        <h2 data-i18n="log.title">What's new.</h2>
       </div>
-      <div class="log">
-        <div class="ver"><b>v1.0.0</b><span class="pill" data-i18n="log.latest">latest</span><time datetime="2026-10-20">2026-10-20</time></div>
-        <div data-i18n="log.intro">First public release.</div>
-        <h4 data-i18n="log.added">## Added</h4>
-        <ul>
-          <li data-i18n="log.a1">Multi-threaded scanner with live results and heaviest-first sorting</li>
-          <li data-i18n="log.a2">Folder tree with “% of parent” bars, two-level space map, Largest files list</li>
-          <li data-i18n="log.a3">Delete to Recycle Bin or permanently; rescan a single folder with F5</li>
-          <li data-i18n="log.a4">Run as Admin, drive overview cards, command-line folder argument</li>
-          <li data-i18n="log.a5">Interface in 11 languages</li>
-        </ul>
-        <h4 data-i18n="log.safety">## Safety</h4>
-        <ul class="safe">
-          <li data-i18n="log.s1">Protected system and profile folders, checked against the real path</li>
-          <li data-i18n="log.s2">Never follows junctions or symlinks, when scanning or deleting</li>
-          <li data-i18n="log.s3">Refuses names ending in a dot or space</li>
-        </ul>
-        <a class="more" href="/changelog" data-i18n="log.full">Full changelog on GitHub →</a>
+      <div class="release">
+        <div class="ver"><b>v1.0.0</b><time datetime="2026-10-20">2026-10-20</time><span class="pill" data-i18n="log.latest">latest</span></div>
+        <div>
+          <p data-i18n="log.intro">First public release.</p>
+          <ul>
+            <li data-i18n="log.a1">Multi-threaded scanner with live results and heaviest-first sorting</li>
+            <li data-i18n="log.a2">Folder tree with “% of parent” bars, two-level space map, Largest files list</li>
+            <li data-i18n="log.a3">Delete to Recycle Bin or permanently; rescan a single folder with F5</li>
+            <li data-i18n="log.a4">Run as Admin, drive overview cards, command-line folder argument</li>
+            <li data-i18n="log.a5">Interface in 11 languages</li>
+          </ul>
+          <a class="more" href="/changelog" data-i18n="log.all">Read the full changelog →</a>
+        </div>
       </div>
     </div>
   </section>
@@ -306,10 +250,8 @@
   <section id="faq">
     <div class="wrap">
       <div class="head">
-        <div>
-          <div class="path"><b>C:\Diskat\</b>FAQ</div>
-          <h2 data-i18n="faq.title">Questions, answered.</h2>
-        </div>
+        <span class="eyebrow">FAQ</span>
+        <h2 data-i18n="faq.title">Questions, answered.</h2>
       </div>
       <div class="faq">
         <details><summary data-i18n="faq.q1">Windows says “Windows protected your PC”. Is Diskat safe?</summary><p data-i18n="faq.a1">The download isn't code-signed yet, so SmartScreen warns about any new app. Click “More info”, then “Run anyway”. The full source code is on GitHub if you want to check it or build it yourself.</p></details>
@@ -318,39 +260,42 @@
         <details><summary data-i18n="faq.q4">Do I need administrator rights?</summary><p data-i18n="faq.a4">No. Without admin rights a few protected system folders can't be read and are marked as blocked. Click “Run as Admin” if you want them counted too.</p></details>
         <details><summary data-i18n="faq.q5">Can I undo a delete?</summary><p data-i18n="faq.a5">Items deleted with Del go to the Recycle Bin, so you can restore them from there. Shift+Del erases permanently and can't be undone.</p></details>
         <details><summary data-i18n="faq.q6">Which Windows versions are supported?</summary><p data-i18n="faq.a6">Windows 10 and Windows 11, 64-bit. The exe is self-contained: no installer and no .NET runtime needed.</p></details>
+        <details><summary data-i18n="faq.q7">How do I get help or report a bug?</summary><p><span data-i18n="faq.a7">Email us or open an issue on GitHub:</span> <a href="mailto:fat@diskat.cc">fat@diskat.cc</a> · <a href="/issues">GitHub Issues</a></p></details>
       </div>
     </div>
   </section>
 
-  <!-- ===== CTA cuối ===== -->
-  <section>
+  <!-- ===== Final call to action ===== -->
+  <section class="final">
     <div class="wrap">
-      <div class="final">
-        <img src="/assets/logo-256.png" alt="" width="92" height="92">
-        <h2 data-i18n="final.title">Go reclaim some gigabytes.</h2>
-        <p data-i18n="final.lead">Download Diskat, pick a drive, delete what you don't need. It takes about a minute.</p>
-        <div class="cta">
-          <a class="btn btn-primary" href="/download" data-i18n="cta.download">Download for Windows</a>
-          <a class="btn btn-ghost" href="/github" data-i18n="cta.star">Star on GitHub</a>
+      <div class="copy">
+        <img src="/assets/logo-256.png" alt="" width="64" height="64">
+        <div>
+          <h2 data-i18n="final.title2">Ready to free up some space?</h2>
+          <p data-i18n="final.lead">Download Diskat, pick a drive, delete what you don't need. It takes about a minute.</p>
         </div>
+      </div>
+      <div class="cta">
+        <a class="btn btn-ghost" href="/github" data-i18n="cta.star">Star on GitHub</a>
+        <a class="btn btn-light" href="/download" data-i18n="cta.download">Download for Windows</a>
       </div>
     </div>
   </section>
 </main>
 
-<footer>
-  <div class="wrap">
+<footer class="foot">
+  <div class="wrap foot-row">
     <span>© 2026 Diskat contributors · <span data-i18n="foot.oss">Open source under the MIT License</span></span>
     <nav aria-label="Footer">
-      <a href="/github">GitHub</a>
       <a href="/changelog" data-i18n="nav.changelog">Changelog</a>
       <a href="/license" data-i18n="foot.license">License</a>
       <a href="/privacy" data-i18n="foot.privacy">Privacy</a>
+      <a href="/github">GitHub</a>
+      <a href="mailto:fat@diskat.cc">fat@diskat.cc</a>
     </nav>
   </div>
 </footer>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="/assets/app.js?v=3" defer></script>
+<script src="/assets/app.js?v=5" defer></script>
 </body>
 </html>

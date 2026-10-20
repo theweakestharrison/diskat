@@ -95,7 +95,7 @@ dung lượng ổ đĩa, phân tích ổ cứng, dọn dẹp ổ đĩa, thư m�
 | Markets | All markets |
 | Age rating (IARC questionnaire) | Answer "No" to every content question → rated 3+ / Everyone |
 | Privacy policy URL | https://diskat.cc/privacy |
-| Support contact | https://diskat.cc (links to GitHub issues) |
+| Support contact | fat@diskat.cc (website: https://diskat.cc) |
 | Product declarations | Does not access, collect or transmit personal information |
 
 ### Notes for certification (paste into "Submission options > Notes for certification")
