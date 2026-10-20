@@ -1,0 +1,56 @@
+﻿<Window x:Class="Diskat.UI.ConfirmDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="clr-namespace:Diskat.Core"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        SizeToContent="WidthAndHeight" ResizeMode="NoResize" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" FontFamily="Segoe UI" FontSize="13"
+        UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
+    <Border Margin="18" Background="White" CornerRadius="12" BorderBrush="{StaticResource Border}" BorderThickness="1" Width="500">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="24" ShadowDepth="4" Opacity="0.22" Color="#1A2540"/>
+        </Border.Effect>
+        <StackPanel Margin="24,22,24,20">
+            <StackPanel Orientation="Horizontal">
+                <Border x:Name="IconBg" Width="40" Height="40" CornerRadius="20" Background="#FFF4DD">
+                    <Path x:Name="IconPath" Width="18" Height="20" Stretch="Uniform" Stroke="#E8A317" StrokeThickness="1.8"
+                          StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                          Data="M3,6 L21,6 M8,6 L8,4 C8,3.4 8.4,3 9,3 L15,3 C15.6,3 16,3.4 16,4 L16,6 M5,6 L6,20 C6,20.6 6.4,21 7,21 L17,21 C17.6,21 18,20.6 18,20 L19,6 Z"/>
+                </Border>
+                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="TitleText" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource Text}"/>
+                    <TextBlock x:Name="SubtitleText" Foreground="{StaticResource SubText}" Margin="0,2,0,0" TextWrapping="Wrap" MaxWidth="390"/>
+                </StackPanel>
+            </StackPanel>
+
+            <Border Background="#F5F7FA" CornerRadius="8" Padding="12,10" Margin="0,18,0,0">
+                <StackPanel>
+                    <TextBox x:Name="PathText" IsReadOnly="True" BorderThickness="0" Background="Transparent" TextWrapping="Wrap"
+                             FontFamily="Consolas" FontSize="12.5" Foreground="{StaticResource Text}" MaxHeight="120"
+                             VerticalScrollBarVisibility="Auto"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <TextBlock Text="{core:T ConfirmSize}" Foreground="{StaticResource SubText}"/>
+                        <TextBlock x:Name="SizeText" FontWeight="SemiBold" Foreground="{StaticResource Text}"/>
+                        <TextBlock x:Name="DetailText" Foreground="{StaticResource SubText}" Margin="14,0,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border x:Name="InfoBox" Background="#FFF6E0" CornerRadius="8" Padding="12,8" Margin="0,12,0,0" Visibility="Collapsed">
+                <TextBlock x:Name="InfoText" Foreground="#8A5A00" TextWrapping="Wrap"/>
+            </Border>
+
+            <Border x:Name="WarnBox" Background="#FDECEC" CornerRadius="8" Padding="12,8" Margin="0,12,0,0" Visibility="Collapsed">
+                <TextBlock Text="{core:T ConfirmWarn}"
+                           Foreground="#B42323" TextWrapping="Wrap" FontWeight="SemiBold"/>
+            </Border>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
+                <Button x:Name="CancelBtn" Content="{core:T Cancel}" Style="{StaticResource BaseButton}" MinWidth="90" Height="36"
+                        IsCancel="True" Click="Cancel_Click"/>
+                <Button x:Name="OkBtn" Style="{StaticResource DangerButton}" MinWidth="150" Height="36" Margin="10,0,0,0" Padding="16,6"
+                        Click="Ok_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

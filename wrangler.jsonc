@@ -1,0 +1,14 @@
+﻿{
+  // Cloudflare Worker serving the static landing page in ./website at https://diskat.cc
+  // Deploy: npx wrangler deploy   (the diskat.cc zone must be in the same Cloudflare account)
+  "name": "diskat-website",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./website",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [
+    { "pattern": "diskat.cc", "custom_domain": true }
+  ]
+}

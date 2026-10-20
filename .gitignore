@@ -1,0 +1,24 @@
+# Build output
+bin/
+obj/
+dist/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# MSIX packaging: build output and Microsoft SDK tools downloaded by build-msix.ps1
+packaging/out/
+packaging/.tools/
+*.msix
+*.msixbundle
+*.msixupload
+*.appx
+*.appxbundle
+
+# Cloudflare wrangler local state
+.wrangler/
+node_modules/
