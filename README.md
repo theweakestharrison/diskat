@@ -94,4 +94,4 @@ Issues and pull requests are welcome. UI strings live in `Core/Loc.cs`; please a
 
 ## License
 
-See [LICENSE](LICENSE).
+Diskat is released under the [MIT License](LICENSE).

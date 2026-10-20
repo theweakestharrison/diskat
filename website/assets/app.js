@@ -126,7 +126,7 @@
 
     "final.title": "Giải phóng dung lượng trong 5 phút tới",
     "final.lead": "Tải Diskat, chọn một ổ đĩa, xóa những gì bạn không cần.",
-    "foot.oss": "Phần mềm mã nguồn mở",
+    "foot.oss": "Mã nguồn mở theo giấy phép MIT",
     "foot.license": "Giấy phép",
     "foot.privacy": "Quyền riêng tư"
   };
