@@ -81,6 +81,7 @@ ${body}
     <nav aria-label="Footer"><a href="/">Home</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
   </div>
 </footer>
+<script src="/assets/app.js?v=${ASSET_VERSION}" defer></script>
 </body>
 </html>
 `;

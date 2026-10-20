@@ -1,5 +1,5 @@
 # Short links to the GitHub repository (https://github.com/theweakestharrison/diskat).
-# /download is served by worker/index.js from R2; /changelog, /license and /privacy are pages in this folder.
+# /download and /download/mac are served by worker/index.js from R2; /changelog, /license and /privacy are pages in this folder.
 
 /github     https://github.com/theweakestharrison/diskat            302
 /issues     https://github.com/theweakestharrison/diskat/issues     302
