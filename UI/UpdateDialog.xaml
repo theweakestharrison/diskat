@@ -6,16 +6,16 @@
         SizeToContent="WidthAndHeight" ResizeMode="NoResize" ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner" FontFamily="Segoe UI" FontSize="13"
         UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
-    <Border Margin="18" Background="White" CornerRadius="12" BorderBrush="{StaticResource Border}" BorderThickness="1" Width="460">
+    <Border Style="{StaticResource DialogCard}" Width="460">
         <Border.Effect>
-            <DropShadowEffect BlurRadius="24" ShadowDepth="4" Opacity="0.22" Color="#1A2540"/>
+            <DropShadowEffect BlurRadius="24" ShadowDepth="4" Opacity="0.22" Color="{DynamicResource ShadowColor}"/>
         </Border.Effect>
         <StackPanel Margin="24,22,24,20">
             <StackPanel Orientation="Horizontal">
                 <Image Source="{StaticResource LogoImage}" Width="40" Height="40"/>
                 <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
-                    <TextBlock Text="{core:T UpdTitle}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource Text}"/>
-                    <TextBlock x:Name="MessageText" Foreground="{StaticResource SubText}" Margin="0,2,0,0" TextWrapping="Wrap" MaxWidth="350"/>
+                    <TextBlock Text="{core:T UpdTitle}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource Text}"/>
+                    <TextBlock x:Name="MessageText" Foreground="{DynamicResource SubText}" Margin="0,2,0,0" TextWrapping="Wrap" MaxWidth="350"/>
                 </StackPanel>
             </StackPanel>
 
@@ -25,7 +25,7 @@
 
             <StackPanel x:Name="ProgressPanel" Margin="0,18,0,0" Visibility="Collapsed">
                 <ProgressBar x:Name="Progress" Style="{StaticResource SlimBar}" Maximum="1"/>
-                <TextBlock x:Name="ProgressText" Margin="0,8,0,0" Foreground="{StaticResource SubText}" FontSize="12"/>
+                <TextBlock x:Name="ProgressText" Margin="0,8,0,0" Foreground="{DynamicResource SubText}" FontSize="12"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">

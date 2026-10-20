@@ -81,6 +81,56 @@ public sealed class Row : INotifyPropertyChanged
         }
     }
 
+    // ---- So sánh với một lần quét đã lưu (cột "Thay đổi") ----
+
+    /// <summary>Lần quét đang được so sánh, dùng chung cho mọi dòng của cây; null khi không so sánh.</summary>
+    public static ScanComparison? Comparison { get; set; }
+
+    private int BaselineIndex => Kind == RowKind.Dir && Comparison is { } c ? c.IndexOf(Dir!) : -2;
+
+    /// <summary>Thư mục chưa có trong lần quét cũ.</summary>
+    public bool IsNew => BaselineIndex == -1;
+    public Visibility NewVisibility => IsNew ? Visibility.Visible : Visibility.Collapsed;
+    public string NewLabel => Loc.T("CompareNew");
+
+    /// <summary>Dung lượng tăng (+) / giảm (-) từ lần quét cũ. File không có số liệu cũ: luôn xếp cuối.</summary>
+    public long ChangeValue => BaselineIndex switch
+    {
+        -2 => long.MinValue,
+        -1 => SizeBytes,
+        var i => SizeBytes - Comparison!.SizeAt(i),
+    };
+
+    public string ChangeText
+    {
+        get
+        {
+            long d = ChangeValue;
+            if (d == long.MinValue || (d == 0 && !IsNew)) return "";
+            return (d < 0 ? "-" : "+") + FileOps.FormatSize(Math.Abs(d));
+        }
+    }
+
+    /// <summary>1: dùng thêm dung lượng, -1: đã giải phóng, 0: không đổi (XAML chọn màu GrowText / ShrinkText theo giao diện).</summary>
+    public int ChangeSign => ChangeValue switch
+    {
+        long.MinValue => 0,
+        > 0 => 1,
+        < 0 => -1,
+        _ => 0,
+    };
+
+    public string? ChangeTip
+    {
+        get
+        {
+            int i = BaselineIndex;
+            if (i == -2) return null;
+            string when = Comparison!.Info.ScannedUtc.ToLocalTime().ToString(Loc.T("DateFormat"), System.Globalization.CultureInfo.InvariantCulture);
+            return i == -1 ? Loc.F("ChangeTipNew", when) : Loc.F("ChangeTip", FileOps.FormatSize(Comparison.SizeAt(i)), Size, when);
+        }
+    }
+
     public Thickness Indent => new(Depth * 18, 0, 0, 0);
 
     public bool HasChildren => Kind == RowKind.Dir && !Dir!.IsLink && (Dir.Children.Length > 0 || Dir.OwnFiles > 0 || !Dir.Scanned);
@@ -147,19 +197,36 @@ public static class Icons
     public static readonly Geometry Dots = G("M3,10 A1.6,1.6 0 1 1 6.2,10 A1.6,1.6 0 1 1 3,10 Z M8.4,10 A1.6,1.6 0 1 1 11.6,10 A1.6,1.6 0 1 1 8.4,10 Z M13.8,10 A1.6,1.6 0 1 1 17,10 A1.6,1.6 0 1 1 13.8,10 Z");
 }
 
+/// <summary>Màu biểu tượng / thanh trong cây, lấy từ giao diện hiện tại (Themes/Light.xaml, Dark.xaml).</summary>
 public static class Palette
 {
     private static SolidColorBrush B(byte r, byte g, byte b) { var x = new SolidColorBrush(Color.FromRgb(r, g, b)); x.Freeze(); return x; }
 
-    public static readonly Brush Folder = B(0xD9, 0x96, 0x1A);
-    public static readonly Brush FolderFill = B(0xF6, 0xC3, 0x4F);
-    public static readonly Brush FileIcon = B(0x5B, 0x8D, 0xEF);
-    public static readonly Brush FileFill = B(0xEA, 0xF1, 0xFD);
-    public static readonly Brush Muted = B(0x9A, 0xA0, 0xAB);
-    public static readonly Brush MutedSoft = B(0xE4, 0xE7, 0xEC);
-    public static readonly Brush Danger = B(0xD9, 0x3B, 0x3B);
-    public static readonly Brush DangerSoft = B(0xF9, 0xD7, 0xD7);
-    public static readonly Brush Accent = B(0x2F, 0x6F, 0xED);
+    // Giá trị ban đầu là màu sáng, dùng khi chưa có Application (ví dụ chỉ xuất báo cáo)
+    public static Brush Folder { get; private set; } = B(0xD9, 0x96, 0x1A);
+    public static Brush FolderFill { get; private set; } = B(0xF6, 0xC3, 0x4F);
+    public static Brush FileIcon { get; private set; } = B(0x5B, 0x8D, 0xEF);
+    public static Brush FileFill { get; private set; } = B(0xEA, 0xF1, 0xFD);
+    public static Brush Muted { get; private set; } = B(0x9A, 0xA0, 0xAB);
+    public static Brush MutedSoft { get; private set; } = B(0xE4, 0xE7, 0xEC);
+    public static Brush Danger { get; private set; } = B(0xD9, 0x3B, 0x3B);
+    public static Brush DangerSoft { get; private set; } = B(0xF9, 0xD7, 0xD7);
+    public static Brush Accent { get; private set; } = B(0x2F, 0x6F, 0xED);
+
+    /// <summary>Đọc lại màu sau khi đổi giao diện (UI/Theme.cs gọi).</summary>
+    public static void Load()
+    {
+        static Brush R(string key) => (Brush)Application.Current.Resources[key];
+        Folder = R("FolderStroke");
+        FolderFill = R("FolderFill");
+        FileIcon = R("FileStroke");
+        FileFill = R("FileFill");
+        Muted = R("IconMuted");
+        MutedSoft = R("IconMutedSoft");
+        Danger = R("Danger");
+        DangerSoft = R("IconDangerSoft");
+        Accent = R("Accent");
+    }
 
     private static readonly Brush[] Bars =
     [

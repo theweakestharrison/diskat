@@ -42,6 +42,7 @@ public partial class MainWindow : Window
         if (_cli.Lang != null) Loc.UseForSession(_cli.Lang);
         InitializeComponent();
         Tree.ItemsSource = _rows;
+        InitDuplicates();
 
         _timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromMilliseconds(200) };
         _timer.Tick += Timer_Tick;
@@ -55,6 +56,9 @@ public partial class MainWindow : Window
         if (_isAdmin) AdminBtn.Visibility = Visibility.Collapsed;
 
         Loc.LanguageChanged += ApplyLanguage;
+        Theme.Changed += ApplyTheme;
+        // Thanh tiêu đề tối phải đặt trước khi cửa sổ hiện lên, không thì Windows 10 vẽ thanh sáng trước
+        SourceInitialized += (_, _) => Theme.SetTitleBar(this);
 
         Loaded += (_, _) =>
         {
@@ -71,7 +75,7 @@ public partial class MainWindow : Window
             else if (_cli.Quit) { Application.Current.Shutdown(0); return; }
             if (!_cli.Quit) MaybeCheckForUpdatesOnStartup();
         };
-        Closing += (_, _) => { _cts?.Cancel(); Loc.LanguageChanged -= ApplyLanguage; };
+        Closing += (_, _) => { _cts?.Cancel(); Loc.LanguageChanged -= ApplyLanguage; Theme.Changed -= ApplyTheme; };
     }
 
     // ================= Ngôn ngữ =================
@@ -117,6 +121,7 @@ public partial class MainWindow : Window
 
         UpdateHeaderCaptions();
         InitFindFilters();
+        InitDupFilters();
         LoadInsights();
         LoadDrives();
         foreach (var r in _rows) r.Refresh();
@@ -125,7 +130,16 @@ public partial class MainWindow : Window
         Map_HoverChanged(null);
         UpdateStats();
         UpdateSelectionText();
+        UpdateCompareBar();
         StatusText.Text = _status();
+    }
+
+    /// <summary>Sau khi đổi giao diện sáng / tối: XAML tự đổi màu, phần lấy màu từ mã (biểu tượng cây, thẻ ổ đĩa, bản đồ) vẽ lại.</summary>
+    private void ApplyTheme()
+    {
+        foreach (var r in _rows) r.Refresh();
+        LoadDrives();
+        Map.Redraw();
     }
 
     // ================= Ổ đĩa =================
@@ -227,6 +241,7 @@ public partial class MainWindow : Window
         _root = _scanner.Root;
         _root.IsExpanded = true;
         PathBox.Text = _root.FullPath;
+        SuspendComparison(_root.FullPath);
 
         ResetTreeState();
         RebuildRows();
@@ -237,6 +252,7 @@ public partial class MainWindow : Window
 
         SetScanningUi(true);
         ClearInsights();
+        ResetDuplicates();
         _watch.Restart();
         _tick = 0;
         _timer.Start();
@@ -303,6 +319,8 @@ public partial class MainWindow : Window
         UpdateMapHeader();
         LoadTopFiles();
         LoadInsights();
+        UpdateDupInfo();
+        OnScanFinishedCompare(cancelled);
 
         double secs = _watch.Elapsed.TotalSeconds;
         long files = Interlocked.Read(ref _root.FileCount);

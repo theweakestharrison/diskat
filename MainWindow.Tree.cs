@@ -69,12 +69,14 @@ public partial class MainWindow
 
     private SortKey KeyOf(Row r)
     {
-        int group = r.Kind == RowKind.Summary ? 2 : (_sortKey == "name" && r.Kind == RowKind.File ? 1 : 0);
+        // Sắp theo tên hoặc theo thay đổi: file nằm sau thư mục (file không có số liệu cũ để so)
+        int group = r.Kind == RowKind.Summary ? 2 : (_sortKey is "name" or "change" && r.Kind == RowKind.File ? 1 : 0);
         long num = _sortKey switch
         {
             "files" => r.FileCountValue,
             "dirs" => r.DirCountValue,
             "date" => r.TimeValue,
+            "change" => r.ChangeValue,
             "name" => 0,
             _ => r.SizeBytes,
         };
@@ -172,6 +174,7 @@ public partial class MainWindow
         if (!same) PreserveView(() => _rows.ReplaceAll(list));
         foreach (var r in _rows) r.Refresh();
         UpdateSelectionText();
+        UpdateCompareBar();
     }
 
     private void Expand(Row row)
@@ -302,17 +305,22 @@ public partial class MainWindow
         }
     }
 
-    private static readonly string[] HeaderKeys = ["ColName", "ColSize", "ColPercent", "ColFiles", "ColFolders", "ColModified"];
+    // Theo Tag của tiêu đề cột: cột "Thay đổi" chỉ có trong lưới khi đang so sánh với lần quét cũ
+    private static readonly Dictionary<string, string> HeaderKeys = new()
+    {
+        ["name"] = "ColName", ["size"] = "ColSize", ["pct"] = "ColPercent", ["files"] = "ColFiles",
+        ["dirs"] = "ColFolders", ["date"] = "ColModified", ["change"] = "ColChange",
+    };
     private string _sortHeaderTag = "size";
 
     private void UpdateHeaderCaptions()
     {
         if (Tree.View is not GridView gv) return;
-        for (int i = 0; i < gv.Columns.Count && i < HeaderKeys.Length; i++)
+        foreach (var col in gv.Columns.Append(ChangeColumn))
         {
-            if (gv.Columns[i].Header is not GridViewColumnHeader h) continue;
-            string caption = Loc.T(HeaderKeys[i]);
-            h.Content = (h.Tag as string) == _sortHeaderTag ? caption + (_sortDesc ? "  ▼" : "  ▲") : caption;
+            if (col.Header is not GridViewColumnHeader { Tag: string tag } h || !HeaderKeys.TryGetValue(tag, out var key)) continue;
+            string caption = Loc.T(key);
+            h.Content = tag == _sortHeaderTag ? caption + (_sortDesc ? "  ▼" : "  ▲") : caption;
         }
     }
 

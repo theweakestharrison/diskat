@@ -37,6 +37,11 @@ public sealed class TreemapControl : FrameworkElement
 
     public DirNode? Root { get; private set; }
 
+    /// <summary>Luôn vẽ màu sáng, bỏ qua giao diện (ảnh bản đồ trong báo cáo PDF).</summary>
+    public bool AlwaysLight { get; init; }
+
+    private bool Dark => !AlwaysLight && Theme.IsDark;
+
     public event Action<TreemapItem>? ItemClicked;
     public event Action<TreemapItem>? ItemDoubleClicked;
     public event Action<TreemapItem?>? HoverChanged;
@@ -112,20 +117,34 @@ public sealed class TreemapControl : FrameworkElement
     ];
     private static readonly Color FileColor = Color.FromRgb(0x8E, 0x9A, 0xAF);
 
-    private static readonly Dictionary<(int, int), Brush> BrushCache = new();
-    private static Brush GetBrush(int color, int depth)
+    private static readonly Dictionary<(bool, int, int), Brush> BrushCache = new();
+    private static Brush GetBrush(int color, int depth, bool dark)
     {
-        if (BrushCache.TryGetValue((color, depth), out var b)) return b;
+        if (BrushCache.TryGetValue((dark, color, depth), out var b)) return b;
         var c = color < 0 ? FileColor : BaseColors[color % BaseColors.Length];
-        if (depth > 0) c = Mix(c, Colors.White, 0.25);
-        var g = new LinearGradientBrush(Mix(c, Colors.White, 0.22), Mix(c, Colors.Black, 0.12), new Point(0, 0), new Point(1, 1));
+        LinearGradientBrush g;
+        if (dark)
+        {
+            // Nền tối: dịu màu đi để ô không chói và chữ trắng dễ đọc hơn; cấp 2 chỉ sáng lên một chút
+            c = Mix(c, Colors.Black, 0.22);
+            if (depth > 0) c = Mix(c, Colors.White, 0.12);
+            g = new LinearGradientBrush(Mix(c, Colors.White, 0.1), Mix(c, Colors.Black, 0.15), new Point(0, 0), new Point(1, 1));
+        }
+        else
+        {
+            if (depth > 0) c = Mix(c, Colors.White, 0.25);
+            g = new LinearGradientBrush(Mix(c, Colors.White, 0.22), Mix(c, Colors.Black, 0.12), new Point(0, 0), new Point(1, 1));
+        }
         g.Freeze();
-        BrushCache[(color, depth)] = g;
+        BrushCache[(dark, color, depth)] = g;
         return g;
     }
 
     private static readonly Brush HeaderBrush = Frozen(new SolidColorBrush(Color.FromArgb(0x40, 0, 0, 0)));
     private static readonly Pen BorderPen = Frozen(new Pen(new SolidColorBrush(Color.FromArgb(0xC0, 0xFF, 0xFF, 0xFF)), 1));
+    // Nền tối: đường phân cách cùng màu nền bản đồ thay vì lưới trắng
+    private static readonly Pen BorderPenDark = Frozen(new Pen(new SolidColorBrush(Color.FromArgb(0xE0, 0x18, 0x1B, 0x21)), 1));
+    private static readonly Brush LabelShadow = Frozen(new SolidColorBrush(Color.FromArgb(0x70, 0, 0, 0)));
     private static readonly Pen HoverPen = Frozen(new Pen(Brushes.White, 2.5));
     private static readonly Pen HoverPenOuter = Frozen(new Pen(new SolidColorBrush(Color.FromArgb(0xA0, 0, 0, 0)), 4.5));
     private static readonly Brush HoverFill = Frozen(new SolidColorBrush(Color.FromArgb(0x30, 0xFF, 0xFF, 0xFF)));
@@ -290,7 +309,8 @@ public sealed class TreemapControl : FrameworkElement
     {
         var r = it.Rect;
         if (r.Width < 0.6 || r.Height < 0.6) return;
-        dc.DrawRectangle(GetBrush(it.Color, it.Depth), r.Width > 3 && r.Height > 3 ? BorderPen : null, r);
+        bool dark = Dark;
+        dc.DrawRectangle(GetBrush(it.Color, it.Depth, dark), r.Width > 3 && r.Height > 3 ? (dark ? BorderPenDark : BorderPen) : null, r);
 
         bool hasNested = it.Depth == 0 && it.Node != null && r.Width >= 70 && r.Height >= 50 && it.Node.Children.Length > 0;
         if (hasNested)
@@ -308,19 +328,31 @@ public sealed class TreemapControl : FrameworkElement
         {
             var sz = new FormattedText(sizeText, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, FaceLight, 11, Brushes.White, dpi);
             name.MaxTextWidth = Math.Max(1, r.Width - sz.Width - 16);
-            dc.DrawText(name, new Point(r.X + 5, r.Y + 2));
-            if (r.Width > sz.Width + 60) dc.DrawText(sz, new Point(r.Right - sz.Width - 5, r.Y + 3));
+            DrawLabel(dc, name, new Point(r.X + 5, r.Y + 2), dark);
+            if (r.Width > sz.Width + 60) DrawLabel(dc, sz, new Point(r.Right - sz.Width - 5, r.Y + 3), dark);
         }
         else
         {
-            dc.DrawText(name, new Point(r.X + 4, r.Y + 3));
+            DrawLabel(dc, name, new Point(r.X + 4, r.Y + 3), dark);
             if (r.Height >= 34)
             {
                 var sz = new FormattedText(sizeText, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, FaceLight, fs - 1, Brushes.White, dpi);
-                dc.DrawText(sz, new Point(r.X + 4, r.Y + 3 + fs + 4));
+                DrawLabel(dc, sz, new Point(r.X + 4, r.Y + 3 + fs + 4), dark);
             }
         }
         dc.Pop();
+    }
+
+    /// <summary>Chữ trắng; nền tối thêm bóng mờ 1 px để đọc rõ trên ô màu vàng, xanh lá.</summary>
+    private static void DrawLabel(DrawingContext dc, FormattedText text, Point p, bool dark)
+    {
+        if (dark)
+        {
+            text.SetForegroundBrush(LabelShadow);
+            dc.DrawText(text, new Point(p.X + 1, p.Y + 1));
+            text.SetForegroundBrush(Brushes.White);
+        }
+        dc.DrawText(text, p);
     }
 
     private void RenderOverlay()

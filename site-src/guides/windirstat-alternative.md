@@ -18,7 +18,7 @@ The facts about WinDirStat on this page come from its official website, checked 
 | Development | Active, first release in October 2026 | Actively developed |
 | Where to get it | Portable single .exe from diskat.cc | Microsoft Store or its official website |
 | Treemap | Two-level space map | Yes |
-| Duplicate file detection | No | Yes |
+| Duplicate file detection | Duplicates tab (Diskat 1.2) | Yes |
 | Permissions features | No | Yes |
 | Deleted-file recovery | No | Yes |
 | Reports | PDF scan report (Diskat 1.1) | Yes |
@@ -34,7 +34,7 @@ We haven't published a side-by-side benchmark under identical conditions. If spe
 
 ## Features
 
-WinDirStat has more features for power users. It includes treemaps, duplicate file detection, permissions features, deleted-file recovery and reports. If you need any of those, WinDirStat is the better fit, and Diskat does not try to replace them.
+WinDirStat has more features for power users. Besides treemaps, duplicate file detection and reports, it includes permissions features and deleted-file recovery. If you need those, WinDirStat is the better fit, and Diskat does not try to replace them.
 
 Diskat keeps a narrower set of tools:
 
@@ -44,6 +44,7 @@ Diskat keeps a narrower set of tools:
 - Open in Explorer, Show in Explorer and Copy path from the right-click menu
 - 11 interface languages
 - From Diskat 1.1, a PDF report of a scan with a summary, the space map, the biggest folders and files, and a breakdown by file type
+- From Diskat 1.2, a **Duplicates** tab that finds files with identical content, sorted by wasted space. It never downloads cloud-only files, and it always keeps one copy of each
 
 ## Deleting safely
 
@@ -66,7 +67,7 @@ To be fair, here is what Diskat doesn't do or does differently:
 - It runs on 64-bit Windows 10 and 11 only.
 - It shows logical file sizes, not size on disk. OneDrive files that are online-only and compressed files can look larger than the space they really use.
 - Files with hard links are counted once per link. Folders such as `C:\Windows`, which use many hard links, look larger than their real footprint.
-- It has no duplicate finder, permissions view or file recovery.
+- It has no permissions view or file recovery.
 - The .exe isn't code-signed yet, so Windows SmartScreen may warn you the first time you run it.
 
 ## When to choose Diskat
@@ -79,7 +80,7 @@ To be fair, here is what Diskat doesn't do or does differently:
 
 ## When to choose WinDirStat
 
-- You need duplicate file detection, permissions features or deleted-file recovery.
+- You need permissions features or deleted-file recovery.
 - You want a tool with more options and reports for detailed analysis.
 - You prefer to install from the Microsoft Store.
 - You run scans as administrator anyway and want the faster elevated NTFS scan.

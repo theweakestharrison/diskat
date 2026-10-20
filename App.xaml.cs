@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Threading;
 using Diskat.Core;
+using Diskat.UI;
 
 namespace Diskat;
 
@@ -9,6 +10,7 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         Loc.Load();
+        Theme.Init();
         DispatcherUnhandledException += OnUnhandled;
         base.OnStartup(e);
     }

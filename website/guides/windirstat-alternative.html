@@ -41,7 +41,7 @@
 <tr><td>Development</td><td>Active, first release in October 2026</td><td>Actively developed</td></tr>
 <tr><td>Where to get it</td><td>Portable single .exe from diskat.cc</td><td>Microsoft Store or its official website</td></tr>
 <tr><td>Treemap</td><td>Two-level space map</td><td>Yes</td></tr>
-<tr><td>Duplicate file detection</td><td>No</td><td>Yes</td></tr>
+<tr><td>Duplicate file detection</td><td>Duplicates tab (Diskat 1.2)</td><td>Yes</td></tr>
 <tr><td>Permissions features</td><td>No</td><td>Yes</td></tr>
 <tr><td>Deleted-file recovery</td><td>No</td><td>Yes</td></tr>
 <tr><td>Reports</td><td>PDF scan report (Diskat 1.1)</td><td>Yes</td></tr>
@@ -52,7 +52,7 @@
 <p>According to its website, WinDirStat scans NTFS drives faster when you run it elevated, that is, as administrator.</p>
 <p>We haven't published a side-by-side benchmark under identical conditions. If speed is what matters most to you, try both on your own drive. Both are free, so it costs nothing to compare.</p>
 <h2 id="features">Features</h2>
-<p>WinDirStat has more features for power users. It includes treemaps, duplicate file detection, permissions features, deleted-file recovery and reports. If you need any of those, WinDirStat is the better fit, and Diskat does not try to replace them.</p>
+<p>WinDirStat has more features for power users. Besides treemaps, duplicate file detection and reports, it includes permissions features and deleted-file recovery. If you need those, WinDirStat is the better fit, and Diskat does not try to replace them.</p>
 <p>Diskat keeps a narrower set of tools:</p>
 <ul>
 <li>A folder tree sorted by size, with a "% of parent" bar, file and folder counts, and modified dates</li>
@@ -61,6 +61,7 @@
 <li>Open in Explorer, Show in Explorer and Copy path from the right-click menu</li>
 <li>11 interface languages</li>
 <li>From Diskat 1.1, a PDF report of a scan with a summary, the space map, the biggest folders and files, and a breakdown by file type</li>
+<li>From Diskat 1.2, a <strong>Duplicates</strong> tab that finds files with identical content, sorted by wasted space. It never downloads cloud-only files, and it always keeps one copy of each</li>
 </ul>
 <h2 id="deleting-safely">Deleting safely</h2>
 <p>Safe deletion is where Diskat puts most of its design effort:</p>
@@ -79,7 +80,7 @@
 <li>It runs on 64-bit Windows 10 and 11 only.</li>
 <li>It shows logical file sizes, not size on disk. OneDrive files that are online-only and compressed files can look larger than the space they really use.</li>
 <li>Files with hard links are counted once per link. Folders such as <code>C:\Windows</code>, which use many hard links, look larger than their real footprint.</li>
-<li>It has no duplicate finder, permissions view or file recovery.</li>
+<li>It has no permissions view or file recovery.</li>
 <li>The .exe isn't code-signed yet, so Windows SmartScreen may warn you the first time you run it.</li>
 </ul>
 <h2 id="when-to-choose-diskat">When to choose Diskat</h2>
@@ -92,7 +93,7 @@
 </ul>
 <h2 id="when-to-choose-windirstat">When to choose WinDirStat</h2>
 <ul>
-<li>You need duplicate file detection, permissions features or deleted-file recovery.</li>
+<li>You need permissions features or deleted-file recovery.</li>
 <li>You want a tool with more options and reports for detailed analysis.</li>
 <li>You prefer to install from the Microsoft Store.</li>
 <li>You run scans as administrator anyway and want the faster elevated NTFS scan.</li>

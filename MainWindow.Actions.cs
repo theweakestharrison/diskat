@@ -356,6 +356,7 @@ public partial class MainWindow
             }
         }
         UpdateFindInfo();
+        RemoveDuplicatesUnder(path);
     }
 
     /// <summary>Sau khi quét lại một thư mục: bỏ các file trong đó đã không còn tồn tại.</summary>
@@ -367,6 +368,7 @@ public partial class MainWindow
                 if (list[i].Path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && !File.Exists(list[i].Path))
                     list.RemoveAt(i);
         UpdateFindInfo();
+        PruneMissingDuplicatesUnder(path);
     }
 
     private List<TopFileVM> SelectedTopFiles => TopFiles.SelectedItems.Cast<TopFileVM>().ToList();

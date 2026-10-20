@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+- **Compare with an earlier scan**: after each scan that finishes, Diskat saves a compact copy of the folder tree on your PC (folder names, sizes and counts only, no file names; about 2.5 MB for 400,000 folders), keeping the latest 10 scans of each folder. Pick one from the ⋯ menu to add a **Change** column to the folder tree (what grew, what shrank, sortable), mark folders that are new since then, and show how much the whole folder grew. The PDF report includes the change when a comparison is on, and `--compare` does the same for scripted reports. Saved scans never leave your PC; saving can be turned off and all saved scans deleted from the same menu.
+- **Dark theme**: Diskat follows the Windows app mode (Settings > Personalization > Colors) and switches as soon as you change it, or pick Light or Dark yourself under ⋯ > Theme. The title bar, menus, dialogs, scroll bars and the space map all follow, and text keeps WCAG AA contrast in both themes. PDF reports always stay light.
+- **Duplicates** tab: finds files with identical content in the scanned folder, grouped and sorted by wasted space. Only files of the same size are read: first the first 64 KB, then the whole file (XxHash128), several files at a time on SSDs and one at a time on hard disks. The minimum size is adjustable (1 MB by default). Online-only OneDrive and other cloud files are skipped and opened with no-recall, so nothing is downloaded; hard links count as one file, and junctions are not followed. Windows, Program Files, ProgramData, AppData and system files are skipped by default, since programs keep identical copies there. Tick copies yourself or use **Select all but newest**, then delete through the usual flow (Recycle Bin by default, Shift+Del for permanent, protected folders blocked, files-in-use dialog). Diskat never lets you select every copy of a group, and just before deleting it checks again that the copy you keep is still there and that nothing changed since the search.
+
+### Changed
+- Menus and scroll bars use the same flat style as the rest of the app, and secondary text in the light theme is a little darker so it stays readable on selected rows.
+
 ### Fixed
 - Closing the update dialog in any way (for example Alt+F4) during a download now cancels the download, so the update never installs afterwards.
 

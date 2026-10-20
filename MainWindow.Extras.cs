@@ -15,6 +15,9 @@ public partial class MainWindow
     {
         var menu = new ContextMenu { PlacementTarget = MoreBtn, Placement = PlacementMode.Bottom };
 
+        menu.Items.Add(CompareMenuItem());
+        menu.Items.Add(new Separator());
+
         bool canExport = CanExport;
         var pdf = new MenuItem { Header = Loc.T("MenuExportPdf"), IsEnabled = canExport };
         pdf.Click += (_, _) => _ = ExportPdfAsync();
@@ -66,6 +69,8 @@ public partial class MainWindow
             menu.Items.Add(new Separator());
             menu.Items.Add(shell);
         }
+        else menu.Items.Add(new Separator());
+        menu.Items.Add(ThemeMenu());
 
         menu.Items.Add(new Separator());
         var about = new MenuItem { Header = Loc.T("MenuAbout") };
@@ -74,6 +79,19 @@ public partial class MainWindow
         menu.Items.Add(about);
 
         menu.IsOpen = true;
+    }
+
+    /// <summary>Menu con Giao diện: theo Windows, sáng hoặc tối. Đổi ngay và lưu vào settings.json.</summary>
+    private static MenuItem ThemeMenu()
+    {
+        var root = new MenuItem { Header = Loc.T("MenuTheme") };
+        foreach (var (theme, key) in new[] { (AppTheme.System, "ThemeSystem"), (AppTheme.Light, "ThemeLight"), (AppTheme.Dark, "ThemeDark") })
+        {
+            var item = new MenuItem { Header = Loc.T(key), IsCheckable = true, IsChecked = Settings.Current.Theme == theme };
+            item.Click += (_, _) => Theme.Set(theme);
+            root.Items.Add(item);
+        }
+        return root;
     }
 
     /// <summary>

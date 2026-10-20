@@ -3,8 +3,9 @@ namespace Diskat.Core;
 /// <summary>
 /// Tham số dòng lệnh:
 ///   Diskat.exe [thư mục] [--pdf file.pdf] [--csv thư-mục.csv] [--files-csv file.csv] [--lang vi]
-///              [--shell-menu on|off] [--quit]
+///              [--compare] [--shell-menu on|off] [--quit]
 /// Thư mục được quét ngay; các file xuất được ghi sau khi quét xong; --quit đóng Diskat khi đã xuất xong.
+/// --compare: so với lần quét đã lưu gần nhất của thư mục đó (báo cáo PDF có thêm phần thay đổi).
 /// </summary>
 public sealed class CommandLine
 {
@@ -14,6 +15,7 @@ public sealed class CommandLine
     public string? FilesCsvPath { get; private set; }
     public string? Lang { get; private set; }
     public bool Quit { get; private set; }
+    public bool Compare { get; private set; }
     /// <summary>--shell-menu on|off: bật / tắt mục "Quét bằng Diskat" trong Explorer.</summary>
     public bool? ShellMenu { get; private set; }
     public bool HasExports => PdfPath != null || FoldersCsvPath != null || FilesCsvPath != null;
@@ -32,6 +34,7 @@ public sealed class CommandLine
                 case "--files-csv": cl.FilesCsvPath = Next(); break;
                 case "--lang": cl.Lang = i + 1 < args.Count ? args[++i].ToLowerInvariant() : null; break;
                 case "--quit": cl.Quit = true; break;
+                case "--compare": cl.Compare = true; break;
                 case "--shell-menu":
                     cl.ShellMenu = i + 1 < args.Count ? args[++i].ToLowerInvariant() is "on" or "1" or "true" : null;
                     break;
