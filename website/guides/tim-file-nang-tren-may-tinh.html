@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cách tìm file và thư mục nặng trên máy tính Windows · Diskat</title>
+  <meta name="description" content="Ổ đĩa đầy mà không biết vì sao? Bốn cách tìm file và thư mục nặng trên Windows 10 và 11: Cài đặt, File Explorer, PowerShell và công cụ phân tích dung lượng.">
+  <link rel="canonical" href="https://diskat.cc/guides/tim-file-nang-tren-may-tinh">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/tim-file-nang-tren-may-tinh">
+  <meta property="og:title" content="Cách tìm file và thư mục nặng trên máy tính Windows">
+  <meta property="og:description" content="Ổ đĩa đầy mà không biết vì sao? Bốn cách tìm file và thư mục nặng trên Windows 10 và 11: Cài đặt, File Explorer, PowerShell và công cụ phân tích dung lượng.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=8">
+  <link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/tim-file-nang-tren-may-tinh">
+  <link rel="alternate" hreflang="en" href="https://diskat.cc/guides/find-large-files-windows">
+  <link rel="alternate" hreflang="x-default" href="https://diskat.cc/guides/find-large-files-windows">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cách tìm file và thư mục nặng trên máy tính Windows","description":"Ổ đĩa đầy mà không biết vì sao? Bốn cách tìm file và thư mục nặng trên Windows 10 và 11: Cài đặt, File Explorer, PowerShell và công cụ phân tích dung lượng.","inLanguage":"vi","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/tim-file-nang-tren-may-tinh","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Hướng dẫn","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"Cách tìm file và thư mục nặng trên máy tính Windows","item":"https://diskat.cc/guides/tim-file-nang-tren-may-tinh"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Vì sao File Explorer không hiện dung lượng thư mục?","acceptedAnswer":{"@type":"Answer","text":"Để biết dung lượng một thư mục, phải đọc kích thước của mọi file bên trong nó. Explorer không làm việc này khi bạn duyệt vì sẽ rất chậm. Bạn chỉ xem được từng thư mục qua Thuộc tính."}},{"@type":"Question","name":"Làm sao tìm tất cả file lớn hơn 1 GB?","acceptedAnswer":{"@type":"Answer","text":"Trong File Explorer, mở ổ đĩa và gõ size:>1GB vào ô tìm kiếm. Công cụ phân tích dung lượng cho kết quả nhanh hơn và xếp sẵn theo kích thước."}},{"@type":"Question","name":"Thư mục AppData rất nặng, xóa được không?","acceptedAnswer":{"@type":"Answer","text":"Không nên xóa cả thư mục. AppData chứa dữ liệu và cài đặt của ứng dụng. Hãy xem thư mục con nào nặng, rồi dọn từ trong ứng dụng tương ứng. Riêng AppData\\Local\\Temp thì xóa được."}},{"@type":"Question","name":"Quét cả ổ có cần quyền Admin không?","acceptedAnswer":{"@type":"Answer","text":"Không bắt buộc. Thiếu quyền Admin, một số thư mục hệ thống không đọc được nên không được tính vào tổng. Muốn số liệu đầy đủ, hãy chạy công cụ với quyền quản trị."}},{"@type":"Question","name":"Có quét được ổ D, ổ USB hay ổ mạng không?","acceptedAnswer":{"@type":"Answer","text":"Được. Diskat hiển thị mọi ổ đĩa đang sẵn sàng, kể cả USB và ổ mạng, kèm dung lượng đã dùng và còn trống. Bấm vào ổ nào để quét ổ đó."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Tải về</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Hướng dẫn</a></nav>
+<article class="guide">
+<h1>Cách tìm file và thư mục nặng trên máy tính Windows</h1>
+<p class="guide-meta">Cập nhật <time datetime="2026-10-20">2026-10-20</time></p>
+<p>Khi ổ đĩa sắp đầy, câu hỏi đầu tiên là: cái gì đang chiếm chỗ? File Explorer không trả lời được, vì nó không hiển thị dung lượng của thư mục. Bài này giới thiệu bốn cách tìm file và thư mục nặng trên Windows 10 và 11, và những gì cần kiểm tra trước khi xóa.</p>
+<h2 id="cach-1-xem-nhanh-trong-cai-dat">Cách 1: Xem nhanh trong Cài đặt</h2>
+<p>Mở <strong>Cài đặt &gt; Hệ thống &gt; Lưu trữ</strong>. Windows chia dung lượng ổ C theo nhóm: ứng dụng, tệp tạm thời, tài liệu, ảnh, video. Bấm <strong>Show more categories</strong> (hiện thêm danh mục) để xem đủ các nhóm, rồi bấm vào từng nhóm để xem chi tiết.</p>
+<p>Cách này nhanh nhưng chỉ cho biết nhóm. Nó không chỉ ra thư mục cụ thể, và nhóm "Khác" (Other) thường lớn mà không có giải thích.</p>
+<h2 id="cach-2-tim-file-lon-bang-file-explorer">Cách 2: Tìm file lớn bằng File Explorer</h2>
+<ol>
+<li>Nhấn <code>Win + E</code> để mở File Explorer, vào ổ đĩa hoặc thư mục cần tìm.</li>
+<li>Gõ <code>size:&gt;1GB</code> vào ô tìm kiếm rồi nhấn Enter. Muốn ngưỡng thấp hơn, thay bằng <code>size:&gt;500MB</code>.</li>
+<li>Chuyển sang chế độ xem <strong>Chi tiết</strong> (Details), bấm vào cột <strong>Kích thước</strong> (Size) để sắp xếp từ lớn đến nhỏ.</li>
+</ol>
+<p>Để xem dung lượng của một thư mục, chuột phải vào nó và chọn <strong>Thuộc tính</strong> (Properties).</p>
+<p>Giới hạn của cách này:</p>
+<ul>
+<li>Tìm kiếm chỉ trả về file, không trả về thư mục. Một thư mục chứa hàng chục nghìn file nhỏ (bộ nhớ đệm, ảnh, mã nguồn) có thể nặng hàng chục GB mà không file nào vượt 1 GB.</li>
+<li>Tìm trên cả ổ có thể rất chậm, nhất là ở những chỗ Windows không lập chỉ mục.</li>
+<li>Xem Thuộc tính thì phải mở từng thư mục một.</li>
+</ul>
+<h2 id="cach-3-dung-powershell">Cách 3: Dùng PowerShell</h2>
+<p>Nếu quen dòng lệnh, bạn có thể liệt kê 20 file lớn nhất trong thư mục tài khoản. Mở PowerShell (gõ <code>powershell</code> trong Start) và chạy:</p>
+<p><code>Get-ChildItem $env:USERPROFILE -Recurse -File -ErrorAction SilentlyContinue | Sort-Object Length -Descending | Select-Object -First 20 FullName, @{n='GB';e={[math]::Round($_.Length/1GB,2)}}</code></p>
+<p>Thay <code>$env:USERPROFILE</code> bằng đường dẫn khác, ví dụ <code>D:\</code>, để quét chỗ khác. Lệnh này chạy khá chậm trên ổ lớn và cũng không cộng dung lượng theo thư mục.</p>
+<h2 id="cach-4-dung-cong-cu-phan-tich-dung-luong">Cách 4: Dùng công cụ phân tích dung lượng</h2>
+<p>Cách nhanh và đầy đủ nhất là dùng phần mềm đo dung lượng của cả cây thư mục. Ví dụ với Diskat, phần mềm miễn phí, mã nguồn mở, chạy từ một file .exe không cần cài và không thu thập dữ liệu:</p>
+<ol>
+<li><a href="/download">Tải Diskat</a> và chạy file vừa tải. Nếu Windows SmartScreen hiện "Windows protected your PC", bấm <strong>More info</strong> rồi <strong>Run anyway</strong> (bản tải về chưa được ký số).</li>
+<li>Bấm vào thẻ ổ đĩa, ví dụ ổ C, hoặc bấm <strong>Chọn thư mục…</strong> để quét một thư mục. Ứng dụng quét song song nhiều luồng: một ổ SSD 476 GB có 1,95 triệu file mất khoảng 12,5 giây.</li>
+<li>Xem <strong>Cây thư mục</strong>. Thư mục nặng nhất luôn ở trên cùng. Cột <strong>% thư mục cha</strong> cho biết mỗi thư mục con chiếm bao nhiêu phần của thư mục chứa nó. Dùng phím mũi tên phải để mở, mũi tên trái để thu gọn.</li>
+<li>Mở thẻ <strong>Bản đồ dung lượng</strong>. Mỗi ô là một thư mục hoặc file, ô càng to càng nặng. Nhấp đúp để đi vào bên trong.</li>
+<li>Mở thẻ <strong>File lớn nhất</strong> để xem 500 file lớn nhất trên cả ổ, dù chúng nằm ở đâu.</li>
+</ol>
+<p>Chuột phải vào một mục để <strong>Hiện trong Explorer</strong> hoặc <strong>Sao chép đường dẫn</strong>. Không cần quyền Admin để quét, nhưng khi đó một số thư mục hệ thống bị chặn đọc và không được tính. Bấm nút <strong>Quyền Admin</strong> nếu muốn số liệu đầy đủ.</p>
+<p>Một lưu ý: ứng dụng tính theo kích thước file. Nếu bạn dùng OneDrive với file chỉ lưu trên mạng (online-only), thư mục OneDrive có thể trông lớn hơn chỗ nó thực sự chiếm trên ổ.</p>
+<h2 id="nhung-thu-thuong-chiem-nhieu-dung-luong">Những thứ thường chiếm nhiều dung lượng</h2>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Thủ phạm</th><th>Thường nằm ở</th><th>Nên làm gì</th></tr></thead><tbody>
+<tr><td>File cài đặt, ISO, video tải về</td><td>Downloads</td><td>Xóa những gì đã cài hoặc đã xem</td></tr>
+<tr><td>Video, ảnh gốc</td><td>Videos, Pictures, Desktop</td><td>Chuyển sang ổ ngoài hoặc đám mây</td></tr>
+<tr><td>Game</td><td>Thư mục thư viện của Steam, Epic</td><td>Gỡ bằng launcher của game</td></tr>
+<tr><td>Máy ảo, WSL, Docker</td><td>File .vhdx, .vmdk</td><td>Xóa trong chính phần mềm đó</td></tr>
+<tr><td>Bộ nhớ đệm trình duyệt, ứng dụng chat</td><td>AppData\Local</td><td>Dọn trong cài đặt của ứng dụng</td></tr>
+<tr><td>File tạm</td><td>AppData\Local\Temp</td><td>Xóa trực tiếp</td></tr>
+<tr><td>Bản Windows cũ</td><td>C:\Windows.old</td><td>Xóa bằng Dọn đĩa</td></tr>
+</tbody></table></div>
+<p>Với file tạm, Windows.old và các thư mục hệ thống, xem bài <a href="/guides/giai-phong-dung-luong-o-c">giải phóng dung lượng ổ C</a>.</p>
+<h2 id="truoc-khi-xoa-kiem-tra-ba-dieu">Trước khi xóa, kiểm tra ba điều</h2>
+<ul>
+<li><strong>Nó thuộc về ai.</strong> File trong <code>AppData</code> thường là dữ liệu của một ứng dụng. Xóa thẳng có thể làm ứng dụng lỗi hoặc mất lịch sử, tin nhắn, cài đặt. Hãy dọn từ bên trong ứng dụng đó nếu có thể.</li>
+<li><strong>Nó có phải của hệ thống không.</strong> Không đụng vào <code>C:\Windows</code>, <code>Program Files</code> hay <code>ProgramData</code>. Diskat khóa sẵn các thư mục này, cùng gốc ổ đĩa, <code>C:\Users</code>, thư mục gốc của từng tài khoản, <code>AppData\Roaming</code> và <code>AppData\Local</code>, nên không thể lỡ tay xóa.</li>
+<li><strong>Bạn có lấy lại được không.</strong> Xóa vào Thùng rác trước (phím <code>Del</code>), dùng máy vài ngày, rồi mới dọn Thùng rác. Chỉ dùng <code>Shift+Del</code> (xóa vĩnh viễn) khi chắc chắn.</li>
+</ul>
+<p>Nếu Windows báo file đang mở trong chương trình khác, xem <a href="/guides/xoa-file-dang-duoc-mo">cách xóa file đang được sử dụng</a>.</p>
+<h2 id="cau-hoi-thuong-gap">Câu hỏi thường gặp</h2>
+<h3 id="vi-sao-file-explorer-khong-hien-dung-luong-thu-muc">Vì sao File Explorer không hiện dung lượng thư mục?</h3>
+<p>Để biết dung lượng một thư mục, phải đọc kích thước của mọi file bên trong nó. Explorer không làm việc này khi bạn duyệt vì sẽ rất chậm. Bạn chỉ xem được từng thư mục qua Thuộc tính.</p>
+<h3 id="lam-sao-tim-tat-ca-file-lon-hon-1-gb">Làm sao tìm tất cả file lớn hơn 1 GB?</h3>
+<p>Trong File Explorer, mở ổ đĩa và gõ <code>size:&gt;1GB</code> vào ô tìm kiếm. Công cụ phân tích dung lượng cho kết quả nhanh hơn và xếp sẵn theo kích thước.</p>
+<h3 id="thu-muc-appdata-rat-nang-xoa-duoc-khong">Thư mục AppData rất nặng, xóa được không?</h3>
+<p>Không nên xóa cả thư mục. AppData chứa dữ liệu và cài đặt của ứng dụng. Hãy xem thư mục con nào nặng, rồi dọn từ trong ứng dụng tương ứng. Riêng <code>AppData\Local\Temp</code> thì xóa được.</p>
+<h3 id="quet-ca-o-co-can-quyen-admin-khong">Quét cả ổ có cần quyền Admin không?</h3>
+<p>Không bắt buộc. Thiếu quyền Admin, một số thư mục hệ thống không đọc được nên không được tính vào tổng. Muốn số liệu đầy đủ, hãy chạy công cụ với quyền quản trị.</p>
+<h3 id="co-quet-duoc-o-d-o-usb-hay-o-mang-khong">Có quét được ổ D, ổ USB hay ổ mạng không?</h3>
+<p>Được. Diskat hiển thị mọi ổ đĩa đang sẵn sàng, kể cả USB và ổ mạng, kèm dung lượng đã dùng và còn trống. Bấm vào ổ nào để quét ổ đó.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>Xem thứ gì đang chiếm ổ đĩa</h2><p>Diskat là phần mềm phân tích dung lượng ổ đĩa miễn phí, mã nguồn mở cho Windows 10 và 11. Chỉ một file .exe, không cần cài đặt.</p></div>
+  <a class="btn btn-primary" href="/download">Tải Diskat</a>
+</aside>
+<div class="guide-more"><h2>Hướng dẫn khác</h2><ul><li><a href="/guides/giai-phong-dung-luong-o-c">Cách giải phóng dung lượng ổ C trên Windows 10 và 11</a></li><li><a href="/guides/xoa-file-dang-duoc-mo">Cách xóa file đang được chương trình khác sử dụng</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Trang chủ</a><a href="/guides">Hướng dẫn</a><a href="/changelog">Nhật ký thay đổi</a><a href="/license">Giấy phép</a><a href="/privacy">Quyền riêng tư</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+<script src="/assets/app.js?v=8" defer></script>
+</body>
+</html>

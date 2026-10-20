@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to free up disk space on Windows 10 and 11 · Diskat</title>
+  <meta name="description" content="Free up disk space on Windows 10 and 11 step by step. See what is big, then clean temp files, updates, apps, hibernation and restore points safely.">
+  <link rel="canonical" href="https://diskat.cc/guides/free-up-disk-space-windows">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/free-up-disk-space-windows">
+  <meta property="og:title" content="How to free up disk space on Windows 10 and 11">
+  <meta property="og:description" content="Free up disk space on Windows 10 and 11 step by step. See what is big, then clean temp files, updates, apps, hibernation and restore points safely.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=8">
+  <link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/giai-phong-dung-luong-o-c">
+  <link rel="alternate" hreflang="en" href="https://diskat.cc/guides/free-up-disk-space-windows">
+  <link rel="alternate" hreflang="x-default" href="https://diskat.cc/guides/free-up-disk-space-windows">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to free up disk space on Windows 10 and 11","description":"Free up disk space on Windows 10 and 11 step by step. See what is big, then clean temp files, updates, apps, hibernation and restore points safely.","inLanguage":"en","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/free-up-disk-space-windows","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"How to free up disk space on Windows 10 and 11","item":"https://diskat.cc/guides/free-up-disk-space-windows"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much free space should I keep on my C drive?","acceptedAnswer":{"@type":"Answer","text":"There is no fixed rule. A good target is at least 10 to 15 percent of the drive. Windows needs extra room to download and install feature updates, so keep more if updates keep failing."}},{"@type":"Question","name":"Is it safe to delete temporary files?","acceptedAnswer":{"@type":"Answer","text":"Yes. Temporary files listed in Settings or Disk Cleanup are safe to remove. You can also open %TEMP% from the Run box and delete its contents. Windows skips any file that is still in use."}},{"@type":"Question","name":"Why does my drive fill up again after I clean it?","acceptedAnswer":{"@type":"Answer","text":"Updates, browser and app caches, new downloads and restore points all grow over time. Turning on Storage Sense handles much of this automatically."}},{"@type":"Question","name":"Does Disk Cleanup still work on Windows 11?","acceptedAnswer":{"@type":"Answer","text":"Yes. cleanmgr is still included in Windows 11. Most of its options are also available in Settings > System > Storage > Temporary files."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Guides</a></nav>
+<article class="guide">
+<h1>How to free up disk space on Windows 10 and 11</h1>
+<p class="guide-meta">Updated <time datetime="2026-10-20">2026-10-20</time></p>
+<p>When your drive fills up, Windows gets slow, updates fail and apps can't save files. The fix is usually a mix of quick cleanups and a few bigger decisions. This guide starts with the safest steps and moves on to the ones that need more care. Work through it in order and check your free space after each step, so you stop when you have enough room.</p>
+<h2 id="step-1-see-what-is-using-the-space">Step 1: See what is using the space</h2>
+<p>Before you delete anything, find out where the space went. Open <strong>Settings &gt; System &gt; Storage</strong>. Windows shows how much space is used and splits it into categories such as apps, temporary files, documents and system files. It's a good overview, but the categories are broad and don't tell you which folder is the problem.</p>
+<p>A disk space analyzer gives you the exact answer. Diskat is a free, open-source analyzer that runs without installing. Click the C: drive card and it scans the drive, with the heaviest folders moving to the top as it goes. The "% of parent" bars and the space map make it obvious which folders matter. For more ways to do this, see <a href="/guides/find-large-files-windows">how to find large files</a>.</p>
+<h2 id="step-2-empty-the-recycle-bin">Step 2: Empty the Recycle Bin</h2>
+<p>Files you delete in File Explorer go to the Recycle Bin and still take up space. Open the Recycle Bin, check that nothing in it is still needed, then right-click its icon and choose <strong>Empty Recycle Bin</strong>.</p>
+<p>If the bin often grows large, you can cap its size. Right-click the Recycle Bin, choose <strong>Properties</strong>, select the drive and set a custom maximum size.</p>
+<h2 id="step-3-remove-temporary-files-in-settings">Step 3: Remove temporary files in Settings</h2>
+<p>Go to <strong>Settings &gt; System &gt; Storage</strong> and click <strong>Temporary files</strong>. Windows scans the drive and lists what it can remove, for example:</p>
+<ul>
+<li>Temporary files left behind by apps</li>
+<li>Windows Update Cleanup (old update files)</li>
+<li>Delivery Optimization Files (update data shared with other PCs)</li>
+<li>Thumbnails</li>
+<li>Recycle Bin</li>
+</ul>
+<p>Check the boxes you want and click <strong>Remove files</strong>. Be careful with the <strong>Downloads</strong> box: it deletes everything in your Downloads folder, not just old installers. Leave it unchecked unless you have already looked through that folder.</p>
+<p>On Windows 11 the same page also shows <strong>Cleanup recommendations</strong>. It suggests large or unused files, files already synced to the cloud and apps you haven't used for a while. Review each suggestion before you accept it.</p>
+<h2 id="step-4-turn-on-storage-sense">Step 4: Turn on Storage Sense</h2>
+<p>Storage Sense cleans up automatically so the drive doesn't fill up again. Turn it on in <strong>Settings &gt; System &gt; Storage &gt; Storage Sense</strong>. In its settings you choose how often it runs and what it removes: temporary files, Recycle Bin items older than a set number of days, Downloads files you haven't opened for a while, and OneDrive files that can go back to being online-only. If you keep important files in Downloads, set that option to <strong>Never</strong>.</p>
+<h2 id="step-5-clean-up-system-files-with-disk-cleanup">Step 5: Clean up system files with Disk Cleanup</h2>
+<p>The classic Disk Cleanup tool still works on Windows 10 and 11 and can reach system files. Type <code>cleanmgr</code> in the Start menu and open it, choose drive C:, then click <strong>Clean up system files</strong>. This needs administrator rights.</p>
+<p>In the list, the most useful entries are usually <strong>Windows Update Cleanup</strong>, <strong>Delivery Optimization Files</strong>, <strong>Temporary files</strong> and, if present, <strong>Previous Windows installation(s)</strong>. Removing the previous installation deletes the <code>C:\Windows.old</code> folder, which can be large. After that you can no longer go back to your earlier version of Windows, so only do it once the current version works well.</p>
+<h2 id="step-6-uninstall-apps-and-games-you-don-t-use">Step 6: Uninstall apps and games you don't use</h2>
+<p>Open <strong>Settings &gt; Apps &gt; Installed apps</strong> on Windows 11, or <strong>Settings &gt; Apps &gt; Apps &amp; features</strong> on Windows 10. Sort the list by size. Games are often the biggest items. Uninstall what you no longer use. Many game launchers can also move a game to another drive instead of removing it.</p>
+<h2 id="step-7-clear-out-downloads-and-other-personal-folders">Step 7: Clear out Downloads and other personal folders</h2>
+<p>Your Downloads folder collects installers, ISO files and zip archives that you only needed once. Open it in File Explorer, switch to the Details view and click the <strong>Size</strong> column to sort. Old videos, phone backups and screen recordings in your Videos and Pictures folders are also common space hogs.</p>
+<p>Delete to the Recycle Bin first. Empty the bin only after you are sure you don't need the files.</p>
+<h2 id="step-8-bigger-savings-from-system-settings">Step 8: Bigger savings from system settings</h2>
+<p>These steps can free several gigabytes each, but they change how Windows behaves. Read each one before you act.</p>
+<h3 id="turn-off-hibernation">Turn off hibernation</h3>
+<p>Windows keeps a hibernation file, <code>C:\hiberfil.sys</code>, that is often several gigabytes. If you never use Hibernate, open Terminal or Command Prompt as administrator and run <code>powercfg /hibernate off</code>. Windows deletes the file. This also turns off Fast Startup. Run <code>powercfg /hibernate on</code> to undo it. Don't do this on a laptop if you rely on hibernation to save your work when the battery runs low.</p>
+<h3 id="limit-space-for-restore-points">Limit space for restore points</h3>
+<p>System Restore keeps restore points (shadow copies) on the drive. Press Win+R, run <code>SystemPropertiesProtection</code>, select drive C: and click <strong>Configure</strong>. Lower the <strong>Max Usage</strong> slider to cap the space. Restore points are a safety net, so keep some space for them rather than turning protection off.</p>
+<h3 id="shrink-the-component-store">Shrink the component store</h3>
+<p>Old versions of Windows components pile up in <code>C:\Windows\WinSxS</code>. Run <code>DISM /Online /Cleanup-Image /StartComponentCleanup</code> from an administrator Terminal to remove the ones Windows no longer needs. Never delete files from that folder by hand. The <a href="/guides/winsxs-folder">WinSxS guide</a> explains why.</p>
+<h2 id="step-9-move-files-off-the-c-drive">Step 9: Move files off the C: drive</h2>
+<p>If you have a second drive, move large personal files there. To move a whole library such as Documents, right-click it in File Explorer, choose <strong>Properties</strong>, open the <strong>Location</strong> tab and click <strong>Move</strong>. If you use OneDrive, right-click files or folders you rarely open and choose <strong>Free up space</strong>. They stay visible but only download when you open them.</p>
+<h2 id="what-not-to-delete">What not to delete</h2>
+<p>Some large items look tempting but should never be removed by hand:</p>
+<ul>
+<li>Anything inside <code>C:\Windows</code>, including WinSxS, Installer and System32</li>
+<li><code>pagefile.sys</code> and <code>hiberfil.sys</code> (use the settings above instead)</li>
+<li>Folders under Program Files (uninstall the app instead)</li>
+<li>The AppData folder as a whole (see <a href="/guides/appdata-folder-large">why AppData gets big</a>)</li>
+</ul>
+<p>A tool that blocks these mistakes helps. Diskat refuses to delete Windows, Program Files, ProgramData, user profile roots and similar folders. It moves items to the Recycle Bin by default and asks for confirmation every time. You can <a href="/download">download Diskat</a> as a single portable file.</p>
+<h2 id="faq">FAQ</h2>
+<h3 id="how-much-free-space-should-i-keep-on-my-c-drive">How much free space should I keep on my C drive?</h3>
+<p>There is no fixed rule. A good target is at least 10 to 15 percent of the drive. Windows needs extra room to download and install feature updates, so keep more if updates keep failing.</p>
+<h3 id="is-it-safe-to-delete-temporary-files">Is it safe to delete temporary files?</h3>
+<p>Yes. Temporary files listed in Settings or Disk Cleanup are safe to remove. You can also open <code>%TEMP%</code> from the Run box and delete its contents. Windows skips any file that is still in use.</p>
+<h3 id="why-does-my-drive-fill-up-again-after-i-clean-it">Why does my drive fill up again after I clean it?</h3>
+<p>Updates, browser and app caches, new downloads and restore points all grow over time. Turning on Storage Sense handles much of this automatically.</p>
+<h3 id="does-disk-cleanup-still-work-on-windows-11">Does Disk Cleanup still work on Windows 11?</h3>
+<p>Yes. <code>cleanmgr</code> is still included in Windows 11. Most of its options are also available in <strong>Settings &gt; System &gt; Storage &gt; Temporary files</strong>.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>See what's filling up your disk</h2><p>Diskat is a free, open-source disk space analyzer for Windows 10 and 11. One portable .exe, nothing to install.</p></div>
+  <a class="btn btn-primary" href="/download">Download Diskat</a>
+</aside>
+<div class="guide-more"><h2>More guides</h2><ul><li><a href="/guides/appdata-folder-large">Why is the AppData folder so big, and what can you safely delete?</a></li><li><a href="/guides/c-drive-full">C drive full? How to see what's taking up space and fix it</a></li><li><a href="/guides/delete-file-in-use">How to delete a file that's open in another program</a></li><li><a href="/guides/find-large-files-windows">How to find large files on Windows</a></li><li><a href="/guides/treesize-alternative">Diskat vs TreeSize Free</a></li><li><a href="/guides/windirstat-alternative">Diskat vs WinDirStat</a></li><li><a href="/guides/winsxs-folder">Can you delete the WinSxS folder? (and how to shrink it safely)</a></li><li><a href="/guides/wiztree-alternative">Diskat vs WizTree</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+<script src="/assets/app.js?v=8" defer></script>
+</body>
+</html>

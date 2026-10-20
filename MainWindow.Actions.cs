@@ -107,26 +107,77 @@ public partial class MainWindow
     private async Task<bool> RunDeleteAsync(string path, bool isDir, bool permanent)
     {
         var hwnd = new WindowInteropHelper(this).Handle;
-        BusyText.Text = Loc.T(permanent ? "DeletingPerm" : "Recycling");
-        BusyOverlay.Visibility = Visibility.Visible;
-        try
+        while (true)
         {
-            await Task.Run(() =>
+            Exception error;
+            BusyText.Text = Loc.T(permanent ? "DeletingPerm" : "Recycling");
+            BusyOverlay.Visibility = Visibility.Visible;
+            try
             {
-                if (permanent) FileOps.DeletePermanently(path, isDir);
-                else FileOps.SendToRecycleBin(path, hwnd);
-            });
-            return true;
+                await Task.Run(() =>
+                {
+                    if (permanent) FileOps.DeletePermanently(path, isDir);
+                    else FileOps.SendToRecycleBin(path, hwnd);
+                });
+                return true;
+            }
+            catch (Exception ex) { error = ex; }
+            finally { BusyOverlay.Visibility = Visibility.Collapsed; }
+
+            // Có chương trình đang giữ file? Tìm ra chúng thay vì chỉ báo "đang được sử dụng"
+            LockReport? report = null;
+            if (Path.Exists(path))
+            {
+                BusyText.Text = Loc.T("LockSearching");
+                BusyOverlay.Visibility = Visibility.Visible;
+                try { report = await Task.Run(() => LockFinder.Inspect(path, isDir)); }
+                catch { }
+                finally { BusyOverlay.Visibility = Visibility.Collapsed; }
+            }
+
+            bool inUse = report != null && (LockFinder.IsInUseError(error) || report.LockedFiles.Count > 0 || report.Processes.Count > 0);
+            if (!inUse)
+            {
+                MessageBox.Show(this, Loc.F("MsgDeleteFailed", path, error.Message), Loc.T("MsgDeleteErrorTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            switch (LockedDialog.Ask(this, path, report!))
+            {
+                case LockAction.Retry:
+                    continue;
+                case LockAction.DeleteOnReboot:
+                    ScheduleDeleteOnReboot(path, isDir, permanent);
+                    return false;
+                default:
+                    return false;
+            }
         }
-        catch (Exception ex)
+    }
+
+    /// <summary>Hẹn xóa khi Windows khởi động lại. Windows chỉ cho phép việc này khi chạy bằng quyền Admin.</summary>
+    private void ScheduleDeleteOnReboot(string path, bool isDir, bool permanent)
+    {
+        if (!_isAdmin)
         {
-            MessageBox.Show(this, Loc.F("MsgDeleteFailed", path, ex.Message), Loc.T("MsgDeleteErrorTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
-            return false;
+            MessageBox.Show(this, Loc.T("LockRebootAdmin"), Loc.T("LockTitle"), MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
         }
-        finally
+        // Xóa lúc khởi động không đi qua Thùng rác: hỏi lại nếu người dùng đã chọn "Thùng rác"
+        if (!permanent && MessageBox.Show(this, Loc.T("LockRebootPermanent"), Loc.T("LockTitle"),
+                MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes)
+            return;
+
+        bool ok;
+        try { ok = LockFinder.ScheduleDeleteOnReboot(path, isDir); }
+        catch { ok = false; }
+        if (ok)
         {
-            BusyOverlay.Visibility = Visibility.Collapsed;
+            SetStatus(() => Loc.F("LockRebootStatus", path));
+            MessageBox.Show(this, Loc.F("LockRebootDone", path), Loc.T("LockTitle"), MessageBoxButton.OK, MessageBoxImage.Information);
         }
+        else
+            MessageBox.Show(this, Loc.F("LockRebootFailed", path), Loc.T("LockTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
     }
 
     private async Task DeleteRowAsync(Row row, bool permanent)
@@ -198,6 +249,8 @@ public partial class MainWindow
     /// <summary>Cập nhật lại cây/bản đồ sau khi xóa và chọn dòng kế bên.</summary>
     private void AfterTreeChanged(int oldIndex)
     {
+        _statsStale = true;
+        UpdateInsightNotes();
         // Thư mục đang xem trên bản đồ (hoặc một thư mục cha của nó) đã bị xóa
         if (Map.Root != null && _root != null && !Map.Root.IsAttachedTo(_root))
             Map.SetRoot(_root);
@@ -278,30 +331,42 @@ public partial class MainWindow
     private void LoadTopFiles()
     {
         if (_scanner == null) return;
-        TopFiles.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<TopFileVM>(
+        _topList = new System.Collections.ObjectModel.ObservableCollection<TopFileVM>(
             _scanner.GetTopFiles().Select(f => new TopFileVM { Path = f.Path, Size = f.Size, LastWriteUtc = f.LastWriteUtc }));
+        if (_searchList == null) TopFiles.ItemsSource = _topList;
+    }
+
+    /// <summary>Danh sách file lớn nhất và kết quả tìm kiếm (cả hai cần cập nhật khi xóa).</summary>
+    private IEnumerable<System.Collections.ObjectModel.ObservableCollection<TopFileVM>> FileLists()
+    {
+        if (_topList != null) yield return _topList;
+        if (_searchList != null) yield return _searchList;
     }
 
     private void RemoveTopFilesUnder(string path)
     {
-        if (TopFiles.ItemsSource is not System.Collections.ObjectModel.ObservableCollection<TopFileVM> list) return;
         string prefix = path.TrimEnd('\\') + "\\";
-        for (int i = list.Count - 1; i >= 0; i--)
+        foreach (var list in FileLists())
         {
-            var p = list[i].Path;
-            if (string.Equals(p, path, StringComparison.OrdinalIgnoreCase) || p.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                list.RemoveAt(i);
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                var p = list[i].Path;
+                if (string.Equals(p, path, StringComparison.OrdinalIgnoreCase) || p.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    list.RemoveAt(i);
+            }
         }
+        UpdateFindInfo();
     }
 
     /// <summary>Sau khi quét lại một thư mục: bỏ các file trong đó đã không còn tồn tại.</summary>
     private void PruneMissingTopFilesUnder(string path)
     {
-        if (TopFiles.ItemsSource is not System.Collections.ObjectModel.ObservableCollection<TopFileVM> list) return;
         string prefix = path.TrimEnd('\\') + "\\";
-        for (int i = list.Count - 1; i >= 0; i--)
-            if (list[i].Path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && !File.Exists(list[i].Path))
-                list.RemoveAt(i);
+        foreach (var list in FileLists())
+            for (int i = list.Count - 1; i >= 0; i--)
+                if (list[i].Path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && !File.Exists(list[i].Path))
+                    list.RemoveAt(i);
+        UpdateFindInfo();
     }
 
     private List<TopFileVM> SelectedTopFiles => TopFiles.SelectedItems.Cast<TopFileVM>().ToList();

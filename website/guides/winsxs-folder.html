@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Can you delete the WinSxS folder? (and how to shrink it safely) · Diskat</title>
+  <meta name="description" content="The WinSxS folder looks huge, but deleting it breaks Windows. Learn what it is, how to check its real size, and how to shrink it safely with DISM.">
+  <link rel="canonical" href="https://diskat.cc/guides/winsxs-folder">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/winsxs-folder">
+  <meta property="og:title" content="Can you delete the WinSxS folder? (and how to shrink it safely)">
+  <meta property="og:description" content="The WinSxS folder looks huge, but deleting it breaks Windows. Learn what it is, how to check its real size, and how to shrink it safely with DISM.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=8">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Can you delete the WinSxS folder? (and how to shrink it safely)","description":"The WinSxS folder looks huge, but deleting it breaks Windows. Learn what it is, how to check its real size, and how to shrink it safely with DISM.","inLanguage":"en","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/winsxs-folder","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"Can you delete the WinSxS folder? (and how to shrink it safely)","item":"https://diskat.cc/guides/winsxs-folder"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I delete the WinSxS folder?","acceptedAnswer":{"@type":"Answer","text":"No. Deleting the folder or files inside it can break Windows Update, optional features and system repair, and can stop Windows from starting. Use DISM or Disk Cleanup to shrink it instead."}},{"@type":"Question","name":"Is it safe to run DISM StartComponentCleanup?","acceptedAnswer":{"@type":"Answer","text":"Yes. It's a supported Microsoft command that only removes component versions Windows no longer needs. Run it from an administrator window and let it finish. Only the /ResetBase option has a real downside: you can no longer uninstall current updates."}},{"@type":"Question","name":"Why is WinSxS so big?","acceptedAnswer":{"@type":"Answer","text":"Partly because it holds older versions of updated components, and partly because many tools count its hard-linked files more than once. The DISM analysis shows the actual size and how much is shared with the rest of Windows."}},{"@type":"Question","name":"Does Disk Cleanup clean the WinSxS folder?","acceptedAnswer":{"@type":"Answer","text":"Yes. The Windows Update Cleanup option under Clean up system files removes superseded components from WinSxS, much like the DISM command."}},{"@type":"Question","name":"How big should the WinSxS folder be?","acceptedAnswer":{"@type":"Answer","text":"There's no single correct size. It depends on your Windows version, installed features and update history. Use /AnalyzeComponentStore and follow its recommendation rather than aiming for a number."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Guides</a></nav>
+<article class="guide">
+<h1>Can you delete the WinSxS folder? (and how to shrink it safely)</h1>
+<p class="guide-meta">Updated <time datetime="2026-10-20">2026-10-20</time></p>
+<p>If you look at <code>C:\Windows\WinSxS</code> while hunting for disk space, it often looks like one of the biggest folders on the drive. The short answer to whether you can delete it is no. Not the folder, and not files inside it. But you can shrink it safely with tools built into Windows. This guide explains what WinSxS is, why it looks bigger than it really is, and how to clean it up the supported way.</p>
+<h2 id="what-the-winsxs-folder-is">What the WinSxS folder is</h2>
+<p>WinSxS is the Windows component store. It holds the files Windows needs to install, update and repair itself, and to turn optional features on and off. When an update replaces a system component, Windows keeps the older version for a while so the update can be uninstalled if something goes wrong.</p>
+<p>Windows also uses the component store to repair itself. When you run <code>sfc /scannow</code> or <code>DISM /Online /Cleanup-Image /RestoreHealth</code>, damaged system files are restored from it.</p>
+<h2 id="why-it-looks-bigger-than-it-really-is">Why it looks bigger than it really is</h2>
+<p>Many files in WinSxS are not separate copies. They are hard links: one file on the disk that appears in two places, for example in WinSxS and in <code>C:\Windows\System32</code>. File Explorer, and any tool that counts each link, adds the size once for each place the file appears. That makes WinSxS look much larger than the space it really uses on its own.</p>
+<p>Diskat counts each hard link too, so in a scan of <code>C:\Windows</code> the shared files are included in both WinSxS and System32. Treat the WinSxS number in Explorer or Diskat as an upper limit, not as the space you could get back. To see the real figure, use DISM as shown in step 1.</p>
+<h2 id="why-you-should-never-delete-it-by-hand">Why you should never delete it by hand</h2>
+<ul>
+<li>The folder is owned by TrustedInstaller, the account Windows uses for updates. To delete its files you would have to take ownership, which is already a sign you're going around a safety check.</li>
+<li>Without the component store, Windows Update can fail, optional features can't be turned on, and repair tools have nothing to repair from. In bad cases Windows stops starting.</li>
+<li>Because so many files are hard links, deleting them from WinSxS often frees far less space than you expect.</li>
+</ul>
+<p>Diskat blocks every delete inside <code>C:\Windows</code> for these reasons, so the folder can't be removed by accident from a scan.</p>
+<h2 id="step-1-check-the-real-size">Step 1: Check the real size</h2>
+<p>Open Terminal or Command Prompt as administrator and run:</p>
+<p><code>Dism.exe /Online /Cleanup-Image /AnalyzeComponentStore</code></p>
+<p>After a minute or two, DISM shows a report. The important lines are:</p>
+<ul>
+<li><strong>Windows Explorer Reported Size of Component Store</strong>: the size File Explorer shows, including hard links.</li>
+<li><strong>Actual Size of Component Store</strong>: the space it really uses.</li>
+<li><strong>Shared with Windows</strong>: files that are hard-linked into the rest of Windows. These would stay even without WinSxS.</li>
+<li><strong>Backups and Disabled Features</strong>: older component versions and files for features that are turned off.</li>
+<li><strong>Cache and Temporary Data</strong>: working files used by servicing.</li>
+<li><strong>Component Store Cleanup Recommended</strong>: Yes or No.</li>
+</ul>
+<p>If cleanup is recommended, go on to step 2.</p>
+<h2 id="step-2-run-component-cleanup">Step 2: Run component cleanup</h2>
+<p>In the same administrator window, run:</p>
+<p><code>DISM /Online /Cleanup-Image /StartComponentCleanup</code></p>
+<p>DISM removes older versions of components that have been replaced by updates. It can take several minutes and may look stuck at times. Let it finish and don't turn off the PC while it runs.</p>
+<p>Windows runs a similar cleanup on its own through a scheduled task, but that task waits about 30 days after an update before removing the old versions. Running the command yourself removes them right away.</p>
+<h2 id="step-3-optional-reset-the-base">Step 3 (optional): Reset the base</h2>
+<p>For a bit more space you can add <code>/ResetBase</code>:</p>
+<p><code>DISM /Online /Cleanup-Image /StartComponentCleanup /ResetBase</code></p>
+<p>This removes all superseded versions of every component. The catch: <strong>after this, you can't uninstall any update that is currently installed.</strong> Only do it when your PC has been running well on its current updates, and skip it if you might need to roll one back.</p>
+<h2 id="another-option-disk-cleanup">Another option: Disk Cleanup</h2>
+<p>If you prefer not to use the command line, Disk Cleanup does a similar job. Type <code>cleanmgr</code> in the Start menu, choose drive C:, click <strong>Clean up system files</strong> and check <strong>Windows Update Cleanup</strong>. On Windows 10 and 11 the same item also appears in <strong>Settings &gt; System &gt; Storage &gt; Temporary files</strong>.</p>
+<h2 id="leave-the-automatic-cleanup-task-on">Leave the automatic cleanup task on</h2>
+<p>Windows keeps the component store in check with a scheduled task. In Task Scheduler you'll find it under <strong>Task Scheduler Library &gt; Microsoft &gt; Windows &gt; Servicing &gt; StartComponentCleanup</strong>. It runs when the PC is idle. Don't disable it.</p>
+<h2 id="what-to-expect">What to expect</h2>
+<p>How much you get back depends on how long it has been since the last cleanup and how many updates were installed since. It can be a few hundred megabytes or several gigabytes. Right after a big update, the store is often larger for a while. WinSxS will never be small, because Windows needs it to work.</p>
+<p>If your drive is still full after cleanup, the space is most likely somewhere else. Start with <a href="/guides/c-drive-full">what to do when your C drive is full</a> or the general guide to <a href="/guides/free-up-disk-space-windows">freeing up disk space</a>. A disk space analyzer shows which folders are really large, and you can <a href="/download">download Diskat</a> for free.</p>
+<h2 id="faq">FAQ</h2>
+<h3 id="can-i-delete-the-winsxs-folder">Can I delete the WinSxS folder?</h3>
+<p>No. Deleting the folder or files inside it can break Windows Update, optional features and system repair, and can stop Windows from starting. Use DISM or Disk Cleanup to shrink it instead.</p>
+<h3 id="is-it-safe-to-run-dism-startcomponentcleanup">Is it safe to run DISM StartComponentCleanup?</h3>
+<p>Yes. It's a supported Microsoft command that only removes component versions Windows no longer needs. Run it from an administrator window and let it finish. Only the <code>/ResetBase</code> option has a real downside: you can no longer uninstall current updates.</p>
+<h3 id="why-is-winsxs-so-big">Why is WinSxS so big?</h3>
+<p>Partly because it holds older versions of updated components, and partly because many tools count its hard-linked files more than once. The DISM analysis shows the actual size and how much is shared with the rest of Windows.</p>
+<h3 id="does-disk-cleanup-clean-the-winsxs-folder">Does Disk Cleanup clean the WinSxS folder?</h3>
+<p>Yes. The <strong>Windows Update Cleanup</strong> option under <strong>Clean up system files</strong> removes superseded components from WinSxS, much like the DISM command.</p>
+<h3 id="how-big-should-the-winsxs-folder-be">How big should the WinSxS folder be?</h3>
+<p>There's no single correct size. It depends on your Windows version, installed features and update history. Use <code>/AnalyzeComponentStore</code> and follow its recommendation rather than aiming for a number.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>See what's filling up your disk</h2><p>Diskat is a free, open-source disk space analyzer for Windows 10 and 11. One portable .exe, nothing to install.</p></div>
+  <a class="btn btn-primary" href="/download">Download Diskat</a>
+</aside>
+<div class="guide-more"><h2>More guides</h2><ul><li><a href="/guides/appdata-folder-large">Why is the AppData folder so big, and what can you safely delete?</a></li><li><a href="/guides/c-drive-full">C drive full? How to see what's taking up space and fix it</a></li><li><a href="/guides/delete-file-in-use">How to delete a file that's open in another program</a></li><li><a href="/guides/find-large-files-windows">How to find large files on Windows</a></li><li><a href="/guides/free-up-disk-space-windows">How to free up disk space on Windows 10 and 11</a></li><li><a href="/guides/treesize-alternative">Diskat vs TreeSize Free</a></li><li><a href="/guides/windirstat-alternative">Diskat vs WinDirStat</a></li><li><a href="/guides/wiztree-alternative">Diskat vs WizTree</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+<script src="/assets/app.js?v=8" defer></script>
+</body>
+</html>

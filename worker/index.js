@@ -4,11 +4,13 @@
 //   /download/v1.0.0/Diskat.exe        -> the file, streamed from R2 (resumable, cached for a year)
 //   /download/mac                      -> 302 to the latest macOS version (LATEST_MAC_VERSION in wrangler.jsonc)
 //   /download/v1.0.0/Diskat-1.0.0.dmg  -> the macOS disk image, served the same way
+//   /api/latest                        -> {version, url, sha256, size, notes} for the Windows app's update check
 //
 // The Windows and macOS apps are versioned separately. Publishing a new version:
 //   npx wrangler r2 object put diskat-downloads/releases/v<x.y.z>/Diskat.exe --file dist/Diskat.exe --remote
 //   npx wrangler r2 object put diskat-downloads/releases/v<x.y.z>/Diskat-<x.y.z>.dmg --file macos/dist/Diskat-<x.y.z>.dmg --remote
-//   then set LATEST_VERSION or LATEST_MAC_VERSION in wrangler.jsonc and run: npx wrangler deploy
+//   then set LATEST_VERSION, LATEST_SHA256 and LATEST_SIZE (Windows) or LATEST_MAC_VERSION in wrangler.jsonc
+//   and run: npx wrangler deploy
 
 const EXE = /^\/download\/v(\d+\.\d+\.\d+)\/Diskat\.exe$/;
 const DMG = /^\/download\/v(\d+\.\d+\.\d+)\/Diskat-\1\.dmg$/;
@@ -26,6 +28,7 @@ export default {
     if ((m = url.pathname.match(EXE))) return serveRelease(request, env, m[1], WINDOWS);
     if ((m = url.pathname.match(DMG))) return serveRelease(request, env, m[1], MAC);
     if (url.pathname.startsWith("/download/")) return notFound(request, env, url);
+    if (url.pathname === "/api/latest") return apiLatest(env, url);
     return env.ASSETS.fetch(request);
   },
 };
@@ -75,6 +78,26 @@ async function serveRelease(request, env, version, app) {
 
   headers.set("Content-Length", String(object.size));
   return new Response(object.body, { status: 200, headers });
+}
+
+// Used by Diskat's "Check for updates" (only when the user asks, or turns on the startup check).
+// No cookies, no query parameters, nothing about the user is read or stored.
+function apiLatest(env, url) {
+  const body = {
+    version: env.LATEST_VERSION,
+    url: new URL(`/download/v${env.LATEST_VERSION}/Diskat.exe`, url).toString(),
+    sha256: env.LATEST_SHA256,
+    size: Number(env.LATEST_SIZE),
+    notes: new URL("/changelog", url).toString(),
+  };
+  return new Response(JSON.stringify(body), {
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "public, max-age=300",
+      "Access-Control-Allow-Origin": "*",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
 }
 
 // "/404", not "/404.html": with html_handling the .html URL is a redirect, which would leave an empty 404

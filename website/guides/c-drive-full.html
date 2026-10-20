@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C drive full? How to see what's taking up space and fix it · Diskat</title>
+  <meta name="description" content="Is your C drive full? Find out what is using the space on Windows 10 or 11, from user files to system files, and fix each cause safely, step by step.">
+  <link rel="canonical" href="https://diskat.cc/guides/c-drive-full">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/c-drive-full">
+  <meta property="og:title" content="C drive full? How to see what's taking up space and fix it">
+  <meta property="og:description" content="Is your C drive full? Find out what is using the space on Windows 10 or 11, from user files to system files, and fix each cause safely, step by step.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=8">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"C drive full? How to see what's taking up space and fix it","description":"Is your C drive full? Find out what is using the space on Windows 10 or 11, from user files to system files, and fix each cause safely, step by step.","inLanguage":"en","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/c-drive-full","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"C drive full? How to see what's taking up space and fix it","item":"https://diskat.cc/guides/c-drive-full"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Why is my C drive full when I haven't saved anything?","acceptedAnswer":{"@type":"Answer","text":"Windows and apps write data on their own: updates, update backups, restore points, browser caches, app data in AppData and the hibernation file. A disk space analyzer shows which of these is the main cause on your PC."}},{"@type":"Question","name":"What is \"System & reserved\" in Storage settings?","acceptedAnswer":{"@type":"Answer","text":"It's space used by Windows itself, the page file, the hibernation file, restore points and reserved storage for updates. You can shrink parts of it by turning off hibernation and limiting restore points, but don't try to delete these files by hand."}},{"@type":"Question","name":"Can I delete files in the Windows folder to free space?","acceptedAnswer":{"@type":"Answer","text":"Don't delete anything there by hand. Use Disk Cleanup, Settings and DISM, which know which files are safe to remove. Deleting the wrong file can stop Windows from updating or starting."}},{"@type":"Question","name":"Is it safe to delete Windows.old?","acceptedAnswer":{"@type":"Answer","text":"Yes, if your current Windows version works well. Once it's gone you can't go back to the previous version. Remove it with Disk Cleanup or Settings rather than deleting it in File Explorer."}},{"@type":"Question","name":"Why does my scan show less used space than Windows reports?","acceptedAnswer":{"@type":"Answer","text":"Some folders, such as System Volume Information, can't be read even with administrator rights. Restore points stored there count as used space but don't appear in the scan."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Guides</a></nav>
+<article class="guide">
+<h1>C drive full? How to see what's taking up space and fix it</h1>
+<p class="guide-meta">Updated <time datetime="2026-10-20">2026-10-20</time></p>
+<p>When the C: drive bar in This PC turns red, Windows starts to struggle. Updates fail, apps can't save, and the PC can feel slow. Guessing what to delete rarely works. The reliable approach is to measure first, then fix the specific things that are big. This guide shows how to do both on Windows 10 and 11.</p>
+<h2 id="step-1-check-the-overview-in-settings">Step 1: Check the overview in Settings</h2>
+<p>Open <strong>Settings &gt; System &gt; Storage</strong>. Windows shows the used and free space on C: and splits the used space into categories such as apps, documents, temporary files and system files.</p>
+<p>Click <strong>Show more categories</strong> if you don't see them all. One category that often surprises people is <strong>System &amp; reserved</strong>. It includes Windows itself, the page file, the hibernation file and <strong>reserved storage</strong>. Reserved storage is space Windows keeps aside so updates can install even when the drive is nearly full. You can check its state with <code>DISM /Online /Get-ReservedStorageState</code> in an administrator Terminal. Leave it on: it exists to keep updates working.</p>
+<h2 id="step-2-scan-the-drive-to-see-folder-sizes">Step 2: Scan the drive to see folder sizes</h2>
+<p>Settings tells you the category, not the folder. For that you need a disk space analyzer. Diskat is a free, portable one: <a href="/download">download Diskat</a>, run it and click the C: drive card.</p>
+<p>When the scan finishes, the top level of C: usually shows these items:</p>
+<ul>
+<li><code>Users</code>, with your personal files and app data</li>
+<li><code>Windows</code>, the operating system</li>
+<li><code>Program Files</code> and <code>Program Files (x86)</code>, installed apps</li>
+<li><code>ProgramData</code>, shared app data</li>
+<li>Files such as <code>hiberfil.sys</code>, <code>pagefile.sys</code> and <code>swapfile.sys</code></li>
+</ul>
+<p>Expand the biggest folder and keep going down until you find the folders that matter. If the status bar says some folders were blocked, click <strong>Run as Admin</strong> and scan again to include protected system folders.</p>
+<p>Sometimes the scanned total is noticeably smaller than the used space Windows reports. The gap is often in <code>C:\System Volume Information</code>, where Windows stores restore points. That folder can stay unreadable even with administrator rights. Run <code>vssadmin list shadowstorage</code> in an administrator Terminal to see how much space restore points use.</p>
+<h2 id="step-3-match-what-you-find-to-a-fix">Step 3: Match what you find to a fix</h2>
+<p>Once you know what is big, use this table to pick the right fix.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>What is big</th><th>What it is</th><th>How to shrink it safely</th></tr></thead><tbody>
+<tr><td><code>C:\Users\YourName\Downloads</code></td><td>Installers, archives, ISO files</td><td>Delete what you no longer need</td></tr>
+<tr><td><code>C:\Users\YourName\AppData</code></td><td>App caches and data</td><td>Clear caches from inside each app</td></tr>
+<tr><td><code>C:\Windows\WinSxS</code></td><td>Windows component store</td><td>Run DISM component cleanup</td></tr>
+<tr><td><code>C:\Windows\SoftwareDistribution\Download</code></td><td>Downloaded updates</td><td>Usually cleared by Windows, see below</td></tr>
+<tr><td><code>C:\Windows.old</code></td><td>Previous Windows installation</td><td>Remove with Settings or Disk Cleanup</td></tr>
+<tr><td><code>C:\hiberfil.sys</code></td><td>Hibernation file</td><td>Turn off hibernation</td></tr>
+<tr><td><code>C:\pagefile.sys</code></td><td>Virtual memory</td><td>Leave it system managed</td></tr>
+<tr><td><code>C:\System Volume Information</code></td><td>Restore points</td><td>Lower the System Restore limit</td></tr>
+<tr><td><code>C:\Program Files</code></td><td>Installed apps and games</td><td>Uninstall or move apps</td></tr>
+</tbody></table></div>
+<p>For the AppData folder, see <a href="/guides/appdata-folder-large">what you can safely delete in AppData</a>. For WinSxS, see <a href="/guides/winsxs-folder">how to shrink the WinSxS folder</a>.</p>
+<h2 id="step-4-quick-fixes-that-take-minutes">Step 4: Quick fixes that take minutes</h2>
+<p>Start with these. They are safe and often enough on their own.</p>
+<ol>
+<li><strong>Empty the Recycle Bin.</strong> Deleted files still use space until you empty it.</li>
+<li><strong>Remove temporary files.</strong> Go to <strong>Settings &gt; System &gt; Storage &gt; Temporary files</strong>, check the items you want and click <strong>Remove files</strong>. Leave the <strong>Downloads</strong> box unchecked unless you have already reviewed that folder, because it deletes everything in it.</li>
+<li><strong>Clear out Downloads.</strong> Sort the folder by size in File Explorer and remove old installers and archives.</li>
+<li><strong>Uninstall unused apps.</strong> Open <strong>Settings &gt; Apps &gt; Installed apps</strong> (Windows 11) or <strong>Apps &amp; features</strong> (Windows 10), sort by size and remove what you don't use.</li>
+</ol>
+<h2 id="step-5-bigger-fixes-that-need-more-care">Step 5: Bigger fixes that need more care</h2>
+<h3 id="remove-windows-old">Remove Windows.old</h3>
+<p>After a major Windows update, the previous version is kept in <code>C:\Windows.old</code> so you can go back. Windows deletes it automatically after about 10 days. To remove it sooner, open Disk Cleanup (<code>cleanmgr</code>), click <strong>Clean up system files</strong> and check <strong>Previous Windows installation(s)</strong>. You won't be able to roll back afterwards.</p>
+<h3 id="turn-off-hibernation">Turn off hibernation</h3>
+<p>If you never use Hibernate, run <code>powercfg /hibernate off</code> in an administrator Terminal. Windows deletes <code>hiberfil.sys</code>, which is often several gigabytes. This also turns off Fast Startup. Don't do it on a laptop if you depend on hibernation.</p>
+<h3 id="reduce-space-for-restore-points">Reduce space for restore points</h3>
+<p>Press Win+R and run <code>SystemPropertiesProtection</code>. Select C:, click <strong>Configure</strong> and lower <strong>Max Usage</strong>. In Disk Cleanup, after you click <strong>Clean up system files</strong>, the <strong>More Options</strong> tab can also remove all but the most recent restore point. Keep at least one restore point as a safety net.</p>
+<h3 id="clean-the-windows-update-download-cache">Clean the Windows Update download cache</h3>
+<p>Windows normally clears <code>C:\Windows\SoftwareDistribution\Download</code> on its own. If it stays large, you can empty it by hand. Make sure no update is installing, then open an administrator Terminal and run <code>net stop wuauserv</code>. Delete the contents of the Download folder, not the folder itself, then run <code>net start wuauserv</code>. Windows downloads again whatever it still needs. Diskat blocks deletions anywhere inside <code>C:\Windows</code> on purpose, so do this step in File Explorer.</p>
+<h3 id="clean-up-the-component-store">Clean up the component store</h3>
+<p>Run <code>DISM /Online /Cleanup-Image /StartComponentCleanup</code> in an administrator Terminal. It removes old versions of Windows components that are no longer needed. Never delete WinSxS files by hand.</p>
+<h2 id="step-6-keep-it-from-filling-up-again">Step 6: Keep it from filling up again</h2>
+<ul>
+<li>Turn on <strong>Storage Sense</strong> in <strong>Settings &gt; System &gt; Storage</strong> so temporary files and old Recycle Bin items are removed automatically.</li>
+<li>Move large personal folders to another drive. Right-click Documents, Videos or Pictures, choose <strong>Properties</strong>, open the <strong>Location</strong> tab and click <strong>Move</strong>.</li>
+<li>If you use OneDrive, right-click folders you rarely open and choose <strong>Free up space</strong>. They stay visible but download only when needed.</li>
+<li>Install large games on a second drive. Most game launchers let you add a library folder on another drive.</li>
+</ul>
+<h2 id="when-the-drive-is-simply-too-small">When the drive is simply too small</h2>
+<p>Some laptops ship with a small SSD. After Windows, updates and a few apps, there may be little room left no matter how much you clean. In that case a larger SSD, a second internal drive or an external drive for personal files is the lasting fix.</p>
+<h2 id="faq">FAQ</h2>
+<h3 id="why-is-my-c-drive-full-when-i-haven-t-saved-anything">Why is my C drive full when I haven't saved anything?</h3>
+<p>Windows and apps write data on their own: updates, update backups, restore points, browser caches, app data in AppData and the hibernation file. A disk space analyzer shows which of these is the main cause on your PC.</p>
+<h3 id="what-is-system-reserved-in-storage-settings">What is "System &amp; reserved" in Storage settings?</h3>
+<p>It's space used by Windows itself, the page file, the hibernation file, restore points and reserved storage for updates. You can shrink parts of it by turning off hibernation and limiting restore points, but don't try to delete these files by hand.</p>
+<h3 id="can-i-delete-files-in-the-windows-folder-to-free-space">Can I delete files in the Windows folder to free space?</h3>
+<p>Don't delete anything there by hand. Use Disk Cleanup, Settings and DISM, which know which files are safe to remove. Deleting the wrong file can stop Windows from updating or starting.</p>
+<h3 id="is-it-safe-to-delete-windows-old">Is it safe to delete Windows.old?</h3>
+<p>Yes, if your current Windows version works well. Once it's gone you can't go back to the previous version. Remove it with Disk Cleanup or Settings rather than deleting it in File Explorer.</p>
+<h3 id="why-does-my-scan-show-less-used-space-than-windows-reports">Why does my scan show less used space than Windows reports?</h3>
+<p>Some folders, such as System Volume Information, can't be read even with administrator rights. Restore points stored there count as used space but don't appear in the scan.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>See what's filling up your disk</h2><p>Diskat is a free, open-source disk space analyzer for Windows 10 and 11. One portable .exe, nothing to install.</p></div>
+  <a class="btn btn-primary" href="/download">Download Diskat</a>
+</aside>
+<div class="guide-more"><h2>More guides</h2><ul><li><a href="/guides/appdata-folder-large">Why is the AppData folder so big, and what can you safely delete?</a></li><li><a href="/guides/delete-file-in-use">How to delete a file that's open in another program</a></li><li><a href="/guides/find-large-files-windows">How to find large files on Windows</a></li><li><a href="/guides/free-up-disk-space-windows">How to free up disk space on Windows 10 and 11</a></li><li><a href="/guides/treesize-alternative">Diskat vs TreeSize Free</a></li><li><a href="/guides/windirstat-alternative">Diskat vs WinDirStat</a></li><li><a href="/guides/winsxs-folder">Can you delete the WinSxS folder? (and how to shrink it safely)</a></li><li><a href="/guides/wiztree-alternative">Diskat vs WizTree</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+<script src="/assets/app.js?v=8" defer></script>
+</body>
+</html>

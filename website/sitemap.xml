@@ -1,5 +1,20 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url><loc>https://diskat.cc/</loc><lastmod>2026-10-20</lastmod><priority>1.0</priority></url>
+  <url><loc>https://diskat.cc/guides</loc><lastmod>2026-10-20</lastmod><priority>0.8</priority></url>
+  <url><loc>https://diskat.cc/guides/appdata-folder-large</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority></url>
+  <url><loc>https://diskat.cc/guides/c-drive-full</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority></url>
+  <url><loc>https://diskat.cc/guides/delete-file-in-use</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority><xhtml:link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/xoa-file-dang-duoc-mo"/><xhtml:link rel="alternate" hreflang="en" href="https://diskat.cc/guides/delete-file-in-use"/></url>
+  <url><loc>https://diskat.cc/guides/find-large-files-windows</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority><xhtml:link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/tim-file-nang-tren-may-tinh"/><xhtml:link rel="alternate" hreflang="en" href="https://diskat.cc/guides/find-large-files-windows"/></url>
+  <url><loc>https://diskat.cc/guides/free-up-disk-space-windows</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority><xhtml:link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/giai-phong-dung-luong-o-c"/><xhtml:link rel="alternate" hreflang="en" href="https://diskat.cc/guides/free-up-disk-space-windows"/></url>
+  <url><loc>https://diskat.cc/guides/giai-phong-dung-luong-o-c</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority><xhtml:link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/giai-phong-dung-luong-o-c"/><xhtml:link rel="alternate" hreflang="en" href="https://diskat.cc/guides/free-up-disk-space-windows"/></url>
+  <url><loc>https://diskat.cc/guides/tim-file-nang-tren-may-tinh</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority><xhtml:link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/tim-file-nang-tren-may-tinh"/><xhtml:link rel="alternate" hreflang="en" href="https://diskat.cc/guides/find-large-files-windows"/></url>
+  <url><loc>https://diskat.cc/guides/treesize-alternative</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority></url>
+  <url><loc>https://diskat.cc/guides/windirstat-alternative</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority></url>
+  <url><loc>https://diskat.cc/guides/winsxs-folder</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority></url>
+  <url><loc>https://diskat.cc/guides/wiztree-alternative</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority></url>
+  <url><loc>https://diskat.cc/guides/xoa-file-dang-duoc-mo</loc><lastmod>2026-10-20</lastmod><priority>0.7</priority><xhtml:link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/xoa-file-dang-duoc-mo"/><xhtml:link rel="alternate" hreflang="en" href="https://diskat.cc/guides/delete-file-in-use"/></url>
+  <url><loc>https://diskat.cc/changelog</loc><lastmod>2026-10-20</lastmod><priority>0.5</priority></url>
+  <url><loc>https://diskat.cc/license</loc><lastmod>2026-10-20</lastmod><priority>0.3</priority></url>
   <url><loc>https://diskat.cc/privacy</loc><lastmod>2026-10-20</lastmod><priority>0.3</priority></url>
 </urlset>

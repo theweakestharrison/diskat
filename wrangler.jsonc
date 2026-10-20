@@ -1,4 +1,4 @@
-﻿{
+{
   // diskat.cc: static site in ./website plus a small Worker (worker/index.js) that serves the
   // downloads from the R2 bucket "diskat-downloads": Diskat.exe at /download, the macOS DMG at /download/mac.
   // Deploy: npx wrangler deploy   (the diskat.cc zone must be in the same Cloudflare account)
@@ -10,14 +10,17 @@
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash",
-    "run_worker_first": ["/download", "/download/*"]
+    "run_worker_first": ["/download", "/download/*", "/api/*"]
   },
   "r2_buckets": [
     { "binding": "DOWNLOADS", "bucket_name": "diskat-downloads" }
   ],
   "vars": {
-    // Windows version that /download points to. Upload releases/v<version>/Diskat.exe to R2 first.
-    "LATEST_VERSION": "1.0.0",
+    // Windows version that /download and /api/latest point to. Upload releases/v<version>/Diskat.exe to R2 first,
+    // then set its SHA-256 and size in bytes (the app verifies the hash before installing an update).
+    "LATEST_VERSION": "1.1.0",
+    "LATEST_SHA256": "9e86ca2e48a7cb106efcc817fa56b3972ae94d91507d40ae049276d5eed6ba57",
+    "LATEST_SIZE": "65703166",
     // macOS version that /download/mac points to (versioned separately from Windows).
     // Upload releases/v<version>/Diskat-<version>.dmg to R2 first.
     "LATEST_MAC_VERSION": "1.0.0"

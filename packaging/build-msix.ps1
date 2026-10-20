@@ -14,7 +14,7 @@ param(
     [string]$IdentityName = "Diskat.Dev",
     [string]$Publisher = "CN=DiskatDev",
     [string]$PublisherDisplayName = "Diskat",
-    [string]$Version = "1.0.0.0",
+    [string]$Version = "",   # mặc định: <Version> trong Diskat.csproj + ".0"
     [string]$BuildToolsVersion = "10.0.28000.2705"
 )
 
@@ -24,6 +24,10 @@ $pkgDir = $PSScriptRoot
 $out = Join-Path $pkgDir "out"
 $layout = Join-Path $out "layout"
 
+if (-not $Version) {
+    $csproj = [xml](Get-Content (Join-Path $root "Diskat.csproj") -Raw)
+    $Version = ($csproj.Project.PropertyGroup | ForEach-Object { $_.Version } | Where-Object { $_ } | Select-Object -First 1) + ".0"
+}
 if ($Version -notmatch '^\d+\.\d+\.\d+\.0$') { throw "Version phải có dạng a.b.c.0 (Store yêu cầu số cuối là 0)." }
 
 # ---------- 1. Công cụ đóng gói ----------

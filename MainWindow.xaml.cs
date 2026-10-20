@@ -35,8 +35,11 @@ public partial class MainWindow : Window
     private bool _isScanning;
     private bool IsScanning => _isScanning;
 
+    private readonly CommandLine _cli = CommandLine.Parse(Environment.GetCommandLineArgs().Skip(1).ToArray());
+
     public MainWindow()
     {
+        if (_cli.Lang != null) Loc.UseForSession(_cli.Lang);
         InitializeComponent();
         Tree.ItemsSource = _rows;
 
@@ -57,9 +60,16 @@ public partial class MainWindow : Window
         {
             ApplyLanguage();
             UpdateActionButtons();
-            var args = Environment.GetCommandLineArgs();
-            if (args.Length > 1 && Directory.Exists(args[1]))
-                _ = StartScanAsync(args[1]);
+            if (_cli.ShellMenu is bool shellOn && !Updater.IsPackaged)
+            {
+                try { if (shellOn) ShellIntegration.Install(Loc.T("ShellVerb")); else ShellIntegration.Uninstall(); }
+                catch { }
+            }
+            else if (!Updater.IsPackaged) ShellIntegration.RefreshIfInstalled(Loc.T("ShellVerb"));
+
+            if (_cli.ScanPath != null) _ = RunCommandLineAsync(_cli);
+            else if (_cli.Quit) { Application.Current.Shutdown(0); return; }
+            if (!_cli.Quit) MaybeCheckForUpdatesOnStartup();
         };
         Closing += (_, _) => { _cts?.Cancel(); Loc.LanguageChanged -= ApplyLanguage; };
     }
@@ -106,6 +116,8 @@ public partial class MainWindow : Window
         LangLabel.Text = Loc.Lang.ToUpperInvariant();
 
         UpdateHeaderCaptions();
+        InitFindFilters();
+        LoadInsights();
         LoadDrives();
         foreach (var r in _rows) r.Refresh();
         TopFiles.Items.Refresh();
@@ -210,6 +222,7 @@ public partial class MainWindow : Window
         }
 
         _cts = new CancellationTokenSource();
+        _statsStale = false;
         _scanner = new Scanner(path);
         _root = _scanner.Root;
         _root.IsExpanded = true;
@@ -219,10 +232,11 @@ public partial class MainWindow : Window
         RebuildRows();
         Map.SetRoot(_root);
         UpdateMapHeader();
-        TopFiles.ItemsSource = null;
+        ResetFind();
         EmptyState.Visibility = Visibility.Collapsed;
 
         SetScanningUi(true);
+        ClearInsights();
         _watch.Restart();
         _tick = 0;
         _timer.Start();
@@ -282,11 +296,13 @@ public partial class MainWindow : Window
     private void OnScanFinished(bool cancelled)
     {
         if (_root == null || _scanner == null) return;
+        _scanStopped = cancelled;
         UpdateStats();
         RebuildRows();
         Map.SetRoot(Map.Root ?? _root);
         UpdateMapHeader();
         LoadTopFiles();
+        LoadInsights();
 
         double secs = _watch.Elapsed.TotalSeconds;
         long files = Interlocked.Read(ref _root.FileCount);

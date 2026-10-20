@@ -4,7 +4,7 @@
   "use strict";
 
   // Bump together with ?v= in the HTML whenever CSS/JS/translations change (assets are cached for 7 days)
-  var ASSET_VERSION = "6";
+  var ASSET_VERSION = "8";
 
   // Mac visitors get the macOS download as the main button and in the nav (iPads also report "Mac" but have touch).
   // Without script every page still works: Windows is the default.

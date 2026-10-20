@@ -191,11 +191,12 @@ public static class FileOps
                     hwnd = owner,
                     wFunc = FO_DELETE,
                     pFrom = path + "\0\0",
-                    fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_WANTNUKEWARNING | FOF_SILENT,
+                    // NOERRORUI: lỗi (vd. file đang mở) trả về cho Diskat xử lý, thay vì hộp thoại của Explorer
+                    fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_WANTNUKEWARNING | FOF_SILENT | FOF_NOERRORUI,
                 };
                 int rc = SHFileOperation(ref op);
                 if (op.fAnyOperationsAborted) ok = false;
-                else if (rc != 0) error = new IOException(Loc.F("RecycleError", rc));
+                else if (rc != 0) error = new IOException(Loc.F("RecycleError", rc), rc is 32 or 33 ? unchecked((int)0x80070000) | rc : rc);
                 else ok = true;
             }
             catch (Exception ex) { error = ex; }
@@ -236,6 +237,7 @@ public static class FileOps
     private const ushort FOF_SILENT = 0x0004;
     private const ushort FOF_NOCONFIRMATION = 0x0010;
     private const ushort FOF_ALLOWUNDO = 0x0040;
+    private const ushort FOF_NOERRORUI = 0x0400;
     private const ushort FOF_WANTNUKEWARNING = 0x4000;
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]

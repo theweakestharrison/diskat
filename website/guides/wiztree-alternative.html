@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diskat vs WizTree · Diskat</title>
+  <meta name="description" content="Diskat vs WizTree compared honestly. WizTree is faster on full NTFS drives, while Diskat is open source, free at work and built around deleting safely.">
+  <link rel="canonical" href="https://diskat.cc/guides/wiztree-alternative">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/wiztree-alternative">
+  <meta property="og:title" content="Diskat vs WizTree">
+  <meta property="og:description" content="Diskat vs WizTree compared honestly. WizTree is faster on full NTFS drives, while Diskat is open source, free at work and built around deleting safely.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=8">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Diskat vs WizTree","description":"Diskat vs WizTree compared honestly. WizTree is faster on full NTFS drives, while Diskat is open source, free at work and built around deleting safely.","inLanguage":"en","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/wiztree-alternative","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"Diskat vs WizTree","item":"https://diskat.cc/guides/wiztree-alternative"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is WizTree faster than Diskat?","acceptedAnswer":{"@type":"Answer","text":"Yes, on full NTFS drives. WizTree reads the Master File Table directly, which is very fast. Diskat scans folders in parallel and scanned 1.95 million files on a laptop SSD in about 12.5 seconds without admin rights."}},{"@type":"Question","name":"Is Diskat free for commercial use?","acceptedAnswer":{"@type":"Answer","text":"Yes. Diskat uses the MIT license, so it's free for personal and business use. WizTree is free for personal use but needs a paid license in a business."}},{"@type":"Question","name":"Why do Diskat and WizTree show different sizes?","acceptedAnswer":{"@type":"Answer","text":"The main reasons are hard links, which WizTree counts once and Diskat counts once per link, and folders Diskat couldn't open during the scan. Run Diskat as admin to include protected folders."}},{"@type":"Question","name":"Does Diskat read the Master File Table?","acceptedAnswer":{"@type":"Answer","text":"No. Diskat asks Windows for the contents of each folder, using many threads at once. That's slower than reading the Master File Table, but it works the same on any drive Windows can open."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Guides</a></nav>
+<article class="guide">
+<h1>Diskat vs WizTree</h1>
+<p class="guide-meta">Updated <time datetime="2026-10-20">2026-10-20</time></p>
+<p>WizTree is known for one thing above all: speed. Diskat is a newer, open-source disk space analyzer that is also fast but makes different trade-offs. This page compares the two honestly. On full NTFS drives, WizTree is faster. Diskat's strengths are its open MIT license, which makes it free for business use too, and its focus on deleting files safely.</p>
+<p>The facts about WizTree on this page come from its official website, checked in October 2026. Prices and features change, so check the current terms before you decide.</p>
+<h2 id="at-a-glance">At a glance</h2>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Feature</th><th>Diskat</th><th>WizTree</th></tr></thead><tbody>
+<tr><td>Price for personal use</td><td>Free</td><td>Free</td></tr>
+<tr><td>Price for business use</td><td>Free</td><td>Paid license</td></tr>
+<tr><td>License</td><td>MIT (open source)</td><td>Free for personal use, paid licenses for business</td></tr>
+<tr><td>How it scans</td><td>Walks the folder tree in parallel on many threads</td><td>Reads the NTFS Master File Table directly</td></tr>
+<tr><td>Speed on a full NTFS drive</td><td>Fast</td><td>Faster</td></tr>
+<tr><td>Hard links</td><td>Counted once per link</td><td>Counted once</td></tr>
+<tr><td>Platform</td><td>Windows 10 and 11, 64-bit</td><td>Windows</td></tr>
+</tbody></table></div>
+<h2 id="why-wiztree-is-so-fast">Why WizTree is so fast</h2>
+<p>NTFS, the file system Windows uses on most internal drives, keeps a central table of every file on the drive: the Master File Table. WizTree reads that table directly instead of opening folders one by one. That's why it can scan a full NTFS drive very quickly.</p>
+<p>Diskat takes the usual route of asking Windows for the contents of each folder, but it does this on many threads at once. In our test it scanned a 476 GB laptop SSD with 1.95 million files in about 12.5 seconds, without administrator rights. That's fast enough for most people, and results appear live while the scan runs. Still, if you regularly scan very large NTFS drives and every second counts, WizTree has the edge.</p>
+<p>Diskat's approach works the same way on any drive Windows can open, including USB drives and network drives. It can also rescan one folder with F5 after you delete something, so you don't have to scan the whole drive again.</p>
+<h2 id="hard-links-and-size-totals">Hard links and size totals</h2>
+<p>You may see different totals in the two tools for the same drive. One reason is hard links: a single file on the disk that appears in several folders. WizTree counts hard links once. Diskat counts them once per link, so a folder like <code>C:\Windows</code>, which uses many hard links, looks bigger in Diskat than the space it really takes up. For a normal user folder the difference is usually small.</p>
+<p>Diskat also shows logical file sizes rather than size on disk. OneDrive files that are online-only and compressed files can look larger than the space they use. And if some folders were blocked during a scan, Diskat tells you how many in the status bar. Click <strong>Run as Admin</strong> to include them.</p>
+<h2 id="licensing-and-cost">Licensing and cost</h2>
+<p>WizTree is free for personal use. Using it in a business requires a paid license.</p>
+<p>Diskat is released under the MIT license. It's free for everyone, at home and at work, with no paid edition. The source code is public, so anyone can check what it does.</p>
+<h2 id="deleting-safely">Deleting safely</h2>
+<p>Both tools can help you find what to delete. Diskat puts extra care into the delete itself:</p>
+<ul>
+<li>Del moves items to the Recycle Bin. Shift+Del deletes permanently. Both always show a confirmation dialog with the full path and size.</li>
+<li>It refuses to delete protected folders: drive roots, <code>C:\Windows</code> and everything in it, Program Files, ProgramData, <code>ProgramData\Microsoft</code>, <code>C:\Users</code> and every user profile root, and the <code>AppData\Roaming</code> and <code>AppData\Local</code> folders.</li>
+<li>Junctions and symbolic links are never followed, so a delete can't reach through a link into another location.</li>
+<li>From Diskat 1.1, when a file is open in another program, Diskat shows which program holds it and offers to close that program and retry, or to delete the file at the next Windows startup.</li>
+</ul>
+<h2 id="other-diskat-features">Other Diskat features</h2>
+<ul>
+<li>A folder tree sorted by size with "% of parent" bars, file and folder counts and modified dates</li>
+<li>A two-level space map (treemap)</li>
+<li>A <strong>Largest files</strong> tab with the top 500 files and multi-select delete</li>
+<li>11 interface languages</li>
+<li>A single portable .exe with no install and no telemetry</li>
+<li>From Diskat 1.1, a PDF report of a scan and an optional <strong>Check for updates</strong>, off by default</li>
+</ul>
+<h2 id="diskat-s-limitations">Diskat's limitations</h2>
+<ul>
+<li>It's slower than WizTree on full NTFS drives.</li>
+<li>It runs on 64-bit Windows 10 and 11 only.</li>
+<li>Sizes are logical sizes, and hard links are counted once per link, as described above.</li>
+<li>The .exe isn't code-signed yet, so Windows SmartScreen may warn the first time you run it.</li>
+</ul>
+<h2 id="when-to-choose-diskat">When to choose Diskat</h2>
+<ul>
+<li>You need a disk space analyzer for work and want one that's free for business use.</li>
+<li>You prefer open-source software you can inspect.</li>
+<li>You want strong protection against deleting the wrong thing.</li>
+<li>A scan of a few seconds to a few tens of seconds is fine for you.</li>
+</ul>
+<h2 id="when-to-choose-wiztree">When to choose WizTree</h2>
+<ul>
+<li>Raw scan speed on large NTFS drives matters most.</li>
+<li>You want hard links counted once, for a closer match to real disk usage on system folders.</li>
+<li>You use it at home, where it's free, or your company already pays for a license.</li>
+</ul>
+<p>If you want to compare them yourself, <a href="/download">download Diskat</a> and scan the same drive with both. For what to do once you know what's big, see <a href="/guides/c-drive-full">what to do when your C drive is full</a> and <a href="/guides/winsxs-folder">why the WinSxS folder looks so big</a>.</p>
+<h2 id="faq">FAQ</h2>
+<h3 id="is-wiztree-faster-than-diskat">Is WizTree faster than Diskat?</h3>
+<p>Yes, on full NTFS drives. WizTree reads the Master File Table directly, which is very fast. Diskat scans folders in parallel and scanned 1.95 million files on a laptop SSD in about 12.5 seconds without admin rights.</p>
+<h3 id="is-diskat-free-for-commercial-use">Is Diskat free for commercial use?</h3>
+<p>Yes. Diskat uses the MIT license, so it's free for personal and business use. WizTree is free for personal use but needs a paid license in a business.</p>
+<h3 id="why-do-diskat-and-wiztree-show-different-sizes">Why do Diskat and WizTree show different sizes?</h3>
+<p>The main reasons are hard links, which WizTree counts once and Diskat counts once per link, and folders Diskat couldn't open during the scan. Run Diskat as admin to include protected folders.</p>
+<h3 id="does-diskat-read-the-master-file-table">Does Diskat read the Master File Table?</h3>
+<p>No. Diskat asks Windows for the contents of each folder, using many threads at once. That's slower than reading the Master File Table, but it works the same on any drive Windows can open.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>See what's filling up your disk</h2><p>Diskat is a free, open-source disk space analyzer for Windows 10 and 11. One portable .exe, nothing to install.</p></div>
+  <a class="btn btn-primary" href="/download">Download Diskat</a>
+</aside>
+<div class="guide-more"><h2>More guides</h2><ul><li><a href="/guides/appdata-folder-large">Why is the AppData folder so big, and what can you safely delete?</a></li><li><a href="/guides/c-drive-full">C drive full? How to see what's taking up space and fix it</a></li><li><a href="/guides/delete-file-in-use">How to delete a file that's open in another program</a></li><li><a href="/guides/find-large-files-windows">How to find large files on Windows</a></li><li><a href="/guides/free-up-disk-space-windows">How to free up disk space on Windows 10 and 11</a></li><li><a href="/guides/treesize-alternative">Diskat vs TreeSize Free</a></li><li><a href="/guides/windirstat-alternative">Diskat vs WinDirStat</a></li><li><a href="/guides/winsxs-folder">Can you delete the WinSxS folder? (and how to shrink it safely)</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+<script src="/assets/app.js?v=8" defer></script>
+</body>
+</html>
