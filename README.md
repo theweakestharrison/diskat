@@ -12,21 +12,50 @@
 
 ## Features
 
-- **Fast parallel scan**: multi-threaded, no per-file allocations. About 2 million files in 15 seconds on an SSD.
-- **Live results**: sizes update while scanning and the heaviest folders float to the top.
-- **Folder tree** with size, "% of parent" bar, file and folder counts, modified date. Click a column header to sort.
-- **Space map** (squarified treemap): click a tile to select it, double-click to drill in, ↑ to go back up.
-- **Largest files** across the whole scan (top 500), with multi-select delete.
-- **Find files** by name pattern (`*.log; *.tmp`), minimum size and age across the whole scan.
-- **File types** and **File age** tabs: which extensions use the most space, and how old the data is.
-- **Files in use**: when a delete fails because a program has the file open, Diskat shows which program, can close it and retry, or delete at the next restart.
-- **Reports**: PDF report (summary, space map, largest folders and files, file types, file age) and CSV export of folders and files.
-- **Safe delete**: Recycle Bin by default (`Del`) or permanent (`Shift+Del`), always with a confirmation dialog.
-  Drive roots, Windows, Program Files, ProgramData and user profile roots are protected.
-- **No double counting**: junctions and symlinks are listed but never followed.
+Everything in the current release (1.1.0). All of it is free.
+
+### Scan
+- **Fast parallel scan**: multi-threaded, no per-file allocations. About 2 million files in 12.5 seconds on an SSD.
+- **Live results**: sizes update while scanning and the heaviest folders float to the top. Stop a scan at any time.
+- **Any drive**: internal disks, USB drives and network shares, picked from drive cards that show used and free space, from a folder dialog, or by typing a path.
 - **Run as Admin** to include protected system folders.
+- **Rescan one folder** with `F5` instead of the whole drive.
+
+### Explore
+- **Folder tree** with size, "% of parent" bar, file and folder counts and modified date. Click a column header to sort; works fully from the keyboard.
+- **Space map** (squarified treemap, two levels): click a tile to select it, double-click to drill in, ↑ to go back up.
+- **Largest files**: the top 500 files of the whole scan in one list.
+- **File types** tab: space and file count per extension.
+- **File age** tab: space by last-modified date, from under a month to over 5 years.
+
+### Find
+- **Search every file** in the scan by name pattern (`*.log; *.tmp`, or any part of a name), minimum size and age, largest first.
+- **Double-click** a file type or an age range to list all of its files.
+- **Open** any item, **show it in Explorer** or **copy its path**.
+
+### Clean up
+- **Safe delete**: Recycle Bin by default (`Del`) or permanent (`Shift+Del`), always with a confirmation dialog that shows the full path and size.
+- **Multi-select delete** from the Largest files list and search results.
+- **Instant totals**: sizes update after a delete, no rescan needed.
+- **Files in use**: when a delete fails because a program has the file or folder open, Diskat shows which program, closes it and retries (force-closing only after you confirm), or deletes it at the next Windows restart (as admin). System processes, services and File Explorer are never closed.
+
+### Stay safe
+- **Protected folders**: drive roots, Windows, Program Files, ProgramData, the Users folder, every user profile root and AppData can't be deleted, also when reached through a `subst` drive or a junction.
+- **No double counting**: junctions and symlinks are listed but never followed.
+- **Tricky names** ending in a dot or a space are refused, because Windows would act on a different item.
+- **Honest numbers**: the delete dialog warns when a folder wasn't fully scanned.
+
+### Reports and automation
+- **PDF report**: summary, drive free space, space map, largest folders and files, file types and file age, in your interface language.
+- **CSV export** of the folder tree and of the file list, ready for Excel.
+- **Command line** for scripted reports (see below).
+- **"Scan with Diskat"** in the Explorer right-click menu for folders and drives (optional, per user, no admin needed).
+
+### Private and portable
+- **One portable .exe**: no installer and no .NET to install. Windows 10 and 11, 64-bit. Also packaged as MSIX for the Microsoft Store.
 - **11 languages**: English (default), Tiếng Việt, 简体中文, 日本語, 한국어, Español, Português, Deutsch, Français, Русский, Bahasa Indonesia.
-- **Private**: no telemetry. The only network access is the optional update check, which is off by default (the Microsoft Store version never checks; the Store updates it).
+- **Private**: no ads, no accounts, no telemetry. The only network access is the optional update check, which is off by default and verifies the download with SHA-256 (the Microsoft Store version never checks; the Store updates it).
+- **Open source** under the MIT License.
 
 | Largest files | Safe delete |
 |---|---|
@@ -61,6 +90,7 @@ Diskat.exe --shell-menu on --quit     # add or remove "Scan with Diskat" in Expl
 | `Enter` | Toggle folder |
 | `Del` / `Shift+Del` | Move to Recycle Bin / delete permanently |
 | `F5` | Rescan the selected folder |
+| `Enter` in the search box | Search files on the Largest files tab |
 
 ## Building from source
 

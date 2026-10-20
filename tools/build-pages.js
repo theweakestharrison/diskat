@@ -166,7 +166,10 @@ const write = (rel, html) => { fs.mkdirSync(path.dirname(path.join(site, rel)), 
 
 // ---------------- Changelog and license ----------------
 
-const changelog = fs.readFileSync(path.join(root, "CHANGELOG.md"), "utf8").replace(/^# Changelog\s*/, "");
+// Only released versions go on the website: the "## [Unreleased]" section is work that hasn't shipped yet
+const changelog = fs.readFileSync(path.join(root, "CHANGELOG.md"), "utf8")
+  .replace(/^# Changelog\s*/, "")
+  .replace(/^## \[Unreleased\][\s\S]*?(?=^## \[)/m, "");
 write("changelog.html", page({
   title: "Changelog", description: "Every Diskat release and what changed in it.", canonical: "/changelog",
   body: `<h1>Changelog</h1>\n${markdown(changelog, { keepDots: true }).html}`,
