@@ -3,6 +3,11 @@ bin/
 obj/
 dist/
 
+# macOS app (Swift Package): build output; dist/ above also covers macos/dist
+.build/
+.swiftpm/
+.DS_Store
+
 # IDE
 .vs/
 .vscode/

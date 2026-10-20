@@ -5,7 +5,7 @@
 <h1 align="center">Diskat</h1>
 
 <p align="center">
-  Fast disk space analyzer for Windows: find the heaviest folders and clean them up safely.
+  Fast disk space analyzer for Windows and macOS: find the heaviest folders and clean them up safely.
 </p>
 
 ![Diskat scanning a drive: folder tree on the left, space map on the right](packaging/store/screenshots/en/01-overview.png)
@@ -46,6 +46,37 @@ You can also pass a folder on the command line: `Diskat.exe "D:\Projects"`.
 | `Del` / `Shift+Del` | Move to Recycle Bin / delete permanently |
 | `F5` | Rescan the selected folder |
 
+## macOS
+
+A native macOS version lives in [`macos/`](macos). It is written in Swift (SwiftUI + AppKit), has the same
+features and the same 11 languages, and follows Mac conventions:
+
+| | Windows | macOS |
+|---|---|---|
+| Delete | Recycle Bin (`Del`) / permanent (`Shift+Del`) | Trash (`⌘⌫`) / permanent (`⌥⌘⌫`) |
+| Rescan folder | `F5` | `⌘R` |
+| Protected folders | Windows, Program Files, ProgramData, user profiles… | `/System`, `/usr`, `/Library`, `/Applications`, home folders, `~/Library`, Desktop, Documents… |
+| Not followed | Junctions, symlinks | Symlinks, other volumes mounted inside the scanned folder |
+| Full scan | Run as Admin | Full Disk Access (System Settings > Privacy & Security) |
+| Sizes | Binary units, like Explorer | Size on disk in decimal units, like Finder |
+
+Other macOS details: scanning uses `getattrlistbulk` on all cores (about 1.7 million files in 17 seconds on an M-series SSD),
+hard links are counted once, iCloud files that are not downloaded count as 0, scanning `/` does not count the
+Data volume twice, and you can drop a folder on the window or the Dock icon.
+
+Requires macOS 14 or later. Build with Xcode 16+ (or just the Command Line Tools with Swift 6):
+
+```bash
+cd macos
+swift run Diskat               # run in debug (or open Package.swift in Xcode)
+swift test                     # unit tests
+scripts/build-app.sh           # universal Diskat.app + Diskat-<version>.dmg in macos/dist
+```
+
+`build-app.sh` signs ad-hoc by default. For a release, pass a Developer ID and a notarytool profile:
+`SIGN_ID="Developer ID Application: <Name> (<TEAMID>)" NOTARY_PROFILE=<profile> scripts/build-app.sh`.
+The app icon (`Resources/AppIcon.icns`) is generated from the same vector logo with `swift run make-icon`.
+
 ## Building from source
 
 Requires the [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) on Windows.
@@ -68,6 +99,7 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=
 | `MainWindow.*` | Main window: scanning, tree, map and actions |
 | `packaging/` | Microsoft Store (MSIX) packaging scripts, tiles, listing text and screenshots |
 | `website/` | Landing page for [diskat.cc](https://diskat.cc), deployed to Cloudflare (`wrangler.jsonc`) |
+| `macos/` | Native macOS app (Swift package): `Sources/DiskatCore` scanner, model and strings, `Sources/Diskat` UI, `scripts/build-app.sh` |
 
 ### Microsoft Store package (MSIX)
 
