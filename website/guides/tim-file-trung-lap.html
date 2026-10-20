@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cách tìm và xóa file trùng lặp trên Windows · Diskat</title>
+  <meta name="description" content="Tìm file trùng lặp trên Windows 10 và 11 theo nội dung chứ không theo tên, rồi xóa các bản thừa an toàn. Bằng phần mềm miễn phí hoặc bằng PowerShell.">
+  <link rel="canonical" href="https://diskat.cc/guides/tim-file-trung-lap">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/tim-file-trung-lap">
+  <meta property="og:title" content="Cách tìm và xóa file trùng lặp trên Windows">
+  <meta property="og:description" content="Tìm file trùng lặp trên Windows 10 và 11 theo nội dung chứ không theo tên, rồi xóa các bản thừa an toàn. Bằng phần mềm miễn phí hoặc bằng PowerShell.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=7">
+  <link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/tim-file-trung-lap">
+  <link rel="alternate" hreflang="en" href="https://diskat.cc/guides/find-duplicate-files-windows">
+  <link rel="alternate" hreflang="x-default" href="https://diskat.cc/guides/find-duplicate-files-windows">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cách tìm và xóa file trùng lặp trên Windows","description":"Tìm file trùng lặp trên Windows 10 và 11 theo nội dung chứ không theo tên, rồi xóa các bản thừa an toàn. Bằng phần mềm miễn phí hoặc bằng PowerShell.","inLanguage":"vi","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/tim-file-trung-lap","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Hướng dẫn","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"Cách tìm và xóa file trùng lặp trên Windows","item":"https://diskat.cc/guides/tim-file-trung-lap"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Xóa file trùng lặp có an toàn không?","acceptedAnswer":{"@type":"Answer","text":"Có, nếu chúng thật sự giống hệt nhau và là file của bạn. Hãy so theo nội dung chứ không theo tên, giữ lại một bản của mỗi file, xóa vào Thùng rác, và tránh xa Windows, Program Files, ProgramData và AppData."}},{"@type":"Question","name":"Windows có sẵn công cụ tìm file trùng không?","acceptedAnswer":{"@type":"Answer","text":"Không. File Explorer sắp xếp được theo tên và dung lượng, giúp nhận ra vài bản sao rõ ràng, nhưng không so được nội dung. Bạn cần một phần mềm hoặc một lệnh PowerShell như ở trên."}},{"@type":"Question","name":"Vì sao hai file cùng tên lại không được coi là trùng?","acceptedAnswer":{"@type":"Answer","text":"Vì nội dung của chúng khác nhau. Phần mềm so theo nội dung chỉ nhóm những file có các byte giống hệt nhau, bất kể tên gọi."}},{"@type":"Question","name":"Phần mềm tìm file trùng có tải file OneDrive của tôi về không?","acceptedAnswer":{"@type":"Answer","text":"Nhiều phần mềm có, vì phải đọc file thì mới so được. Diskat bỏ qua file OneDrive chỉ có trên mạng và mở file theo cách không kích hoạt việc tải về."}},{"@type":"Question","name":"Xóa file trùng lấy lại được bao nhiêu dung lượng?","acceptedAnswer":{"@type":"Answer","text":"Tùy thói quen của bạn. Thư mục ảnh và video từng được chép hoặc nhập vào máy nhiều lần thường là nơi được nhiều nhất. Diskat cho thấy dung lượng lãng phí của từng nhóm và tổng cộng trước khi bạn xóa gì. Dọn xong file trùng, hãy tìm file và thư mục nặng hoặc làm theo hướng dẫn giải phóng dung lượng ổ C."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Tải về</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Hướng dẫn</a></nav>
+<article class="guide">
+<h1>Cách tìm và xóa file trùng lặp trên Windows</h1>
+<p class="guide-meta">Cập nhật <time datetime="2026-10-20">2026-10-20</time></p>
+<p>File trùng lặp tích tụ dần mà không ai để ý: ảnh trong điện thoại được chép vào máy hai lần, một file tải về lại lần nữa, bản sao lưu được chép thêm vào thư mục khác "cho chắc", một video vừa nằm trong Downloads vừa nằm trong Videos. Mỗi bản sao lại chiếm trọn dung lượng một lần nữa. Bài này hướng dẫn cách tìm đúng file trùng trên Windows 10 và 11, chọn bản cần giữ và xóa phần còn lại mà không mất gì.</p>
+<h2 id="the-nao-la-file-trung-lap">Thế nào là file trùng lặp</h2>
+<p>Hai file trùng nhau khi nội dung của chúng giống hệt nhau đến từng byte. Tên file không nói lên nhiều:</p>
+<ul>
+<li><code>IMG_2041.jpg</code> và <code>IMG_2041 (1).jpg</code> thường là cùng một ảnh, nhưng không phải lúc nào cũng vậy.</li>
+<li>Hai file cùng tên <code>baocao.docx</code> ở hai thư mục khác nhau có thể là hai tài liệu hoàn toàn khác.</li>
+<li>Một file được đổi tên thành <code>du-lich.mp4</code> vẫn có thể là bản sao y hệt của <code>VID_0815.mp4</code>.</li>
+</ul>
+<p>Vì vậy phần mềm tìm file trùng tốt phải so nội dung. Trước hết nó nhóm file theo dung lượng, vì hai file khác dung lượng không thể giống nhau, rồi mới so nội dung của các file cùng dung lượng, thường bằng mã băm (hash): một "dấu vân tay" ngắn tính từ các byte của file.</p>
+<h2 id="truoc-khi-bat-dau-nhung-cho-khong-nen-dung-vao">Trước khi bắt đầu: những chỗ không nên đụng vào</h2>
+<p>Có những bản trùng tồn tại là có lý do. Xóa chúng chỉ được thêm chút chỗ mà có thể làm hỏng thứ khác:</p>
+<ul>
+<li><strong>Windows, Program Files và ProgramData.</strong> Các chương trình hay để những bản giống hệt nhau của cùng một file ở nhiều thư mục. Đừng đụng vào các thư mục này.</li>
+<li><strong>AppData.</strong> Ứng dụng giữ dữ liệu, bộ nhớ đệm và đôi khi cả bản cài đặt ở đây.</li>
+<li><strong>OneDrive và các thư mục đồng bộ khác.</strong> Xóa một file trong thư mục đồng bộ là xóa luôn trên đám mây và trên các máy khác của bạn. Ngoài ra, file "chỉ có trên mạng" (online-only) phải được tải về thì phần mềm mới đọc được.</li>
+<li><strong>Thư viện ảnh, nhạc do một ứng dụng quản lý.</strong> Những ứng dụng như Lightroom hay iTunes giữ một danh mục trỏ tới file theo đường dẫn. Hãy xóa bản trùng ngay trong ứng dụng đó.</li>
+<li><strong>Hard link.</strong> Hai tên cùng trỏ tới một dữ liệu trên ổ đĩa không phải là hai bản sao. Xóa một tên không giải phóng được chỗ nào.</li>
+</ul>
+<p>An toàn nhất là dọn trong các thư mục của chính bạn: Downloads, Desktop, Documents, Pictures, Videos và thư mục sao lưu trên ổ cứng gắn ngoài.</p>
+<h2 id="tim-file-trung-bang-diskat">Tìm file trùng bằng Diskat</h2>
+<p>Từ Diskat 1.2, phần mềm phân tích ổ đĩa miễn phí <a href="/download">Diskat</a> có tab <strong>Trùng lặp</strong>. Nó so theo nội dung, mặc định bỏ qua những chỗ rủi ro nói ở trên, và không bao giờ cho bạn xóa hết mọi bản của một file.</p>
+<ol>
+<li>Mở Diskat và quét thư mục hoặc ổ đĩa cần dọn, ví dụ <code>C:\Users\TenBan</code> hoặc ổ sao lưu gắn ngoài.</li>
+<li>Mở tab <strong>Trùng lặp</strong> ở bên phải.</li>
+<li>Chọn dung lượng tối thiểu. Mặc định <strong>Từ 1 MB trở lên</strong> bỏ qua hàng nghìn file nhỏ mà bản trùng của chúng hầu như không chiếm chỗ. Chọn 100 MB nếu chỉ muốn tìm video và file ảnh đĩa lớn.</li>
+<li>Để nguyên dấu tick ở <strong>Bỏ qua thư mục Windows và chương trình</strong>. Tùy chọn này bỏ qua Windows, Program Files, ProgramData, mọi thư mục AppData và file hệ thống.</li>
+<li>Bấm <strong>Tìm file trùng</strong>. Diskat chỉ đọc những file có cùng dung lượng với một file khác: trước là 64 KB đầu, sau đó mới đọc cả file. Thanh tiến độ cho biết đã làm tới đâu, và bạn có thể dừng bất cứ lúc nào.</li>
+<li>Kết quả là các nhóm file giống hệt nhau, xếp theo dung lượng bị lãng phí. Mở một nhóm để xem từng bản, kèm thư mục và ngày sửa cuối.</li>
+<li>Đánh dấu những bản muốn xóa, hoặc bấm <strong>Chọn tất cả trừ bản mới nhất</strong> để đánh dấu mọi bản trừ bản được sửa gần đây nhất trong mỗi nhóm.</li>
+<li>Bấm <strong>Xóa bản đã chọn</strong>. Các bản đó vào Thùng rác, nên bạn khôi phục lại được nếu đổi ý. Shift+Del để xóa vĩnh viễn.</li>
+</ol>
+<p>Diskat có sẵn vài quy tắc an toàn. Bạn không thể đánh dấu bản cuối cùng của một nhóm. File OneDrive chỉ có trên mạng được bỏ qua và không bao giờ bị tải về. Các hard link được tính là một file và không đánh dấu được. Ngay trước khi xóa, Diskat kiểm tra lại rằng bản bạn giữ vẫn còn và không có file nào thay đổi kể từ lúc tìm.</p>
+<h2 id="tim-file-trung-bang-powershell">Tìm file trùng bằng PowerShell</h2>
+<p>Nếu không muốn cài gì, PowerShell cũng tìm được file trùng chính xác. Lệnh dưới đây tìm trong thư mục Pictures các file lớn hơn 1 MB, nhóm theo dung lượng, chỉ tính mã băm cho những file cùng dung lượng, rồi liệt kê các bản trùng:</p>
+<p><code>Get-ChildItem "$env:USERPROFILE\Pictures" -Recurse -File | Where-Object Length -gt 1MB | Group-Object Length | Where-Object Count -gt 1 | ForEach-Object { $_.Group | Get-FileHash -Algorithm SHA256 } | Group-Object Hash | Where-Object Count -gt 1 | ForEach-Object { $_.Group.Path; "" }</code></p>
+<p>Mỗi khối đường dẫn là một bộ file giống hệt nhau. Mở chúng trong Explorer và tự xóa các bản thừa, để chúng vào Thùng rác.</p>
+<p>Cần nhớ:</p>
+<ul>
+<li>Tính mã băm phải đọc hết từng file, nên với thư mục lớn có thể mất khá lâu.</li>
+<li>Nếu thư mục nằm trong OneDrive, tính mã băm một file chỉ có trên mạng sẽ tải file đó về trước.</li>
+<li>Lệnh này không biết hard link, nên hai tên của cùng một file vẫn hiện như hai bản trùng.</li>
+</ul>
+<h2 id="nen-giu-ban-nao">Nên giữ bản nào</h2>
+<p>Khi hai bản giống hệt nhau, nội dung không quan tâm bản nào được giữ, nhưng bạn thì có. Vài nguyên tắc:</p>
+<ul>
+<li>Giữ bản nằm ở nơi bạn sẽ tìm tới: trong Pictures thay vì Downloads, trong thư mục sao lưu gọn gàng thay vì bản trong "New folder (3)".</li>
+<li>Nếu không chắc, giữ bản mới nhất. Đó thường là bản "hiện tại". Nút <strong>Chọn tất cả trừ bản mới nhất</strong> làm đúng như vậy.</li>
+<li>Trước khi xóa cả loạt, hãy bắt đầu từ những nhóm lãng phí nhiều nhất. Vài video trùng thường giải phóng nhiều hơn hàng nghìn tấm ảnh.</li>
+</ul>
+<h2 id="cau-hoi-thuong-gap">Câu hỏi thường gặp</h2>
+<h3 id="xoa-file-trung-lap-co-an-toan-khong">Xóa file trùng lặp có an toàn không?</h3>
+<p>Có, nếu chúng thật sự giống hệt nhau và là file của bạn. Hãy so theo nội dung chứ không theo tên, giữ lại một bản của mỗi file, xóa vào Thùng rác, và tránh xa Windows, Program Files, ProgramData và AppData.</p>
+<h3 id="windows-co-san-cong-cu-tim-file-trung-khong">Windows có sẵn công cụ tìm file trùng không?</h3>
+<p>Không. File Explorer sắp xếp được theo tên và dung lượng, giúp nhận ra vài bản sao rõ ràng, nhưng không so được nội dung. Bạn cần một phần mềm hoặc một lệnh PowerShell như ở trên.</p>
+<h3 id="vi-sao-hai-file-cung-ten-lai-khong-duoc-coi-la-trung">Vì sao hai file cùng tên lại không được coi là trùng?</h3>
+<p>Vì nội dung của chúng khác nhau. Phần mềm so theo nội dung chỉ nhóm những file có các byte giống hệt nhau, bất kể tên gọi.</p>
+<h3 id="phan-mem-tim-file-trung-co-tai-file-onedrive-cua-toi-ve-khong">Phần mềm tìm file trùng có tải file OneDrive của tôi về không?</h3>
+<p>Nhiều phần mềm có, vì phải đọc file thì mới so được. Diskat bỏ qua file OneDrive chỉ có trên mạng và mở file theo cách không kích hoạt việc tải về.</p>
+<h3 id="xoa-file-trung-lay-lai-duoc-bao-nhieu-dung-luong">Xóa file trùng lấy lại được bao nhiêu dung lượng?</h3>
+<p>Tùy thói quen của bạn. Thư mục ảnh và video từng được chép hoặc nhập vào máy nhiều lần thường là nơi được nhiều nhất. Diskat cho thấy dung lượng lãng phí của từng nhóm và tổng cộng trước khi bạn xóa gì. Dọn xong file trùng, hãy <a href="/guides/tim-file-nang-tren-may-tinh">tìm file và thư mục nặng</a> hoặc làm theo <a href="/guides/giai-phong-dung-luong-o-c">hướng dẫn giải phóng dung lượng ổ C</a>.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>Xem thứ gì đang chiếm ổ đĩa</h2><p>Diskat là phần mềm phân tích dung lượng ổ đĩa miễn phí, mã nguồn mở cho Windows 10 và 11. Chỉ một file .exe, không cần cài đặt.</p></div>
+  <a class="btn btn-primary" href="/download">Tải Diskat</a>
+</aside>
+<div class="guide-more"><h2>Hướng dẫn khác</h2><ul><li><a href="/guides/giai-phong-dung-luong-o-c">Cách giải phóng dung lượng ổ C trên Windows 10 và 11</a></li><li><a href="/guides/phan-mem-phan-tich-o-dia">Phần mềm phân tích dung lượng ổ đĩa miễn phí tốt nhất 2026</a></li><li><a href="/guides/tim-file-nang-tren-may-tinh">Cách tìm file và thư mục nặng trên máy tính Windows</a></li><li><a href="/guides/xem-dung-luong-thu-muc">Cách xem dung lượng thư mục trong File Explorer trên Windows</a></li><li><a href="/guides/xoa-file-dang-duoc-mo">Cách xóa file đang được chương trình khác sử dụng</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Trang chủ</a><a href="/guides">Hướng dẫn</a><a href="/changelog">Nhật ký thay đổi</a><a href="/license">Giấy phép</a><a href="/privacy">Quyền riêng tư</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>

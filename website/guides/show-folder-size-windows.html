@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to see folder sizes in Windows File Explorer · Diskat</title>
+  <meta name="description" content="File Explorer leaves the Size column empty for folders. Five ways to see how big a folder is on Windows 10 and 11, from Properties to PowerShell and a free tool.">
+  <link rel="canonical" href="https://diskat.cc/guides/show-folder-size-windows">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/show-folder-size-windows">
+  <meta property="og:title" content="How to see folder sizes in Windows File Explorer">
+  <meta property="og:description" content="File Explorer leaves the Size column empty for folders. Five ways to see how big a folder is on Windows 10 and 11, from Properties to PowerShell and a free tool.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=7">
+  <link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/xem-dung-luong-thu-muc">
+  <link rel="alternate" hreflang="en" href="https://diskat.cc/guides/show-folder-size-windows">
+  <link rel="alternate" hreflang="x-default" href="https://diskat.cc/guides/show-folder-size-windows">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to see folder sizes in Windows File Explorer","description":"File Explorer leaves the Size column empty for folders. Five ways to see how big a folder is on Windows 10 and 11, from Properties to PowerShell and a free tool.","inLanguage":"en","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/show-folder-size-windows","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"How to see folder sizes in Windows File Explorer","item":"https://diskat.cc/guides/show-folder-size-windows"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Why doesn't File Explorer show folder sizes?","acceptedAnswer":{"@type":"Answer","text":"Because a folder's size is the total of every file in it and in all of its subfolders. Calculating that for every folder in a list would mean reading the whole tree each time you open a folder, which would make Explorer slow."}},{"@type":"Question","name":"How do I see the size of all folders at once?","acceptedAnswer":{"@type":"Answer","text":"Use a disk space analyzer such as Diskat. It scans once and shows every folder's size in a tree sorted by size. In PowerShell, the second command above lists the folders of one location with their sizes."}},{"@type":"Question","name":"Can I add a folder size column to File Explorer?","acceptedAnswer":{"@type":"Answer","text":"Not with Windows' own settings. Explorer's Size column only applies to files. Folder tips show the size when you hover, and a disk space analyzer shows sizes for all folders together."}},{"@type":"Question","name":"Which folders are usually the biggest?","acceptedAnswer":{"@type":"Answer","text":"On a typical PC: Downloads, Videos and Pictures in your user folder, game libraries, AppData for app data and caches, and C:\\Windows with its update files. Our guides explain what's safe to clean in AppData, in WinSxS and on a full C drive."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Guides</a></nav>
+<article class="guide">
+<h1>How to see folder sizes in Windows File Explorer</h1>
+<p class="guide-meta">Updated <time datetime="2026-10-20">2026-10-20</time></p>
+<p>Open a folder in File Explorer, switch to the Details view, and the <strong>Size</strong> column shows a number for every file but stays empty for every folder. Windows has never shown folder sizes there. To know how big a folder is, Explorer would have to add up every file in every subfolder, and doing that for a whole list of folders would make browsing slow. Here are five ways to get the numbers anyway, from a quick check of one folder to a list of all of them, sorted by size.</p>
+<h2 id="1-properties-the-size-of-one-folder">1. Properties: the size of one folder</h2>
+<p>Right-click the folder and choose <strong>Properties</strong>, or select it and press Alt+Enter. The General tab shows:</p>
+<ul>
+<li><strong>Size</strong>: the total size of all files inside, including every subfolder</li>
+<li><strong>Size on disk</strong>: how much space those files really take on the drive</li>
+<li><strong>Contains</strong>: how many files and folders it holds</li>
+</ul>
+<p>For a big folder, the numbers count up for a few seconds while Windows adds everything up. You can select several folders and open Properties once to see their combined size.</p>
+<p>This is fine for one or two folders. It doesn't tell you which of twenty folders is the big one without opening Properties twenty times.</p>
+<h2 id="2-folder-tips-the-size-when-you-hover">2. Folder tips: the size when you hover</h2>
+<p>File Explorer can show a folder's size in the small tooltip that appears when you hover over it:</p>
+<ol>
+<li>In File Explorer, open <strong>Options</strong>. In Windows 11, click the three dots (<strong>See more</strong>) on the toolbar, then <strong>Options</strong>. In Windows 10, it's on the <strong>View</strong> tab.</li>
+<li>On the <strong>View</strong> tab of Folder Options, tick <strong>Display file size information in folder tips</strong>.</li>
+<li>Click <strong>OK</strong>, then hover over a folder.</li>
+</ol>
+<p>The tooltip includes the size for small and medium folders. For very large folders it may take a moment or leave the size out.</p>
+<h2 id="3-storage-settings-the-big-picture">3. Storage settings: the big picture</h2>
+<p><strong>Settings &gt; System &gt; Storage</strong> shows how the space on a drive is split between categories such as Apps, Documents, Pictures and Temporary files. Click a category for details or for cleanup options such as Temporary files.</p>
+<p>It's a good overview of a full C drive, but it groups by category, not by folder, so it won't tell you that one particular project or game folder is 80 GB.</p>
+<h2 id="4-powershell-or-the-command-prompt">4. PowerShell or the command prompt</h2>
+<p>For an exact number without opening any windows, use PowerShell. This prints the size of your Videos folder in gigabytes:</p>
+<p><code>"{0:N2} GB" -f ((Get-ChildItem "$env:USERPROFILE\Videos" -Recurse -File -Force -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum / 1GB)</code></p>
+<p>And this lists every folder in your user profile with its size, biggest first:</p>
+<p><code>Get-ChildItem "$env:USERPROFILE" -Directory -Force | ForEach-Object { [pscustomobject]@{ Folder = $_.Name; GB = [math]::Round((Get-ChildItem $_.FullName -Recurse -File -Force -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum / 1GB, 2) } } | Sort-Object GB -Descending</code></p>
+<p>In the classic command prompt, <code>dir /s "C:\Users\YourName\Videos"</code> lists every file and ends with a total under <strong>Total Files Listed</strong>.</p>
+<p>Both work, but they're slow on folders with many files, they skip folders you're not allowed to read without telling you much, and you have to run them again for every folder you want to look into.</p>
+<h2 id="5-a-folder-size-tool-every-folder-at-once">5. A folder size tool: every folder at once</h2>
+<p>A disk space analyzer does what Explorer won't: it scans a drive or folder once and shows the size of every folder, sorted from biggest to smallest. <a href="/download">Diskat</a> is a free, open-source one for Windows 10 and 11. It's a single .exe, so there's nothing to install.</p>
+<ol>
+<li>Start Diskat and click a drive card, or <strong>Choose folder…</strong> to pick a folder.</li>
+<li>The folder tree fills in while the scan runs. Every folder shows its size, a "% of parent" bar, its file and folder counts and when it was last changed, and the heaviest folders float to the top.</li>
+<li>Expand a folder to see what's inside it, again sorted by size. The <strong>Space map</strong> tab beside the tree draws the same folders as rectangles sized by how much space they use.</li>
+</ol>
+<p>To jump straight from Explorer to a folder's sizes, turn on <strong>Show "Scan with Diskat" in Explorer</strong> in Diskat's ⋯ menu. Then right-click any folder or drive and choose <strong>Scan with Diskat</strong>. In Windows 11 it's under <strong>Show more options</strong>.</p>
+<p>If the goal is to free up space, the same window lets you act on what you find: the <strong>Largest files</strong> tab lists the biggest files, and deleting sends items to the Recycle Bin by default while system folders stay protected.</p>
+<h2 id="size-or-size-on-disk">Size or size on disk?</h2>
+<p>Properties shows two numbers, and they can differ a lot:</p>
+<ul>
+<li><strong>Size</strong> is the sum of the file lengths. It's what most tools, including Diskat, show.</li>
+<li><strong>Size on disk</strong> is the space the files occupy on the drive. It's usually a little larger, because space is handed out in small blocks. It can also be much smaller: compressed files take less, and OneDrive files that are online-only take almost nothing until you open them.</li>
+</ul>
+<p>If a folder in your OneDrive looks huge but your drive isn't full, check the Size on disk. The files may live mostly in the cloud.</p>
+<h2 id="faq">FAQ</h2>
+<h3 id="why-doesn-t-file-explorer-show-folder-sizes">Why doesn't File Explorer show folder sizes?</h3>
+<p>Because a folder's size is the total of every file in it and in all of its subfolders. Calculating that for every folder in a list would mean reading the whole tree each time you open a folder, which would make Explorer slow.</p>
+<h3 id="how-do-i-see-the-size-of-all-folders-at-once">How do I see the size of all folders at once?</h3>
+<p>Use a disk space analyzer such as Diskat. It scans once and shows every folder's size in a tree sorted by size. In PowerShell, the second command above lists the folders of one location with their sizes.</p>
+<h3 id="can-i-add-a-folder-size-column-to-file-explorer">Can I add a folder size column to File Explorer?</h3>
+<p>Not with Windows' own settings. Explorer's Size column only applies to files. Folder tips show the size when you hover, and a disk space analyzer shows sizes for all folders together.</p>
+<h3 id="which-folders-are-usually-the-biggest">Which folders are usually the biggest?</h3>
+<p>On a typical PC: Downloads, Videos and Pictures in your user folder, game libraries, <code>AppData</code> for app data and caches, and <code>C:\Windows</code> with its update files. Our guides explain what's safe to clean in <a href="/guides/appdata-folder-large">AppData</a>, in <a href="/guides/winsxs-folder">WinSxS</a> and on <a href="/guides/c-drive-full">a full C drive</a>.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>See what's filling up your disk</h2><p>Diskat is a free, open-source disk space analyzer for Windows 10 and 11. One portable .exe, nothing to install.</p></div>
+  <a class="btn btn-primary" href="/download">Download Diskat</a>
+</aside>
+<div class="guide-more"><h2>More guides</h2><ul><li><a href="/guides/appdata-folder-large">Why is the AppData folder so big, and what can you safely delete?</a></li><li><a href="/guides/best-disk-space-analyzer">The best free disk space analyzers for Windows (2026)</a></li><li><a href="/guides/c-drive-full">C drive full? How to see what's taking up space and fix it</a></li><li><a href="/guides/delete-file-in-use">How to delete a file that's open in another program</a></li><li><a href="/guides/find-duplicate-files-windows">How to find and delete duplicate files on Windows</a></li><li><a href="/guides/find-large-files-windows">How to find large files on Windows</a></li><li><a href="/guides/free-up-disk-space-windows">How to free up disk space on Windows 10 and 11</a></li><li><a href="/guides/spacesniffer-alternative">Diskat vs SpaceSniffer</a></li><li><a href="/guides/treesize-alternative">Diskat vs TreeSize Free</a></li><li><a href="/guides/windirstat-alternative">Diskat vs WinDirStat</a></li><li><a href="/guides/winsxs-folder">Can you delete the WinSxS folder? (and how to shrink it safely)</a></li><li><a href="/guides/wiztree-alternative">Diskat vs WizTree</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diskat vs SpaceSniffer · Diskat</title>
+  <meta name="description" content="Diskat vs SpaceSniffer: both are free and portable. SpaceSniffer is built around its treemap, Diskat adds a size-sorted tree, duplicates, reports and safe deletion.">
+  <link rel="canonical" href="https://diskat.cc/guides/spacesniffer-alternative">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/spacesniffer-alternative">
+  <meta property="og:title" content="Diskat vs SpaceSniffer">
+  <meta property="og:description" content="Diskat vs SpaceSniffer: both are free and portable. SpaceSniffer is built around its treemap, Diskat adds a size-sorted tree, duplicates, reports and safe deletion.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=7">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Diskat vs SpaceSniffer","description":"Diskat vs SpaceSniffer: both are free and portable. SpaceSniffer is built around its treemap, Diskat adds a size-sorted tree, duplicates, reports and safe deletion.","inLanguage":"en","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/spacesniffer-alternative","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"Diskat vs SpaceSniffer","item":"https://diskat.cc/guides/spacesniffer-alternative"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is SpaceSniffer free?","acceptedAnswer":{"@type":"Answer","text":"Yes. According to its website, SpaceSniffer is freeware and donations are welcome. Its source code is not published."}},{"@type":"Question","name":"Does Diskat have a treemap like SpaceSniffer?","acceptedAnswer":{"@type":"Answer","text":"Yes. Diskat's Space map tab is a two-level treemap of the selected folder. Click a tile to select it, double-click to drill in. The main view is a folder tree sorted by size."}},{"@type":"Question","name":"Can SpaceSniffer find duplicate files?","acceptedAnswer":{"@type":"Answer","text":"Duplicate detection isn't listed among SpaceSniffer's features. Diskat finds files with identical content in its Duplicates tab, from Diskat 1.2."}},{"@type":"Question","name":"Do I need to install either one?","acceptedAnswer":{"@type":"Answer","text":"No. Both are portable. Diskat is a single .exe for Windows 10 and 11 that you can run from any folder or a USB stick."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Guides</a></nav>
+<article class="guide">
+<h1>Diskat vs SpaceSniffer</h1>
+<p class="guide-meta">Updated <time datetime="2026-10-20">2026-10-20</time></p>
+<p>SpaceSniffer is a small, portable disk space analyzer from Uderzo Software. It is freeware (donations are welcome) and it is built entirely around a treemap: every folder and file is a box sized by how much space it uses, and you zoom in by clicking. Diskat is a free, open-source disk space analyzer with a treemap too, but its main view is a folder tree sorted by size, with tools for finding and deleting files safely. This page compares them honestly, including when SpaceSniffer is the better choice.</p>
+<p>The facts about SpaceSniffer on this page come from its official website, checked in October 2026. Software changes, so check the current version before you decide.</p>
+<h2 id="at-a-glance">At a glance</h2>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Feature</th><th>Diskat</th><th>SpaceSniffer</th></tr></thead><tbody>
+<tr><td>Made by</td><td>Open-source project</td><td>Uderzo Software</td></tr>
+<tr><td>Price</td><td>Free</td><td>Free (donations welcome)</td></tr>
+<tr><td>License</td><td>MIT (open source)</td><td>Freeware, source code not published</td></tr>
+<tr><td>Installation</td><td>None, a single portable .exe</td><td>None, portable</td></tr>
+<tr><td>Main view</td><td>Folder tree sorted by size, plus a space map</td><td>Zoomable treemap</td></tr>
+<tr><td>Filters</td><td>File types and file age tabs, search by name, size and age</td><td>Filter box for type, size, date and tags</td></tr>
+<tr><td>Duplicate files</td><td>Duplicates tab (Diskat 1.2)</td><td>Not listed among its features</td></tr>
+<tr><td>Reports</td><td>PDF report and CSV export (Diskat 1.1)</td><td>Customizable text reports</td></tr>
+<tr><td>Shows which program locks a file</td><td>Yes (Diskat 1.1)</td><td>Not listed among its features</td></tr>
+</tbody></table></div>
+<h2 id="two-ways-to-look-at-a-drive">Two ways to look at a drive</h2>
+<p>SpaceSniffer opens straight into a treemap. Bigger boxes are bigger folders and files. Click a box to see what is inside it, double-click to zoom it to the full window, and keep following the biggest boxes until you find what filled the drive. You can open several views of the same disk with different filters, and SpaceSniffer only scans once. It also watches the file system, so boxes blink and update when files change.</p>
+<p>Diskat starts with a folder tree sorted by size. Each folder shows its size, a "% of parent" bar, how many files and folders it holds, and when it was last changed, so the heaviest folders sit at the top of every level. The <strong>Space map</strong> tab next to it is a two-level treemap of the folder you selected: click a tile to select it in the tree, double-click to drill in.</p>
+<p>Which one feels faster to use is mostly a matter of taste. If you think in pictures, SpaceSniffer's treemap is very direct. If you want exact numbers and a list you can sort, Diskat's tree gives you that and the map on the side.</p>
+<h2 id="filters-and-finding-files">Filters and finding files</h2>
+<p>SpaceSniffer has a filter box. Type <code>*.jpg</code> to see only JPEG files, <code>&gt;1mb</code> for files over a megabyte, <code>&gt;2years</code> for old files, or combine them, for example <code>*.jpg;&gt;1mb;&lt;3months</code>. You can also tag files in four colors and filter on the tags.</p>
+<p>Diskat spreads the same ideas over a few tabs:</p>
+<ul>
+<li><strong>Largest files</strong> lists the 500 biggest files in the scan. The search box above it finds every file by name pattern such as <code>*.log; *.tmp</code>, minimum size and age, largest first.</li>
+<li><strong>File types</strong> totals space and file count per extension. Double-click a type to list all of its files.</li>
+<li><strong>File age</strong> groups space by last-modified date, from under a month to over five years. Double-click a row to list the files older than that.</li>
+<li>From Diskat 1.2, <strong>Duplicates</strong> finds files with identical content and sorts them by wasted space.</li>
+</ul>
+<h2 id="deleting-safely">Deleting safely</h2>
+<p>Finding a big folder is half the job. The other half is removing the right thing. Diskat is built around that second half:</p>
+<ul>
+<li>Del moves items to the Recycle Bin and Shift+Del deletes permanently. Both always ask first and show the full path and size.</li>
+<li>Diskat refuses to delete drive roots, <code>C:\Windows</code> and everything in it, Program Files, ProgramData, <code>C:\Users</code> and every user profile root, and the <code>AppData\Roaming</code> and <code>AppData\Local</code> folders.</li>
+<li>Junctions and symbolic links are never followed, so nothing is counted twice and nothing outside the folder is touched.</li>
+<li>If a file is open in another program, Diskat shows which program holds it and can ask it to close, retry, or delete the file at the next Windows startup.</li>
+</ul>
+<p>SpaceSniffer's website focuses on viewing, filtering and reporting, so check how it handles deletion in the version you use.</p>
+<h2 id="reports">Reports</h2>
+<p>SpaceSniffer has an export module that writes a text report, and you can customize its layout.</p>
+<p>From Diskat 1.1 you can save a PDF report of a scan, with a summary, the drive's free space, the space map, the largest folders and files, and the file type and file age breakdowns. You can also export the folder tree or a file list as CSV for Excel. From the command line, <code>Diskat.exe "D:\Data" --pdf report.pdf --quit</code> writes a report without opening anything by hand.</p>
+<h2 id="diskat-s-limitations">Diskat's limitations</h2>
+<ul>
+<li>It shows logical file sizes, not size on disk. OneDrive files that are online-only and compressed files can look larger than the space they really use.</li>
+<li>In the folder tree, files with hard links are counted once per link, so <code>C:\Windows</code> looks larger than its real footprint.</li>
+<li>It has no tags and no free-form filter language like SpaceSniffer's.</li>
+<li>The .exe isn't code-signed yet, so Windows SmartScreen may warn the first time you run it.</li>
+</ul>
+<h2 id="when-to-choose-diskat">When to choose Diskat</h2>
+<ul>
+<li>You want a folder tree with exact sizes, sorted so the biggest folders come first.</li>
+<li>You want duplicate files, file types, file age, PDF reports and CSV export in one free tool.</li>
+<li>You need to use it at work and want a clear open-source license (MIT).</li>
+<li>You want strong protection against deleting the wrong folder, and help when a file is in use.</li>
+<li>You want the interface in your language: Diskat comes in 11.</li>
+</ul>
+<h2 id="when-to-choose-spacesniffer">When to choose SpaceSniffer</h2>
+<ul>
+<li>You like to explore a drive visually and want the treemap to be the whole interface.</li>
+<li>You want several filtered views of one disk at the same time.</li>
+<li>You use its color tags to keep track of files you've already checked.</li>
+<li>You need to see NTFS alternate data streams, which SpaceSniffer can scan.</li>
+</ul>
+<p>Both are portable, so you can try them side by side on the same drive in a few minutes. <a href="/download">Download Diskat</a>, and if you're comparing more tools, see <a href="/guides/best-disk-space-analyzer">the best free disk space analyzers for Windows</a>.</p>
+<h2 id="faq">FAQ</h2>
+<h3 id="is-spacesniffer-free">Is SpaceSniffer free?</h3>
+<p>Yes. According to its website, SpaceSniffer is freeware and donations are welcome. Its source code is not published.</p>
+<h3 id="does-diskat-have-a-treemap-like-spacesniffer">Does Diskat have a treemap like SpaceSniffer?</h3>
+<p>Yes. Diskat's Space map tab is a two-level treemap of the selected folder. Click a tile to select it, double-click to drill in. The main view is a folder tree sorted by size.</p>
+<h3 id="can-spacesniffer-find-duplicate-files">Can SpaceSniffer find duplicate files?</h3>
+<p>Duplicate detection isn't listed among SpaceSniffer's features. Diskat finds files with identical content in its Duplicates tab, from Diskat 1.2.</p>
+<h3 id="do-i-need-to-install-either-one">Do I need to install either one?</h3>
+<p>No. Both are portable. Diskat is a single .exe for Windows 10 and 11 that you can run from any folder or a USB stick.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>See what's filling up your disk</h2><p>Diskat is a free, open-source disk space analyzer for Windows 10 and 11. One portable .exe, nothing to install.</p></div>
+  <a class="btn btn-primary" href="/download">Download Diskat</a>
+</aside>
+<div class="guide-more"><h2>More guides</h2><ul><li><a href="/guides/appdata-folder-large">Why is the AppData folder so big, and what can you safely delete?</a></li><li><a href="/guides/best-disk-space-analyzer">The best free disk space analyzers for Windows (2026)</a></li><li><a href="/guides/c-drive-full">C drive full? How to see what's taking up space and fix it</a></li><li><a href="/guides/delete-file-in-use">How to delete a file that's open in another program</a></li><li><a href="/guides/find-duplicate-files-windows">How to find and delete duplicate files on Windows</a></li><li><a href="/guides/find-large-files-windows">How to find large files on Windows</a></li><li><a href="/guides/free-up-disk-space-windows">How to free up disk space on Windows 10 and 11</a></li><li><a href="/guides/show-folder-size-windows">How to see folder sizes in Windows File Explorer</a></li><li><a href="/guides/treesize-alternative">Diskat vs TreeSize Free</a></li><li><a href="/guides/windirstat-alternative">Diskat vs WinDirStat</a></li><li><a href="/guides/winsxs-folder">Can you delete the WinSxS folder? (and how to shrink it safely)</a></li><li><a href="/guides/wiztree-alternative">Diskat vs WizTree</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>
