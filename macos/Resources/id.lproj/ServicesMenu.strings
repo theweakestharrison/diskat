@@ -1,0 +1,2 @@
+/* Mục "Quét bằng Diskat" trong menu Dịch vụ của Finder (Info.plist > NSServices) */
+"Scan with Diskat" = "Pindai dengan Diskat";

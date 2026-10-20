@@ -12,6 +12,14 @@ enum Theme {
     static let dangerNS = rgb(0xD93B3B)
     static let amberNS = rgb(0xE8A317)
 
+    // Cột "Thay đổi": dùng thêm dung lượng (đỏ cam) / đã giải phóng (xanh lá), đủ tương phản ở cả hai giao diện
+    static let growNS = NSColor(name: nil) { a in
+        a.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? rgb(0xFF8F66) : rgb(0xB4380F)
+    }
+    static let shrinkNS = NSColor(name: nil) { a in
+        a.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? rgb(0x5FD38D) : rgb(0x146C36)
+    }
+
     static let accent = Color(nsColor: accentNS)
     static let danger = Color(nsColor: dangerNS)
     static let amber = Color(nsColor: amberNS)

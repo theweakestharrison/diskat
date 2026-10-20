@@ -100,8 +100,9 @@ Diskat.exe --shell-menu on --quit     # add or remove "Scan with Diskat" in Expl
 ## macOS
 
 A native macOS version lives in [`macos/`](macos). It is written in Swift (SwiftUI + AppKit), has the features of
-Diskat 1.0 (scan, folder tree, space map, largest files, safe delete, rescan) and the same 11 languages, and follows
-Mac conventions:
+Diskat 1.1 (scan, folder tree, space map, largest files and find, file types, file age, duplicates, compare with an
+earlier scan, PDF report, CSV export, light/dark theme, update check, command line) and the same 11 languages, and
+follows Mac conventions:
 
 | | Windows | macOS |
 |---|---|---|
@@ -111,6 +112,11 @@ Mac conventions:
 | Not followed | Junctions, symlinks | Symlinks, other volumes mounted inside the scanned folder |
 | Full scan | Run as Admin | Full Disk Access (System Settings > Privacy & Security) |
 | Sizes | Binary units, like Explorer | Size on disk in decimal units, like Finder |
+| "Scan with Diskat" | Explorer right-click menu (optional) | Finder right-click > Services / Quick Actions |
+| Files in use | Shows which programs hold them, can close them | Not needed: macOS deletes open files |
+| Duplicates skip | OneDrive online-only files, Windows and program folders | Files stored only in iCloud, `/System`, `/Library`, `/Applications`, `~/Library`, inside apps and packages; APFS clones are marked because deleting one frees little space |
+| Update check | Downloads and replaces `Diskat.exe` | Downloads the DMG to Downloads (SHA-256 checked) and opens it (`/api/latest/mac`) |
+| Command line | `Diskat.exe "D:\Data" --pdf r.pdf --quit` | `Diskat.app/Contents/MacOS/Diskat ~/Data --pdf r.pdf --csv f.csv --files-csv g.csv --compare --lang vi --quit` |
 
 Other macOS details: scanning uses `getattrlistbulk` on all cores (about 1.7 million files in 17 seconds on an M-series SSD),
 hard links are counted once, iCloud files that are not downloaded count as 0, scanning `/` does not count the

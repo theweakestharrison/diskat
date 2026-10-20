@@ -92,6 +92,14 @@ struct MainView: View {
                     .labelStyle(.titleAndIcon)
             }
             .help(Loc.t("LangTip"))
+
+            // Menu "Thêm": so sánh lần quét, xuất báo cáo, cập nhật, giao diện, giới thiệu
+            Menu {
+                MoreMenuItems(model: model)
+            } label: {
+                Label(Loc.t("MenuMore"), systemImage: "ellipsis.circle")
+            }
+            .help(Loc.t("MenuMore"))
         }
     }
 }
@@ -284,6 +292,12 @@ struct TreePane: View {
             .padding(.horizontal, 12)
             .frame(height: 50)
 
+            if let summary = model.compareSummary {
+                CompareBar(summary: summary, stopped: model.scanStopped) { model.stopComparison() }
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 8)
+            }
+
             Divider()
 
             ZStack {
@@ -294,6 +308,34 @@ struct TreePane: View {
             }
         }
         .background(Color(nsColor: .controlBackgroundColor))
+    }
+}
+
+/// Đang so sánh với một lần quét đã lưu: tóm tắt thay đổi và nút tắt.
+struct CompareBar: View {
+    let summary: String
+    let stopped: Bool
+    let stop: () -> Void
+
+    var body: some View {
+        HStack(spacing: 9) {
+            Image(systemName: "clock.arrow.circlepath")
+                .foregroundStyle(Theme.accent)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(summary).fontWeight(.semibold).lineLimit(1).truncationMode(.tail).help(summary)
+                if stopped {
+                    Text(Loc.t("CompareStopped")).font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Spacer(minLength: 8)
+            Button(Loc.t("CompareStop"), action: stop)
+                .buttonStyle(.borderless)
+                .foregroundStyle(Theme.accent)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(RoundedRectangle(cornerRadius: 6).fill(Theme.accent.opacity(0.12)))
     }
 }
 
@@ -330,7 +372,19 @@ struct LogoView: View {
     }
 }
 
-// ================= Bên phải: bản đồ + file lớn nhất =================
+// ================= Bên phải: bản đồ, file lớn nhất, loại file, tuổi file, trùng lặp =================
+
+extension RightTab {
+    var titleKey: String {
+        switch self {
+        case .map: "TabMap"
+        case .largest: "TabTopFiles"
+        case .types: "TabTypes"
+        case .ages: "TabAges"
+        case .duplicates: "TabDuplicates"
+        }
+    }
+}
 
 struct RightPane: View {
     @Environment(AppModel.self) private var model
@@ -338,15 +392,16 @@ struct RightPane: View {
     var body: some View {
         @Bindable var model = model
         VStack(spacing: 0) {
-            HStack {
-                Picker("", selection: $model.rightTab) {
-                    Text(Loc.t("TabMap")).tag(RightTab.map)
-                    Text(Loc.t("TabTopFiles")).tag(RightTab.largest)
+            // Khung hẹp (hoặc ngôn ngữ có nhãn dài): thanh phân đoạn không vừa thì chuyển thành menu
+            ViewThatFits(in: .horizontal) {
+                HStack {
+                    tabPicker(segmented: true)
+                    Spacer(minLength: 0)
                 }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .fixedSize()
-                Spacer()
+                HStack {
+                    tabPicker(segmented: false)
+                    Spacer(minLength: 0)
+                }
             }
             .padding(.horizontal, 12)
             .frame(height: 50)
@@ -356,9 +411,26 @@ struct RightPane: View {
             switch model.rightTab {
             case .map: MapPane()
             case .largest: LargestFilesPane()
+            case .types: TypesPane()
+            case .ages: AgesPane()
+            case .duplicates: DuplicatesPane()
             }
         }
         .background(Color(nsColor: .controlBackgroundColor))
+    }
+
+    @ViewBuilder
+    private func tabPicker(segmented: Bool) -> some View {
+        @Bindable var model = model
+        let picker = Picker("", selection: $model.rightTab) {
+            ForEach(RightTab.allCases, id: \.self) { Text(Loc.t($0.titleKey)).tag($0) }
+        }
+        .labelsHidden()
+        if segmented {
+            picker.pickerStyle(.segmented).fixedSize()
+        } else {
+            picker.pickerStyle(.menu).fixedSize()
+        }
     }
 }
 

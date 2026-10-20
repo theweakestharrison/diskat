@@ -11,6 +11,8 @@ struct DiskatApp: App {
         // AppKit mặc định coi đường dẫn trên dòng lệnh là "mở tài liệu" và khi đó SwiftUI không mở cửa sổ chính.
         // Diskat tự đọc đối số trong AppModel.launched().
         UserDefaults.standard.register(defaults: ["NSTreatUnknownArgumentsAsOpen": "NO"])
+        // --lang phải có hiệu lực trước khi cửa sổ và cây thư mục được dựng
+        if let lang = LaunchOptions.parse(Array(CommandLine.arguments.dropFirst())).lang { Loc.useForSession(lang) }
     }
 
     var body: some Scene {
@@ -25,7 +27,11 @@ struct DiskatApp: App {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    private let services = ServiceProvider()
+
     func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApp.servicesProvider = services
+        NSUpdateDynamicServices()
         // Cần khi chạy trực tiếp file thực thi (swift run) thay vì gói .app
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
@@ -44,6 +50,11 @@ struct DiskatCommands: Commands {
     let model: AppModel
 
     var body: some Commands {
+        CommandGroup(replacing: .appInfo) {
+            Button(Loc.t("MenuAbout")) { model.showAbout() }
+            Button(Loc.t("MenuCheckUpdates")) { Task { await model.checkForUpdates(userInitiated: true) } }
+                .disabled(model.checkingUpdates)
+        }
         CommandGroup(replacing: .newItem) {
             Button(Loc.t("Browse")) { model.browse() }
                 .keyboardShortcut("o")
@@ -54,6 +65,9 @@ struct DiskatCommands: Commands {
             Button(Loc.t("Stop")) { model.stopScan() }
                 .keyboardShortcut(".")
                 .disabled(!model.isScanning)
+            Divider()
+            Menu(Loc.t("MenuExport")) { ExportMenuItems(model: model) }
+            CompareMenu(model: model)
         }
         CommandGroup(after: .pasteboard) {
             Divider()
@@ -77,13 +91,20 @@ struct DiskatCommands: Commands {
                 .keyboardShortcut("1")
             Button(Loc.t("TabTopFiles")) { model.rightTab = .largest }
                 .keyboardShortcut("2")
-            Button(Loc.t("MapUpTip")) { model.mapUp() }
+            Button(Loc.t("MapUpTip")) {
+                if model.textEditingActive {
+                    NSApp.sendAction(#selector(NSResponder.moveToBeginningOfDocument(_:)), to: nil, from: nil)
+                } else {
+                    model.mapUp()
+                }
+            }
                 .keyboardShortcut(.upArrow)
                 .disabled(!model.canMapUp || model.pathFieldFocused)
             Divider()
             Picker(Loc.t("LangTip"), selection: Binding(get: { Loc.lang }, set: { model.setLanguage($0) })) {
                 ForEach(Loc.languages, id: \.code) { Text($0.name).tag($0.code) }
             }
+            ThemePicker(model: model)
             if !model.hasFullDiskAccess {
                 Button(Loc.t("FullDiskAccess") + "…") { model.requestFullDiskAccess() }
             }

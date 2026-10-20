@@ -2,9 +2,9 @@ import AppKit
 import Observation
 import DiskatCore
 
-enum RightTab: Hashable { case map, largest }
-enum ActivePane { case tree, largest }
-enum SortKey: String { case name, size, files, dirs, date }
+enum RightTab: Hashable, CaseIterable { case map, largest, types, ages, duplicates }
+enum ActivePane { case tree, largest, duplicates }
+enum SortKey: String { case name, size, files, dirs, date, change }
 
 /// Một file (hoặc dòng tóm tắt "… và N file nhỏ hơn") trong cây thư mục.
 final class FileRow {
@@ -124,11 +124,57 @@ final class AppModel {
     var rightTab: RightTab = .map
     var activePane: ActivePane = .tree
 
+    // ================= Loại file / tuổi file / tìm file =================
+
+    var fileTypes: [TypeStat] = []
+    var ageStats: [AgeStat] = []
+    /// Sau khi xóa / quét lại một phần, thống kê loại file và tuổi file (tính lúc quét) có thể lệch
+    var statsStale = false
+    /// Lần quét gần nhất bị dừng giữa chừng
+    private(set) var scanStopped = false
+    /// Kết quả tìm kiếm đang hiển thị thay cho danh sách file lớn nhất (nil = đang xem file lớn nhất)
+    var searchResults: [TopFile]?
+    var searchCapped = false
+    /// Tăng mỗi khi danh sách ở tab File lớn nhất được thay bằng danh sách khác
+    var searchGeneration = 0
+    var findText = ""
+    var findSizeIndex = 0
+    var findAgeIndex = 0
+    /// Đang tìm: số file khớp đã thấy (nil = không tìm)
+    var findProgress: Int64?
+    var findError: String?
+    @ObservationIgnored var findToken: CancelToken?
+
     // ================= Khác =================
 
     private(set) var volumes: [VolumeInfo] = []
     private(set) var hasFullDiskAccess = true
     var confirm: ConfirmRequest?
+    // ================= So sánh với lần quét trước =================
+
+    /// Lần quét đã lưu đang được so sánh (cột "Thay đổi", nhãn "mới", thanh tóm tắt)
+    var comparison: ScanComparison?
+    /// Lần quét đã chọn để so: giữ lại để so tiếp sau khi quét lại đúng thư mục đó
+    @ObservationIgnored var compareWith: SnapshotInfo?
+    /// Các lần lưu nối tiếp nhau, chạy ở luồng nền
+    @ObservationIgnored var snapshotTask: Task<Void, Never>?
+    /// Các lần quét đã lưu của thư mục đang xem (mới nhất trước) và tổng số lần đã lưu, cho menu
+    var savedScans: [SnapshotInfo] = []
+    var savedScanCount = 0
+
+    // ================= Trùng lặp =================
+
+    let duplicates = DuplicatesModel()
+
+    var theme: AppTheme = Settings.theme
+    var checkingUpdates = false
+    var autoCheckUpdates = Settings.checkForUpdatesOnStartup {
+        didSet { Settings.checkForUpdatesOnStartup = autoCheckUpdates }
+    }
+    var saveScanHistory = Settings.saveScanHistory {
+        didSet { Settings.saveScanHistory = saveScanHistory }
+    }
+    @ObservationIgnored private(set) var launchOptions = LaunchOptions()
 
     private init() {}
 
@@ -147,10 +193,16 @@ final class AppModel {
                 self?.loadVolumes()
             }
         }
-        // Diskat /đường/dẫn hoặc: open -a Diskat --args /đường/dẫn
-        if let arg = CommandLine.arguments.dropFirst().first(where: { !$0.hasPrefix("-") && FileOps.isDirectory($0) }) {
-            startScan(arg)
+        applyTheme()
+        // Diskat /đường/dẫn [--pdf ...] hoặc: open -a Diskat --args /đường/dẫn
+        launchOptions = LaunchOptions.parse(Array(CommandLine.arguments.dropFirst()))
+        if launchOptions.scanPath != nil {
+            Task { await runCommandLine(launchOptions) }
+        } else if launchOptions.quit {
+            NSApp.terminate(nil)
+            return
         }
+        if !launchOptions.quit { maybeCheckForUpdatesOnStartup() }
         #if DEBUG
         DebugHooks.install(self)
         #endif
@@ -263,7 +315,9 @@ final class AppModel {
         childCache.removeAll()
         fileRowCache.removeAll()
         topFiles = []
-        topSelection = []
+        setTopSelection([])
+        resetInsights()
+        resetForNewScan(sc.root.fullPath)
         tree?.reload()
         setMapRoot(sc.root)
 
@@ -336,9 +390,12 @@ final class AppModel {
 
     private func onScanFinished(cancelled: Bool) {
         guard let root, let sc = scanner else { return }
+        scanStopped = cancelled
         rebuildTree()
         setMapRoot(mapRoot ?? root)
         loadTopFiles()
+        loadInsights()
+        scanFinishedHooks(cancelled: cancelled)
 
         let secs = scanSeconds
         let rate = FileOps.formatCount(Int64(Double(root.fileCount) / max(secs, 0.001)))
@@ -435,6 +492,7 @@ final class AppModel {
             case .dirs: Double(d.dirCount)
             case .date: d.modified
             case .name: 0
+            case .change: comparisonChange(d).map(Double.init) ?? -.greatestFiniteMagnitude
             }
             return SortEntry(group: 0, number: n, name: d.name, item: d)
         }
@@ -452,9 +510,10 @@ final class AppModel {
         case .files: 1
         case .dirs: -1
         case .date: f.modified
-        case .name: 0
+        case .name, .change: 0
         }
-        return SortEntry(group: sortKey == .name ? 1 : 0, number: n, name: f.name, item: f)
+        // Sắp theo tên hoặc theo thay đổi: file nằm sau thư mục (file không có số liệu cũ để so)
+        return SortEntry(group: sortKey == .name || sortKey == .change ? 1 : 0, number: n, name: f.name, item: f)
     }
 
     private func sortItems(_ items: [AnyObject]) -> [AnyObject] {
@@ -535,7 +594,7 @@ final class AppModel {
         setMapRoot(parent)
     }
 
-    func mapClicked(_ item: TreemapView.Item) {
+    func mapClicked(_ item: TreemapItem) {
         mapClickExact = false
         selectingFromMap = true
         defer { selectingFromMap = false }
@@ -552,7 +611,7 @@ final class AppModel {
         }
     }
 
-    func mapDoubleClicked(_ item: TreemapView.Item) {
+    func mapDoubleClicked(_ item: TreemapItem) {
         if let node = item.node, !node.isMount, !node.children.isEmpty || node.ownFiles > 0 {
             setMapRoot(node)
         } else if let path = item.filePath {
@@ -560,7 +619,7 @@ final class AppModel {
         }
     }
 
-    func mapHovered(_ item: TreemapView.Item?) {
+    func mapHovered(_ item: TreemapItem?) {
         guard let item else { mapHoverText = nil; return }
         let total = mapRoot?.size ?? 0
         let pct = total > 0 ? Double(item.size) * 100 / Double(total) : 0

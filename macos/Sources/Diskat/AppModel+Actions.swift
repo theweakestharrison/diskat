@@ -37,25 +37,42 @@ extension AppModel {
     // ================= Theo vùng đang dùng (cây / file lớn nhất) =================
 
     private var largestFilesActive: Bool { activePane == .largest && rightTab == .largest && !topSelection.isEmpty }
+    private var duplicatesActive: Bool { activePane == .duplicates && rightTab == .duplicates }
 
     var canDeleteActive: Bool {
         if pathFieldFocused { return false }
+        if duplicatesActive { return duplicates.checkedCount > 0 && !isBusy && !isScanning }
         return largestFilesActive ? !isBusy && !isScanning : canDeleteSelection
     }
 
+    /// Đang gõ trong một ô nhập liệu: phím tắt của menu (⌘⌫, ⌘↑) phải trả lại cho ô đó.
+    var textEditingActive: Bool {
+        (NSApp.keyWindow?.firstResponder as? NSTextView)?.isFieldEditor == true
+    }
+
     func deleteActive(permanent: Bool) {
+        if textEditingActive {
+            // ⌘⌫ trong ô nhập liệu: xóa tới đầu dòng như bình thường
+            if !permanent { NSApp.sendAction(#selector(NSResponder.deleteToBeginningOfLine(_:)), to: nil, from: nil) }
+            return
+        }
         Task {
-            if largestFilesActive { await deleteTopFiles(permanent: permanent) }
+            if duplicatesActive { await deleteDuplicates(permanent: permanent) }
+            else if largestFilesActive { await deleteTopFiles(permanent: permanent) }
             else { await deleteSelected(permanent: permanent) }
         }
     }
 
     func copyActive() {
-        if largestFilesActive { copyTopFiles() } else { copySelectedPath() }
+        if duplicatesActive {
+            let paths = duplicates.selectedFiles.map(\.path)
+            if !paths.isEmpty { Finder.copy(paths.joined(separator: "\n")) }
+        } else if largestFilesActive { copyTopFiles() } else { copySelectedPath() }
     }
 
     func revealActive() {
-        if largestFilesActive { revealTopFile() } else { revealSelected() }
+        if duplicatesActive { if let f = duplicates.selectedFiles.first { Finder.reveal(f.path) } }
+        else if largestFilesActive { revealTopFile() } else { revealSelected() }
     }
 
     // ================= Xóa =================
@@ -65,14 +82,14 @@ extension AppModel {
     }
 
     /// Trả về true nếu được phép bắt đầu xóa; nếu không thì báo cho người dùng.
-    private func canStartDelete() async -> Bool {
+    func canStartDelete() async -> Bool {
         if isBusy { return false }
         if !isScanning { return true }
         await Dialogs.alert(Loc.t("MsgWaitScan"))
         return false
     }
 
-    private func confirmDelete(what: String, path: String, size: Int64, detail: String, permanent: Bool, warning: String? = nil) async -> Bool {
+    func confirmDelete(what: String, path: String, size: Int64, detail: String, permanent: Bool, warning: String? = nil) async -> Bool {
         await withCheckedContinuation { (cont: CheckedContinuation<Bool, Never>) in
             var finished = false
             confirm = ConfirmRequest(permanent: permanent, what: what, path: path, size: FileOps.formatSize(size),
@@ -86,7 +103,7 @@ extension AppModel {
     }
 
     /// Xóa ở luồng nền (hiện lớp phủ). Trả về false nếu lỗi (đã báo cho người dùng).
-    private func runDelete(_ path: String, permanent: Bool) async -> Bool {
+    func runDelete(_ path: String, permanent: Bool) async -> Bool {
         busyText = Loc.t(permanent ? "DeletingPerm" : "Trashing")
         defer { busyText = nil }
         do {
@@ -133,6 +150,7 @@ extension AppModel {
             if !FileOps.exists(path) {
                 dir.detach()
                 fileRowCacheRemove(dir)
+                statsStale = true
                 removeTopFiles(under: path)
                 afterTreeChanged(selectingRow: index)
                 let freed = FileOps.formatSize(size)
@@ -143,6 +161,7 @@ extension AppModel {
             }
         } else if let file, !FileOps.exists(path) {
             applyFileRemoved(owner: file.owner, row: file, size: size)
+            statsStale = true
             removeTopFiles(under: path)
             afterTreeChanged(selectingRow: index)
             let freed = FileOps.formatSize(size)
@@ -150,13 +169,13 @@ extension AppModel {
         }
     }
 
-    private func applyFileRemoved(owner: DirNode, row: FileRow?, size: Int64) {
+    func applyFileRemoved(owner: DirNode, row: FileRow?, size: Int64) {
         owner.removeFile(size: size)
         fileRowCacheRemove(owner, keeping: row)
     }
 
     /// Cập nhật lại cây/bản đồ sau khi xóa và chọn dòng kế bên.
-    private func afterTreeChanged(selectingRow oldIndex: Int) {
+    func afterTreeChanged(selectingRow oldIndex: Int) {
         // Thư mục đang xem trên bản đồ (hoặc một thư mục cha của nó) đã bị xóa
         if let m = mapRoot, let root, !m.isAttached(to: root) { setMapRoot(root) }
         rebuildTree()
@@ -196,6 +215,7 @@ extension AppModel {
 
         node.adopt(sc.root)
         fileRowCacheRemoveAll()
+        statsStale = true
         pruneMissingTopFiles(under: path)
         afterTreeChanged(selectingRow: tree?.selectedRowIndex ?? 0)
         let newSize = FileOps.formatSize(node.size)
@@ -206,21 +226,33 @@ extension AppModel {
 
     func loadTopFiles() {
         topFiles = (scanner?.topFiles() ?? []).map { TopFile(path: $0.path, size: $0.size, modified: $0.modified) }
-        topSelection = []
+        setTopSelection([])
     }
 
-    private func removeTopFiles(under path: String) {
+    /// Gỡ các file nằm trong (hoặc chính là) path khỏi file lớn nhất, kết quả tìm kiếm và danh sách trùng lặp.
+    func removeTopFiles(under path: String) {
         topFiles.removeAll { FileOps.isPath($0.path, inside: path) }
-        topSelection = topSelection.filter { !FileOps.isPath($0, inside: path) }
+        searchResults?.removeAll { FileOps.isPath($0.path, inside: path) }
+        setTopSelection(topSelection.filter { !FileOps.isPath($0, inside: path) })
+        pathsRemoved(under: path)
     }
 
     /// Sau khi quét lại một thư mục: bỏ các file trong đó đã không còn tồn tại.
     private func pruneMissingTopFiles(under path: String) {
-        topFiles.removeAll { FileOps.isPath($0.path, inside: path) && !FileOps.exists($0.path) }
-        topSelection = topSelection.filter { id in topFiles.contains { $0.id == id } }
+        let gone: (TopFile) -> Bool = { FileOps.isPath($0.path, inside: path) && !FileOps.exists($0.path) }
+        topFiles.removeAll(where: gone)
+        searchResults?.removeAll(where: gone)
+        setTopSelection(topSelection.filter { id in displayedFiles.contains { $0.id == id } })
+        pathsPruned(under: path)
     }
 
-    var selectedTopFiles: [TopFile] { topFiles.filter { topSelection.contains($0.id) } }
+    /// Chỉ gán khi khác: @Observable báo thay đổi cả khi gán cùng giá trị, làm bảng SwiftUI vẽ lại
+    /// ngay trong lúc nó đang cập nhật dòng (AppKit cảnh báo "reentrant operation").
+    func setTopSelection(_ value: Set<String>) {
+        if value != topSelection { topSelection = value }
+    }
+
+    var selectedTopFiles: [TopFile] { displayedFiles.filter { topSelection.contains($0.id) } }
 
     func revealTopFile() {
         if let f = selectedTopFiles.first { Finder.reveal(f.path) }
@@ -266,6 +298,7 @@ extension AppModel {
 
             freed += f.size
             if let owner = findNode(f.folder) { applyFileRemoved(owner: owner, row: nil, size: f.size) }
+            statsStale = true
             removeTopFiles(under: f.path)
         }
 
@@ -276,7 +309,7 @@ extension AppModel {
         }
     }
 
-    private func findNode(_ dirPath: String) -> DirNode? {
+    func findNode(_ dirPath: String) -> DirNode? {
         guard let root else { return nil }
         let base = root.fullPath
         guard FileOps.isPath(dirPath, inside: base) else { return nil }

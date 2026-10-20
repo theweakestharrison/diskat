@@ -9,11 +9,11 @@
 #       Thêm công chứng (notarize) và đóng dấu (staple) bản DMG. Tạo hồ sơ một lần bằng:
 #       xcrun notarytool store-credentials diskat --apple-id <email> --team-id <TEAMID>
 #
-# Biến khác: VERSION (mặc định 1.0.0), BUILD (mặc định số commit), CONFIG (release | debug).
+# Biến khác: VERSION (mặc định 1.1.0), BUILD (mặc định số commit), CONFIG (release | debug).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-VERSION="${VERSION:-1.0.0}"
+VERSION="${VERSION:-1.1.0}"
 BUILD="${BUILD:-$(git rev-list --count HEAD 2>/dev/null || echo 1)}"
 CONFIG="${CONFIG:-release}"
 OUT="${OUT:-dist}"
@@ -32,6 +32,7 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/Diskat"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
+cp -R Resources/*.lproj "$APP/Contents/Resources/"
 sed -e "s/@VERSION@/$VERSION/" -e "s/@BUILD@/$BUILD/" Resources/Info.plist > "$APP/Contents/Info.plist"
 printf 'APPL????' > "$APP/Contents/PkgInfo"
 

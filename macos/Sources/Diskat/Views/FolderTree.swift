@@ -71,15 +71,43 @@ final class TreeController: NSObject, NSOutlineViewDataSource, NSOutlineViewDele
 
     private static let columns = [
         Column(id: "name", titleKey: "ColName", width: 260, minWidth: 160, ascending: true),
-        Column(id: "size", titleKey: "ColSize", width: 80, minWidth: 60, ascending: false),
+        Column(id: "size", titleKey: "ColSize", width: 90, minWidth: 60, ascending: false),
         Column(id: "pct", titleKey: "ColPercent", width: 122, minWidth: 90, ascending: false),
         Column(id: "files", titleKey: "ColFiles", width: 72, minWidth: 50, ascending: false),
         Column(id: "dirs", titleKey: "ColFolders", width: 66, minWidth: 50, ascending: false),
         Column(id: "date", titleKey: "ColModified", width: 122, minWidth: 80, ascending: false),
     ]
 
+    // Cột "Thay đổi": chỉ có khi đang so sánh với một lần quét đã lưu
+    private static let changeColumn = Column(id: "change", titleKey: "ColChange", width: 90, minWidth: 64, ascending: false)
+
     init(model: AppModel) {
         self.model = model
+    }
+
+    /// Hiện / ẩn cột "Thay đổi" (ngay sau cột Dung lượng) theo trạng thái so sánh, rồi nạp lại cây.
+    func applyComparison(_ comparing: Bool) {
+        let id = NSUserInterfaceItemIdentifier(Self.changeColumn.id)
+        let existing = outline.tableColumn(withIdentifier: id)
+        if comparing && existing == nil {
+            let c = Self.changeColumn
+            let col = NSTableColumn(identifier: id)
+            col.width = c.width
+            col.minWidth = c.minWidth
+            col.title = Loc.t(c.titleKey)
+            col.headerCell.alignment = .right
+            col.sortDescriptorPrototype = NSSortDescriptor(key: c.id, ascending: c.ascending)
+            outline.addTableColumn(col)
+            let size = outline.column(withIdentifier: NSUserInterfaceItemIdentifier("size"))
+            if size >= 0 { outline.moveColumn(outline.numberOfColumns - 1, toColumn: min(size + 1, outline.numberOfColumns - 1)) }
+        } else if !comparing, let existing {
+            outline.removeTableColumn(existing)
+            if model.sortKey == .change {
+                outline.sortDescriptors = [NSSortDescriptor(key: "size", ascending: false)]
+            }
+        }
+        fitNameColumn()
+        reload()
     }
 
     func makeView() -> NSScrollView {
@@ -115,7 +143,7 @@ final class TreeController: NSObject, NSOutlineViewDataSource, NSOutlineViewDele
         outline.target = self
         outline.doubleAction = #selector(doubleClicked)
         outline.onReturn = { [weak self] in self?.toggleSelected() }
-        outline.onFocus = { [weak self] in self?.model.activePane = .tree }
+        outline.onFocus = { [weak self] in self?.model.setActivePane(.tree) }
 
         let menu = NSMenu()
         menu.delegate = self
@@ -191,7 +219,7 @@ final class TreeController: NSObject, NSOutlineViewDataSource, NSOutlineViewDele
     }
 
     func applyLanguage() {
-        for c in Self.columns {
+        for c in Self.columns + [Self.changeColumn] {
             outline.tableColumn(withIdentifier: NSUserInterfaceItemIdentifier(c.id))?.title = Loc.t(c.titleKey)
         }
         outline.headerView?.needsDisplay = true
@@ -303,11 +331,17 @@ final class TreeController: NSObject, NSOutlineViewDataSource, NSOutlineViewDele
 
     func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
         guard let id = tableColumn?.identifier.rawValue else { return nil }
-        let info = RowInfo(item: item as AnyObject)
+        let info = RowInfo(item: item as AnyObject, model: model)
         switch id {
         case "name":
             let cell = reuse(id) { NameCell(frame: .zero) }
             cell.configure(info)
+            return cell
+        case "change":
+            let cell = reuse(id) { TextCell(frame: .zero) }
+            let color: NSColor = info.changeSign > 0 ? Theme.growNS : info.changeSign < 0 ? Theme.shrinkNS : .secondaryLabelColor
+            cell.configure(info.changeText, alignment: .right, bold: true, color: color)
+            cell.toolTip = info.changeTip
             return cell
         case "pct":
             let cell = reuse(id) { PercentCell(frame: .zero) }
@@ -357,9 +391,20 @@ struct RowInfo {
     let filesText: String
     let foldersText: String
     let modifiedText: String
+    /// So sánh với lần quét đã lưu: thư mục mới, thay đổi dung lượng (+ tăng, - giảm)
+    var isNew = false
+    var changeText = ""
+    var changeSign = 0
+    var changeTip: String?
 
-    init(item: AnyObject) {
+    init(item: AnyObject, model: AppModel) {
         if let d = item as? DirNode {
+            if let change = model.comparisonChange(d) {
+                isNew = model.comparisonIsNew(d)
+                changeText = change == 0 && !isNew ? "" : (change < 0 ? "-" : "+") + FileOps.formatSize(abs(change))
+                changeSign = change > 0 ? 1 : change < 0 ? -1 : 0
+                changeTip = model.changeTip(d)
+            }
             name = d.name
             isRoot = d.parent == nil
             let denied = d.isAccessDenied
@@ -396,9 +441,17 @@ final class NameCell: NSTableCellView {
     private let icon = NSImageView()
     private let label = NSTextField(labelWithString: "")
     private let noteLabel = NSTextField(labelWithString: "")
+    /// Nhãn "mới": thư mục chưa có trong lần quét đang so sánh
+    private let badge = NSTextField(labelWithString: "")
 
     override init(frame: NSRect) {
         super.init(frame: frame)
+        badge.font = .systemFont(ofSize: 10, weight: .semibold)
+        badge.textColor = Theme.accentNS
+        badge.wantsLayer = true
+        badge.layer?.cornerRadius = 3
+        badge.layer?.backgroundColor = Theme.accentNS.withAlphaComponent(0.14).cgColor
+        badge.setContentCompressionResistancePriority(.required, for: .horizontal)
         icon.imageScaling = .scaleProportionallyDown
         label.lineBreakMode = .byTruncatingMiddle
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -409,7 +462,7 @@ final class NameCell: NSTableCellView {
         imageView = icon
         textField = label
 
-        let stack = NSStackView(views: [icon, label, noteLabel])
+        let stack = NSStackView(views: [icon, label, badge, noteLabel])
         stack.orientation = .horizontal
         stack.spacing = 6
         stack.alignment = .centerY
@@ -434,6 +487,8 @@ final class NameCell: NSTableCellView {
         label.font = info.isRoot ? .systemFont(ofSize: 13, weight: .semibold) : .systemFont(ofSize: 13)
         noteLabel.stringValue = info.note ?? ""
         noteLabel.isHidden = info.note == nil
+        badge.stringValue = info.isNew ? " " + Loc.t("CompareNew") + " " : ""
+        badge.isHidden = !info.isNew
     }
 }
 
@@ -455,11 +510,12 @@ final class TextCell: NSTableCellView {
 
     required init?(coder: NSCoder) { fatalError() }
 
-    func configure(_ text: String, alignment: NSTextAlignment, bold: Bool = false) {
+    func configure(_ text: String, alignment: NSTextAlignment, bold: Bool = false, color: NSColor? = nil) {
         label.stringValue = text
         label.alignment = alignment
         label.font = bold ? .monospacedDigitSystemFont(ofSize: 13, weight: .semibold) : .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
-        label.textColor = bold ? .labelColor : .secondaryLabelColor
+        label.textColor = color ?? (bold ? .labelColor : .secondaryLabelColor)
+        toolTip = nil
     }
 }
 

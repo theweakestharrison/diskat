@@ -55,6 +55,11 @@ public final class Loc {
 
     public static var lang: String { shared.lang }
 
+    /// Dùng ngôn ngữ này cho lần chạy hiện tại mà không lưu lại (tham số --lang).
+    public static func useForSession(_ code: String) {
+        if tables[code] != nil { shared.lang = code }
+    }
+
     public static func setLanguage(_ code: String) {
         guard code != shared.lang, tables[code] != nil else { return }
         shared.lang = code

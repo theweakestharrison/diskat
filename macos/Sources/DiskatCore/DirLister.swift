@@ -9,13 +9,19 @@ struct RawEntry {
     let isMountPoint: Bool
     /// Dung lượng thực chiếm trên đĩa (mọi fork). File iCloud chưa tải về có giá trị 0.
     let allocatedSize: Int64
+    /// Độ dài nội dung (fork dữ liệu), như st_size.
+    let dataLength: Int64
     let linkCount: UInt32
     let fileID: UInt64
     let modified: Double
+    /// Cờ BSD (st_flags), ví dụ SF_DATALESS: file iCloud chưa tải về máy.
+    let flags: UInt32
 
     var isDirectory: Bool { type == VDIR.rawValue }
     var isRegularFile: Bool { type == VREG.rawValue }
     var name: String { String(cString: namePointer) }
+    /// Dữ liệu chỉ có trên iCloud: đọc vào sẽ tải cả file về.
+    var isDataless: Bool { flags & 0x4000_0000 != 0 } // SF_DATALESS
 }
 
 /// Liệt kê thư mục bằng getattrlistbulk: một lời gọi hệ thống trả về tên, loại, dung lượng, thời gian
@@ -28,9 +34,10 @@ final class DirLister {
 
     private static let common = attrgroup_t(ATTR_CMN_RETURNED_ATTRS) | attrgroup_t(ATTR_CMN_NAME)
         | attrgroup_t(ATTR_CMN_ERROR) | attrgroup_t(ATTR_CMN_OBJTYPE) | attrgroup_t(ATTR_CMN_MODTIME)
-        | attrgroup_t(ATTR_CMN_FILEID)
+        | attrgroup_t(ATTR_CMN_FLAGS) | attrgroup_t(ATTR_CMN_FILEID)
     private static let dirAttrs = attrgroup_t(ATTR_DIR_MOUNTSTATUS)
     private static let fileAttrs = attrgroup_t(ATTR_FILE_LINKCOUNT) | attrgroup_t(ATTR_FILE_ALLOCSIZE)
+        | attrgroup_t(ATTR_FILE_DATALENGTH)
     private static let mountMask = UInt32(DIR_MNTSTATUS_MNTPOINT) | UInt32(DIR_MNTSTATUS_TRIGGER)
 
     /// Gọi `body` cho từng mục trong thư mục. Trả về 0 nếu đọc trọn vẹn, ngược lại errno
@@ -88,6 +95,12 @@ final class DirLister {
                     field += MemoryLayout<timespec>.size
                 }
 
+                var flags: UInt32 = 0
+                if returned.commonattr & attrgroup_t(ATTR_CMN_FLAGS) != 0 {
+                    flags = field.loadUnaligned(as: UInt32.self)
+                    field += 4
+                }
+
                 var fileID: UInt64 = 0
                 if returned.commonattr & attrgroup_t(ATTR_CMN_FILEID) != 0 {
                     fileID = field.loadUnaligned(as: UInt64.self)
@@ -112,8 +125,15 @@ final class DirLister {
                     field += 8
                 }
 
+                var dataLength: Int64 = 0
+                if returned.fileattr & attrgroup_t(ATTR_FILE_DATALENGTH) != 0 {
+                    dataLength = field.loadUnaligned(as: Int64.self)
+                    field += 8
+                }
+
                 body(RawEntry(namePointer: namePointer, type: type, isMountPoint: isMount,
-                              allocatedSize: allocated, linkCount: links, fileID: fileID, modified: modified))
+                              allocatedSize: allocated, dataLength: dataLength, linkCount: links, fileID: fileID, modified: modified,
+                              flags: flags))
             }
         }
     }

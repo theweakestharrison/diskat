@@ -22,6 +22,8 @@ public final class DiskScanner: @unchecked Sendable {
     static let virtualRootDirs: Set<String> = [".vol", ".nofollow", ".resolve"]
 
     public let root: DirNode
+    /// Lúc bắt đầu quét: mốc tính tuổi file và thời điểm lưu lần quét
+    public let startedAt = Date()
 
     private let cond = NSCondition()
     /// Thư mục chờ quét kèm đường dẫn đầy đủ (tính sẵn khi đẩy vào, không phải đi ngược lên các thư mục cha)
@@ -33,6 +35,7 @@ public final class DiskScanner: @unchecked Sendable {
     private var current: String?
     private var errorCount = 0
     private var heaps: [TopFileHeap] = []
+    private var stats: [WorkerStats] = []
     /// File có nhiều hard link chỉ được tính dung lượng một lần.
     private let seenLinks = OSAllocatedUnfairLock(initialState: Set<UInt64>())
 
@@ -81,6 +84,18 @@ public final class DiskScanner: @unchecked Sendable {
         return Array(all.prefix(Self.topFileCapacity))
     }
 
+    /// Dung lượng theo phần mở rộng, lớn nhất trước. Chỉ gọi khi đã quét xong (hoặc đã dừng).
+    public func fileTypes() -> [TypeStat] {
+        cond.lock(); defer { cond.unlock() }
+        return WorkerStats.mergeTypes(stats)
+    }
+
+    /// Dung lượng theo tuổi file (lần sửa cuối), từ mới đến cũ.
+    public func ageBuckets() -> [AgeStat] {
+        cond.lock(); defer { cond.unlock() }
+        return WorkerStats.mergeAges(stats)
+    }
+
     private func start(_ completion: @escaping @Sendable () -> Void) {
         let workers = max(4, min(16, ProcessInfo.processInfo.activeProcessorCount))
         cond.lock()
@@ -88,13 +103,14 @@ public final class DiskScanner: @unchecked Sendable {
         pending = 1
         alive = workers
         heaps = (0..<workers).map { _ in TopFileHeap(capacity: Self.topFileCapacity) }
-        let heaps = self.heaps
+        stats = (0..<workers).map { _ in WorkerStats(now: startedAt) }
+        let heaps = self.heaps, stats = self.stats
         cond.unlock()
 
         for i in 0..<workers {
-            let heap = heaps[i]
+            let heap = heaps[i], stat = stats[i]
             let thread = Thread { [self] in
-                worker(heap)
+                worker(heap, stat)
                 cond.lock()
                 alive -= 1
                 let last = alive == 0
@@ -107,7 +123,7 @@ public final class DiskScanner: @unchecked Sendable {
         }
     }
 
-    private func worker(_ heap: TopFileHeap) {
+    private func worker(_ heap: TopFileHeap, _ stats: WorkerStats) {
         let lister = DirLister()
         while true {
             cond.lock()
@@ -119,7 +135,7 @@ public final class DiskScanner: @unchecked Sendable {
             let (node, path) = stack.removeLast()
             cond.unlock()
 
-            let subdirs = process(node, path, lister, heap)
+            let subdirs = process(node, path, lister, heap, stats)
 
             cond.lock()
             if !cancelled && !subdirs.isEmpty {
@@ -138,7 +154,8 @@ public final class DiskScanner: @unchecked Sendable {
     }
 
     /// Quét một thư mục; trả về các thư mục con cần quét tiếp.
-    private func process(_ node: DirNode, _ path: String, _ lister: DirLister, _ heap: TopFileHeap) -> [(node: DirNode, path: String)] {
+    private func process(_ node: DirNode, _ path: String, _ lister: DirLister, _ heap: TopFileHeap,
+                         _ stats: WorkerStats) -> [(node: DirNode, path: String)] {
         cond.lock()
         current = path
         let stop = cancelled
@@ -164,6 +181,7 @@ public final class DiskScanner: @unchecked Sendable {
             }
             bytes += size
             files += 1
+            stats.add(name: e.namePointer, size: size, modified: e.modified)
             // Chỉ tạo chuỗi tên cho file đủ lớn để lọt vào danh sách "file lớn nhất"
             if size > 0 && size >= threshold {
                 heap.offer(FileRecord(path: isVolumeRoot ? "/" + e.name : path + "/" + e.name,
