@@ -315,22 +315,22 @@ fs.writeFileSync(indexFile, index);
 built.push("index.html (JSON-LD, " + homeFaq.length + " FAQ)");
 
 // ---------------- Sitemap ----------------
+// Plain sitemap, no xhtml:link alternates: the language versions of each guide are already
+// declared with <link rel="alternate" hreflang> in its <head> (see above), which search engines
+// treat the same. Any XHTML element in the file makes browsers render it as a page of run-on
+// text instead of showing the XML tree.
 
 const urls = [
   { loc: "/", lastmod: TODAY, priority: "1.0" },
   ...(guides.length ? [{ loc: "/guides", lastmod: TODAY, priority: "0.8" }] : []),
-  ...guides.map((g) => ({
-    loc: `/guides/${g.slug}`, lastmod: g.updated, priority: "0.7",
-    alternates: alt[g.slug] ? Object.entries(alt[g.slug]) : null,
-  })),
+  ...guides.map((g) => ({ loc: `/guides/${g.slug}`, lastmod: g.updated, priority: "0.7" })),
   { loc: "/changelog", lastmod: TODAY, priority: "0.5" },
   { loc: "/license", lastmod: TODAY, priority: "0.3" },
   { loc: "/privacy", lastmod: TODAY, priority: "0.3" },
 ];
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${urls.map((u) => `  <url><loc>${ORIGIN}${u.loc}</loc><lastmod>${u.lastmod}</lastmod><priority>${u.priority}</priority>${
-  u.alternates ? u.alternates.map(([l, s]) => `<xhtml:link rel="alternate" hreflang="${l}" href="${ORIGIN}/guides/${s}"/>`).join("") : ""}</url>`).join("\n")}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((u) => `  <url><loc>${ORIGIN}${u.loc}</loc><lastmod>${u.lastmod}</lastmod><priority>${u.priority}</priority></url>`).join("\n")}
 </urlset>
 `;
 fs.writeFileSync(path.join(site, "sitemap.xml"), xml);

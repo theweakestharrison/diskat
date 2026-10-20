@@ -104,13 +104,19 @@ public partial class MainWindow
         await StartScanAsync(cli.ScanPath!);
         if (_root == null || !string.Equals(_root.FullPath.TrimEnd('\\'), Path.GetFullPath(cli.ScanPath!).TrimEnd('\\'), StringComparison.OrdinalIgnoreCase))
             return; // không quét được (đường dẫn sai) hoặc người dùng đã quét chỗ khác
+        if (cli.Compare) await CompareWithPreviousAsync();
         bool ok = true;
         if (cli.PdfPath != null) ok &= await ExportPdfAsync(cli.PdfPath);
         if (cli.FoldersCsvPath != null) ok &= await ExportFoldersCsvAsync(cli.FoldersCsvPath);
         if (cli.FilesCsvPath != null)
             ok &= await ExportFilesCsvAsync((TopFiles.ItemsSource as IEnumerable<TopFileVM>)?.ToList() ?? [], Loc.T("CsvFilesTitle"), cli.FilesCsvPath);
-        // Mã thoát 1 khi có file xuất bị lỗi, để script gọi Diskat biết
-        if (cli.Quit) Application.Current.Shutdown(ok ? 0 : 1);
+        // Mã thoát 1 khi có file xuất bị lỗi, để script gọi Diskat biết.
+        // Đợi lưu xong lần quét này, để lần chạy sau (vd. báo cáo hằng tuần với --compare) có cái để so.
+        if (cli.Quit)
+        {
+            await _snapshotTask;
+            Application.Current.Shutdown(ok ? 0 : 1);
+        }
     }
 
     private ReportData CollectReportData()
@@ -120,7 +126,8 @@ public partial class MainWindow
 
         var folders = root.Children
             .Where(c => Interlocked.Read(ref c.Size) > 0)
-            .Select(c => new ReportFolder(c.Name, c.Size, c.FileCount, c.AccessDenied || c.BadName, false))
+            .Select(c => new ReportFolder(c.Name, c.Size, c.FileCount, c.AccessDenied || c.BadName, false,
+                _compare?.SizeChange(c), _compare != null && _compare.IndexOf(c) < 0))
             .ToList();
         if (root.OwnSize > 0) folders.Add(new ReportFolder("", root.OwnSize, root.OwnFiles, false, true));
         folders = folders.OrderByDescending(f => f.Size).Take(15).ToList();
@@ -162,7 +169,8 @@ public partial class MainWindow
             TopFiles: files,
             Types: sc.GetFileTypes(),
             Ages: sc.GetAgeBuckets(),
-            Version: Updater.CurrentVersion.ToString());
+            Version: Updater.CurrentVersion.ToString(),
+            Compare: CompareSummary());
     }
 
     // ================= CSV =================

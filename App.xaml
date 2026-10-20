@@ -5,6 +5,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- Màu: UI/Theme.cs thay bằng Themes/Dark.xaml khi dùng giao diện tối -->
+                <ResourceDictionary Source="Themes/Light.xaml" />
                 <ResourceDictionary Source="Themes/Styles.xaml" />
                 <ResourceDictionary Source="Themes/Logo.xaml" />
             </ResourceDictionary.MergedDictionaries>

@@ -21,11 +21,13 @@
   <p><em>Last updated: October 20, 2026 (version 1.1)</em></p>
   <p>Diskat is a disk space analyzer that runs entirely on your computer.</p>
   <h2>Data we collect</h2>
-  <p>None. Diskat does not collect, store, upload or share any personal information, file names, file contents or usage data. It has no accounts, no analytics and no advertising.</p>
+  <p>None. Diskat does not collect, upload or share any personal information, file names, file contents or usage data. It has no accounts, no analytics and no advertising.</p>
   <h2>Update check</h2>
   <p>Diskat connects to the internet only when you ask it to check for updates (from the ⋯ menu), or once a day at startup if you turn on that option yourself. It is off by default. The check downloads a small version file from diskat.cc, and if you choose to update, the new Diskat.exe from the same site. These requests contain nothing about you or your files, only what every web request carries, such as your IP address and the Diskat version. diskat.cc is served by Cloudflare, which processes those requests to deliver them; we do not keep logs of them.</p>
   <h2>What Diskat does on your PC</h2>
-  <p>It reads file and folder sizes on the drives you choose to scan so it can show them to you. It deletes files only after you confirm a delete. It saves only your settings (interface language and the update option) on your own PC, and the PDF or CSV files you choose to export.</p>
+  <p>It reads file and folder sizes on the drives you choose to scan so it can show them to you. It deletes files only after you confirm a delete. It saves only your settings (interface language and the update option) on your own PC, the scan history described below, and the PDF or CSV files you choose to export.</p>
+  <h2>Scan history</h2>
+  <p>After each scan that finishes, Diskat saves a compact list of the scanned folders (folder names, sizes, file and folder counts; no file names or file contents) in <code>%LOCALAPPDATA%\Diskat\snapshots</code> on your PC, so that you can compare a later scan with an earlier one. It keeps the latest 10 scans of each folder and deletes older ones. These files never leave your PC. To stop saving them, turn off “Save each scan for comparing later” in the ⋯ menu under “Compare with an earlier scan”, where “Delete all saved scans” removes them. The Microsoft Store version keeps them in its own app data folder, which Windows removes when you uninstall it.</p>
   <h2>This website</h2>
   <p>diskat.cc uses no cookies, no analytics and no third-party scripts. Your language choice on this site is kept in your browser's local storage.</p>
   <h2>Contact</h2>
@@ -37,11 +39,13 @@
     <h1>Chính sách quyền riêng tư</h1>
     <p>Diskat là ứng dụng phân tích dung lượng ổ đĩa chạy hoàn toàn trên máy tính của bạn.</p>
     <h2>Dữ liệu thu thập</h2>
-    <p>Không có. Diskat không thu thập, lưu trữ, tải lên hay chia sẻ thông tin cá nhân, tên file, nội dung file hay dữ liệu sử dụng. Ứng dụng không có tài khoản, không thống kê và không quảng cáo.</p>
+    <p>Không có. Diskat không thu thập, tải lên hay chia sẻ thông tin cá nhân, tên file, nội dung file hay dữ liệu sử dụng. Ứng dụng không có tài khoản, không thống kê và không quảng cáo.</p>
     <h2>Kiểm tra bản cập nhật</h2>
     <p>Diskat chỉ kết nối Internet khi bạn bảo nó kiểm tra bản cập nhật (trong menu ⋯), hoặc mỗi ngày một lần lúc mở app nếu chính bạn bật tùy chọn đó. Mặc định tùy chọn này tắt. Lần kiểm tra chỉ tải một file phiên bản nhỏ từ diskat.cc, và nếu bạn chọn cập nhật thì tải Diskat.exe mới từ cùng trang đó. Các yêu cầu này không chứa gì về bạn hay file của bạn, chỉ có những thông tin mọi yêu cầu web đều có, như địa chỉ IP và phiên bản Diskat. diskat.cc chạy trên Cloudflare, Cloudflare xử lý các yêu cầu đó để phục vụ; chúng tôi không lưu nhật ký các yêu cầu này.</p>
     <h2>Diskat làm gì trên máy bạn</h2>
-    <p>Đọc dung lượng file và thư mục trên ổ đĩa bạn chọn để hiển thị cho bạn. Chỉ xóa file sau khi bạn xác nhận. Chỉ lưu các thiết lập của bạn (ngôn ngữ giao diện và tùy chọn cập nhật) ngay trên máy bạn, cùng các file PDF hoặc CSV mà bạn chọn xuất ra.</p>
+    <p>Đọc dung lượng file và thư mục trên ổ đĩa bạn chọn để hiển thị cho bạn. Chỉ xóa file sau khi bạn xác nhận. Chỉ lưu các thiết lập của bạn (ngôn ngữ giao diện và tùy chọn cập nhật) ngay trên máy bạn, lịch sử quét nói ở dưới, cùng các file PDF hoặc CSV mà bạn chọn xuất ra.</p>
+    <h2>Lịch sử quét</h2>
+    <p>Sau mỗi lần quét xong, Diskat lưu một danh sách gọn các thư mục đã quét (tên thư mục, dung lượng, số file và số thư mục; không có tên file hay nội dung file) vào <code>%LOCALAPPDATA%\Diskat\snapshots</code> trên máy bạn, để sau này bạn so sánh lần quét mới với lần quét trước. Diskat giữ 10 lần quét gần nhất của mỗi thư mục và tự xóa các lần cũ hơn. Các file này không bao giờ rời khỏi máy bạn. Muốn ngừng lưu, hãy tắt “Lưu mỗi lần quét để so sánh về sau” trong menu ⋯, mục “So sánh với lần quét trước”; cũng ở đó, “Xóa mọi lần quét đã lưu” sẽ xóa chúng. Bản cài từ Microsoft Store lưu chúng trong thư mục dữ liệu riêng của ứng dụng, Windows sẽ xóa thư mục này khi bạn gỡ cài đặt.</p>
     <h2>Trang web này</h2>
     <p>diskat.cc không dùng cookie, không dùng công cụ thống kê và không tải script bên thứ ba. Ngôn ngữ bạn chọn trên trang được lưu trong trình duyệt của bạn.</p>
     <h2>Liên hệ</h2>

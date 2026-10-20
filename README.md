@@ -27,6 +27,7 @@ Everything in the current release (1.1.0). All of it is free.
 - **Largest files**: the top 500 files of the whole scan in one list.
 - **File types** tab: space and file count per extension.
 - **File age** tab: space by last-modified date, from under a month to over 5 years.
+- **Compare scans** (next release): each finished scan is saved on your PC (folder names and sizes only, the latest 10 per folder). Pick an earlier scan in the ⋯ menu to get a **Change** column with what grew or shrank, new folders marked, and how much the whole folder grew since then. Sort by Change to find what is filling the disk.
 
 ### Find
 - **Search every file** in the scan by name pattern (`*.log; *.tmp`, or any part of a name), minimum size and age, largest first.
@@ -36,6 +37,7 @@ Everything in the current release (1.1.0). All of it is free.
 ### Clean up
 - **Safe delete**: Recycle Bin by default (`Del`) or permanent (`Shift+Del`), always with a confirmation dialog that shows the full path and size.
 - **Multi-select delete** from the Largest files list and search results.
+- **Duplicates** tab (next release): files with identical content in the scanned folder, grouped and sorted by wasted space. Only files of the same size are read: first 64 KB, then the whole file (XxHash128). Minimum size is adjustable (1 MB by default), cloud-only files are never downloaded, hard links count as one file and junctions are not followed; Windows, Program Files, ProgramData and AppData are skipped by default. Tick copies or use **Select all but newest**, then delete to the Recycle Bin as usual. One copy of each group is always kept.
 - **Instant totals**: sizes update after a delete, no rescan needed.
 - **Files in use**: when a delete fails because a program has the file or folder open, Diskat shows which program, closes it and retries (force-closing only after you confirm), or deletes it at the next Windows restart (as admin). System processes, services and File Explorer are never closed.
 
@@ -54,7 +56,7 @@ Everything in the current release (1.1.0). All of it is free.
 ### Private and portable
 - **One portable .exe**: no installer and no .NET to install. Windows 10 and 11, 64-bit. Also packaged as MSIX for the Microsoft Store.
 - **11 languages**: English (default), Tiếng Việt, 简体中文, 日本語, 한국어, Español, Português, Deutsch, Français, Русский, Bahasa Indonesia.
-- **Private**: no ads, no accounts, no telemetry. The only network access is the optional update check, which is off by default and verifies the download with SHA-256 (the Microsoft Store version never checks; the Store updates it).
+- **Private**: no ads, no accounts, no telemetry. The only network access is the optional update check, which is off by default and verifies the download with SHA-256 (the Microsoft Store version never checks; the Store updates it). Saved scans for comparing stay on your PC in `%LOCALAPPDATA%\Diskat\snapshots`; turn saving off or delete them from the ⋯ menu.
 - **Open source** under the MIT License.
 
 | Largest files | Safe delete |
@@ -63,7 +65,7 @@ Everything in the current release (1.1.0). All of it is free.
 
 ## Download
 
-Download it from **[diskat.cc](https://diskat.cc/download)**. It is a single self-contained file (Windows 10/11 x64), no .NET install needed.
+Download it from **[diskat.cc](https://diskat.cc)**. It is a single self-contained file (Windows 10/11 x64), no .NET install needed.
 
 > The exe is not code-signed yet, so Windows SmartScreen may show "Windows protected your PC" the first time.
 > Click **More info** then **Run anyway**, or right-click the file > Properties > **Unblock**.
@@ -76,6 +78,9 @@ Diskat.exe "D:\Projects"
 
 # Scripted report: scan, write the files, then exit (exit code 1 if an export failed)
 Diskat.exe "D:\Projects" --pdf report.pdf --csv folders.csv --files-csv files.csv --quit
+
+# Same, plus what changed since the previous saved scan of that folder (summary and Change column in the PDF)
+Diskat.exe "D:\Projects" --compare --pdf report.pdf --quit
 
 # Other options
 Diskat.exe --lang vi                  # interface language for this run only
@@ -140,8 +145,8 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=
 
 | Path | Contents |
 |---|---|
-| `Core/` | Parallel scanner (with file type and age totals), directory tree model, delete / Recycle Bin operations, locked-file finder (Restart Manager), file search, updater, Explorer menu entry, command line, localization (`Core/Lang`, 11 languages) |
-| `UI/` | Flattened tree rows, treemap control, confirmation, locked-file and update dialogs, PDF report (PDFsharp) |
+| `Core/` | Parallel scanner (with file type and age totals), directory tree model, scan history and comparison, duplicate finder, delete / Recycle Bin operations, locked-file finder (Restart Manager), file search, updater, Explorer menu entry, command line, localization (`Core/Lang`, 11 languages) |
+| `UI/` | Flattened tree rows, treemap control, Duplicates tab, confirmation, locked-file and update dialogs, PDF report (PDFsharp) |
 | `site-src/guides/` | Markdown sources of the website guides, built into `website/guides/` by `node tools/build-pages.js` |
 | `Themes/` | Styles and the vector logo (`Logo.xaml`, also used to generate `app.ico` and Store tiles) |
 | `MainWindow.*` | Main window: scanning, tree, map and actions |

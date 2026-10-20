@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="PDFsharp-WPF" Version="6.2.4" />
+    <PackageReference Include="System.IO.Hashing" Version="9.0.10" />
   </ItemGroup>
 
 </Project>

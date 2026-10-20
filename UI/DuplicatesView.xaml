@@ -1,0 +1,246 @@
+<UserControl x:Class="Diskat.UI.DuplicatesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:core="clr-namespace:Diskat.Core"
+             xmlns:ui="clr-namespace:Diskat.UI"
+             xmlns:local="clr-namespace:Diskat">
+
+    <!-- Tab Trùng lặp: giao diện ở đây, phần xử lý ở MainWindow.Duplicates.cs -->
+    <UserControl.Resources>
+        <!-- Ô đánh dấu phẳng. Tag="danger": màu đỏ khi đánh dấu (bản sẽ bị xóa) -->
+        <Style x:Key="FlatCheck" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="box" Width="16" Height="16" CornerRadius="4" BorderThickness="1.5" VerticalAlignment="Center"
+                                    BorderBrush="{DynamicResource BorderStrong}" Background="{DynamicResource CardBg}">
+                                <TextBlock x:Name="mark" Text="&#xE73E;" FontFamily="{StaticResource IconFont}" FontSize="10" Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+                            </Border>
+                            <ContentPresenter x:Name="content" Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasContent" Value="False">
+                                <Setter TargetName="content" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="box" Property="Background" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="mark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsChecked" Value="True"/>
+                                    <Condition Property="Tag" Value="danger"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="box" Property="Background" Value="{DynamicResource Danger}"/>
+                                <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource Danger}"/>
+                            </MultiTrigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="box" Property="Opacity" Value="0.35"/>
+                                <Setter TargetName="content" Property="Opacity" Value="0.6"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Mũi tên mở / thu một nhóm -->
+        <Style x:Key="GroupToggle" TargetType="ToggleButton">
+            <Setter Property="Width" Value="22"/>
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="4">
+                            <TextBlock x:Name="glyph" Text="&#xE76C;" FontFamily="{StaticResource IconFont}" FontSize="9"
+                                       Foreground="{DynamicResource SubText}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="glyph" Property="Text" Value="&#xE70D;"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource ExpanderHover}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Một dòng của danh sách: tiêu đề nhóm có nền riêng và đường kẻ phía trên -->
+        <Style x:Key="DupItem" TargetType="ListViewItem">
+            <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource RowHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource RowSelected}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsHeader}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource HeaderBg}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
+                    <Setter Property="BorderThickness" Value="0,1,0,0"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Dung lượng tối thiểu, bỏ qua thư mục hệ thống, nút Tìm / Dừng -->
+        <Grid Margin="10,10,10,6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox x:Name="MinSize" Height="30" Margin="0,0,10,0" VerticalContentAlignment="Center" ToolTip="{core:T DupMinTip}"/>
+            <CheckBox x:Name="SkipSystem" Grid.Column="1" Style="{StaticResource FlatCheck}" IsChecked="True" VerticalAlignment="Center"
+                      ToolTip="{core:T DupSkipSystemTip}">
+                <TextBlock Text="{core:T DupSkipSystem}" FontSize="12.5" TextWrapping="Wrap"/>
+            </CheckBox>
+            <Button x:Name="FindBtn" Grid.Column="2" Style="{StaticResource PrimaryButton}" Height="30" Padding="14,4" Margin="10,0,0,0"
+                    Content="{core:T DupFind}"/>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Margin="12,0,12,6">
+            <TextBlock x:Name="Info" FontSize="12" Foreground="{DynamicResource SubText}" TextWrapping="Wrap"/>
+            <ProgressBar x:Name="Progress" Style="{StaticResource SlimBar}" Margin="0,6,0,0" Maximum="1" Visibility="Collapsed"/>
+        </StackPanel>
+
+        <ListView x:Name="List" Grid.Row="2" Style="{StaticResource FlatList}" ItemContainerStyle="{StaticResource DupItem}"
+                  SelectionMode="Extended" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.Resources>
+                <!-- Tiêu đề nhóm: tên file, số bản, dung lượng lãng phí -->
+                <DataTemplate DataType="{x:Type local:DupGroupVM}">
+                    <Grid Height="42" Margin="4,0,12,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ToggleButton Style="{StaticResource GroupToggle}" IsChecked="{Binding IsExpanded, Mode=TwoWay}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="&#xE8C8;" FontFamily="{StaticResource IconFont}" FontSize="14" Foreground="{DynamicResource AccentText}"
+                                   VerticalAlignment="Center" Margin="4,0,10,0"/>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="{Binding Summary}" FontSize="11.5" Foreground="{DynamicResource SubText}" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="10,0,0,0">
+                            <TextBlock Text="{Binding WastedText}" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                            <TextBlock Text="{Binding SelectedText}" FontSize="11.5" Foreground="{DynamicResource DangerText}" HorizontalAlignment="Right"/>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+
+                <!-- Một bản trong nhóm: ô đánh dấu để xóa, tên, thư mục, ngày sửa -->
+                <DataTemplate DataType="{x:Type local:DupFileVM}">
+                    <Grid Height="28" Margin="30,0,12,0" Background="Transparent" ToolTip="{Binding Tip}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Style="{StaticResource FlatCheck}" Tag="danger" VerticalAlignment="Center"
+                                  IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CanCheck}"/>
+                        <Path Grid.Column="1" Data="{x:Static ui:Icons.File}" Fill="{DynamicResource FileFill}" Stroke="{DynamicResource FileStroke}" StrokeThickness="1.1"
+                              Width="15" Height="15" Stretch="Uniform" VerticalAlignment="Center" Margin="10,0,8,0"/>
+                        <TextBlock x:Name="name" Grid.Column="2" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                            <Run Text="{Binding Name, Mode=OneWay}"/><Run Text="{Binding Folder, Mode=OneWay}" FontSize="12" Foreground="{DynamicResource SubText}"/>
+                        </TextBlock>
+                        <TextBlock Grid.Column="3" Text="{Binding Note}" FontSize="11.5" FontStyle="Italic" Foreground="{DynamicResource HintText}"
+                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
+                        <TextBlock Grid.Column="4" Text="{Binding Modified}" FontSize="12" Foreground="{DynamicResource SubText}"
+                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    </Grid>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsChecked}" Value="True">
+                            <Setter TargetName="name" Property="Foreground" Value="{DynamicResource DangerText}"/>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ListView.Resources>
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="MenuExplorer" Header="{core:T MenuShowInExplorer}"/>
+                    <MenuItem x:Name="MenuOpen" Header="{core:T MenuOpen}"/>
+                    <MenuItem x:Name="MenuCopy" Header="{core:T MenuCopy}"/>
+                    <Separator/>
+                    <MenuItem x:Name="MenuDeletePerm" Header="{core:T DupDeletePerm}" InputGestureText="Shift+Del" Foreground="{DynamicResource DangerText}"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+        </ListView>
+
+        <!-- Chọn nhanh và xóa các bản đã đánh dấu -->
+        <Border x:Name="ActionBar" Grid.Row="3" BorderBrush="{DynamicResource Border}" BorderThickness="0,1,0,0" Padding="10,8" Visibility="Collapsed">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock x:Name="SelInfo" FontSize="12" Foreground="{DynamicResource SubText}" TextWrapping="Wrap" Margin="2,0,0,8"/>
+                <DockPanel Grid.Row="1">
+                    <Button x:Name="DeleteBtn" DockPanel.Dock="Right" Style="{StaticResource DangerButton}" Padding="12,5" Margin="8,0,0,0"
+                            ToolTip="{core:T DupDeleteTip}" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE74D;" FontFamily="{StaticResource IconFont}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="{core:T DupDelete}"/>
+                        </StackPanel>
+                    </Button>
+                    <WrapPanel VerticalAlignment="Center">
+                        <Button x:Name="KeepNewestBtn" Style="{StaticResource GhostButton}" ToolTip="{core:T DupSelectButNewestTip}">
+                            <TextBlock Text="{core:T DupSelectButNewest}" Foreground="{DynamicResource AccentText}"/>
+                        </Button>
+                        <Button x:Name="ClearBtn" Style="{StaticResource GhostButton}" Margin="4,0,0,0">
+                            <TextBlock Text="{core:T DupClearSelection}" Foreground="{DynamicResource SubText}"/>
+                        </Button>
+                    </WrapPanel>
+                </DockPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

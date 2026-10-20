@@ -1,0 +1,85 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Màu giao diện sáng. Dark.xaml có đúng các khóa này; UI/Theme.cs đổi qua lại lúc chạy,
+        nên mọi nơi dùng màu phải viết {DynamicResource Khóa}, không dùng StaticResource hay mã màu trực tiếp.
+        Chữ đạt WCAG AA (4.5:1) trên nền của nó, kể cả dòng đang chọn.
+    -->
+
+    <!-- Nhấn: nút chính, thanh tiến trình, gạch chân tab -->
+    <Color x:Key="AccentColor">#2F6FED</Color>
+    <SolidColorBrush x:Key="Accent" Color="#2F6FED"/>
+    <SolidColorBrush x:Key="AccentHover" Color="#1F5BD6"/>
+    <SolidColorBrush x:Key="AccentSoft" Color="#E8F0FE"/>
+    <!-- Chữ / biểu tượng màu nhấn trên nền thẻ -->
+    <SolidColorBrush x:Key="AccentText" Color="#2A63D6"/>
+
+    <!-- Nền và viền -->
+    <SolidColorBrush x:Key="WindowBg" Color="#F3F5F9"/>
+    <SolidColorBrush x:Key="CardBg" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Border" Color="#E3E7EE"/>
+    <SolidColorBrush x:Key="BorderStrong" Color="#C5CEDC"/>
+    <SolidColorBrush x:Key="Overlay" Color="#80F3F5F9"/>
+
+    <!-- Chữ -->
+    <SolidColorBrush x:Key="Text" Color="#1F2430"/>
+    <SolidColorBrush x:Key="SubText" Color="#5F6673"/>
+    <SolidColorBrush x:Key="HintText" Color="#6E7582"/>
+
+    <!-- Danh sách, nút, tiêu đề cột -->
+    <SolidColorBrush x:Key="RowHover" Color="#F1F5FD"/>
+    <SolidColorBrush x:Key="RowSelected" Color="#DCE7FD"/>
+    <SolidColorBrush x:Key="Track" Color="#EDF0F5"/>
+    <SolidColorBrush x:Key="ButtonHover" Color="#EEF1F6"/>
+    <SolidColorBrush x:Key="ButtonPressed" Color="#E2E7EF"/>
+    <SolidColorBrush x:Key="HeaderBg" Color="#F8F9FC"/>
+    <SolidColorBrush x:Key="HeaderHover" Color="#EEF1F6"/>
+    <SolidColorBrush x:Key="ExpanderHover" Color="#E3E8F2"/>
+    <SolidColorBrush x:Key="ScrollThumb" Color="#C5CBD5"/>
+    <SolidColorBrush x:Key="ScrollThumbHover" Color="#A3ABB8"/>
+
+    <!-- Xóa / nguy hiểm: Danger là nền nút (chữ trắng), DangerText là chữ đỏ trên nền thẻ -->
+    <SolidColorBrush x:Key="Danger" Color="#D93B3B"/>
+    <SolidColorBrush x:Key="DangerHover" Color="#BF2F2F"/>
+    <SolidColorBrush x:Key="DangerText" Color="#C62F2F"/>
+
+    <!-- Menu, tooltip, hộp thoại -->
+    <SolidColorBrush x:Key="MenuBg" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="MenuBorder" Color="#E3E7EE"/>
+    <SolidColorBrush x:Key="MenuHover" Color="#EEF2FA"/>
+    <SolidColorBrush x:Key="ToolTipBg" Color="#262B36"/>
+    <SolidColorBrush x:Key="ToolTipBorder" Color="#262B36"/>
+    <SolidColorBrush x:Key="ToolTipText" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="DialogBg" Color="#FFFFFF"/>
+    <Color x:Key="ShadowColor">#1A2540</Color>
+    <SolidColorBrush x:Key="InsetBg" Color="#F5F7FA"/>
+    <SolidColorBrush x:Key="InfoBg" Color="#FFF6E0"/>
+    <SolidColorBrush x:Key="InfoText" Color="#8A5A00"/>
+    <SolidColorBrush x:Key="WarnBg" Color="#FDECEC"/>
+    <SolidColorBrush x:Key="WarnText" Color="#B42323"/>
+    <SolidColorBrush x:Key="IconWarnBg" Color="#FFF4DD"/>
+    <SolidColorBrush x:Key="IconWarn" Color="#E8A317"/>
+    <SolidColorBrush x:Key="IconLock" Color="#C98A00"/>
+
+    <!-- Biểu tượng thư mục / file (UI/Row.cs Palette đọc lại các khóa này) -->
+    <SolidColorBrush x:Key="FolderFill" Color="#F6C34F"/>
+    <SolidColorBrush x:Key="FolderStroke" Color="#D9961A"/>
+    <SolidColorBrush x:Key="FileFill" Color="#EAF1FD"/>
+    <SolidColorBrush x:Key="FileStroke" Color="#5B8DEF"/>
+    <SolidColorBrush x:Key="IconMuted" Color="#9AA0AB"/>
+    <SolidColorBrush x:Key="IconMutedSoft" Color="#E4E7EC"/>
+    <SolidColorBrush x:Key="IconDangerSoft" Color="#F9D7D7"/>
+
+    <!-- Cột "Thay đổi" khi so sánh hai lần quét: dùng thêm / đã giải phóng dung lượng -->
+    <SolidColorBrush x:Key="GrowText" Color="#B4380F"/>
+    <SolidColorBrush x:Key="ShrinkText" Color="#146C36"/>
+
+    <!-- Trạng thái trống, nền bản đồ -->
+    <SolidColorBrush x:Key="EmptyIcon" Color="#C9D3E3"/>
+    <SolidColorBrush x:Key="MapBg" Color="#F6F8FB"/>
+
+    <!-- Ô góc giữa hai thanh cuộn trong template mặc định của ScrollViewer -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#FFFFFF"/>
+
+</ResourceDictionary>

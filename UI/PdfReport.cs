@@ -8,7 +8,8 @@ using PdfSharp.Pdf;
 
 namespace Diskat.UI;
 
-public sealed record ReportFolder(string Name, long Size, long Files, bool Blocked, bool IsOwnFiles);
+/// <summary>Change / IsNew: chỉ có khi đang so sánh với một lần quét đã lưu.</summary>
+public sealed record ReportFolder(string Name, long Size, long Files, bool Blocked, bool IsOwnFiles, long? Change = null, bool IsNew = false);
 public sealed record ReportFile(string Name, string Folder, long Size, DateTime LastWriteUtc);
 
 /// <summary>Ảnh chụp số liệu tại thời điểm xuất (lấy trên luồng giao diện, rồi dựng PDF ở luồng nền).</summary>
@@ -31,7 +32,9 @@ public sealed record ReportData(
     IReadOnlyList<ReportFile> TopFiles,
     IReadOnlyList<TypeStat> Types,
     IReadOnlyList<AgeStat> Ages,
-    string Version);
+    string Version,
+    // Tóm tắt thay đổi so với lần quét đang so sánh ("Tăng 3.2 GB so với lần quét lúc ..."), null nếu không so sánh
+    string? Compare = null);
 
 /// <summary>Báo cáo phân tích dung lượng dạng PDF (A4), dựng bằng PDFsharp.</summary>
 public static class PdfReport
@@ -47,6 +50,9 @@ public static class PdfReport
     private static readonly XColor Card = XColor.FromArgb(0xF5, 0xF7, 0xFA);
     private static readonly XColor Warn = XColor.FromArgb(0xFF, 0xF4, 0xDD);
     private static readonly XColor WarnInk = XColor.FromArgb(0x8A, 0x5A, 0x00);
+    // Cột "Thay đổi": giống GrowText / ShrinkText của giao diện sáng
+    private static readonly XColor GrowInk = XColor.FromArgb(0xB4, 0x38, 0x0F);
+    private static readonly XColor ShrinkInk = XColor.FromArgb(0x14, 0x6C, 0x36);
 
     // Màu nhóm tuổi file: mới (xanh) đến cũ (cam đất)
     private static readonly XColor[] AgeColors =
@@ -323,6 +329,11 @@ public static class PdfReport
             _y += 15;
             string when = d.ScannedLocal.ToString(Loc.T("DateFormat"), CultureInfo.InvariantCulture);
             Text(Loc.F("PdfScanned", when, d.ScanSeconds), Margin, _y, 9.5, Sub, maxWidth: ContentW);
+            if (d.Compare != null)
+            {
+                _y += 15;
+                Text(d.Compare, Margin, _y, 9.5, Accent, bold: true, maxWidth: ContentW);
+            }
             _y += 24;
 
             var cards = new List<(string Label, string Value, string? Note)>
@@ -401,10 +412,22 @@ public static class PdfReport
         {
             if (d.TopFolders.Count == 0) return;
             SectionTitle(Loc.T("PdfTopFolders"), 18 * 3 + 18);
-            double xNum = Margin, xName = Margin + 18, xBar = Margin + 290, xPct = Margin + 405, xSize = Margin + 465, xFiles = PageW - Margin;
-            void Head() => TableHeader(("#", xNum, 16, false), (Loc.T("PdfColName"), xName, 262, false),
-                (Loc.T("PdfColShare"), xBar, 80, false), (Loc.T("PdfColSize"), xSize - 60, 60, true),
-                (Loc.T("PdfColFiles"), xFiles - 60, 60, true));
+            // Đang so sánh với lần quét trước: thêm cột Thay đổi, thu hẹp cột tên và thanh tỉ lệ
+            bool cmp = d.Compare != null;
+            double nameW = cmp ? 190 : 262, barW = cmp ? 64 : 80;
+            double xNum = Margin, xName = Margin + 18, xBar = xName + nameW + 10, xPct = xBar + barW + 35, xSize = xPct + 60,
+                xChange = xSize + 70, xFiles = PageW - Margin;
+            void Head()
+            {
+                var cols = new List<(string, double, double, bool)>
+                {
+                    ("#", xNum, 16, false), (Loc.T("PdfColName"), xName, nameW, false),
+                    (Loc.T("PdfColShare"), xBar, barW, false), (Loc.T("PdfColSize"), xSize - 60, 60, true),
+                };
+                if (cmp) cols.Add((Loc.T("ColChange"), xChange - 60, 60, true));
+                cols.Add((Loc.T("PdfColFiles"), xFiles - 60, 60, true));
+                TableHeader(cols.ToArray());
+            }
             Head();
             int i = 0;
             foreach (var f in d.TopFolders)
@@ -414,11 +437,14 @@ public static class PdfReport
                 double pct = d.TotalSize > 0 ? f.Size * 100.0 / d.TotalSize : 0;
                 Text(i.ToString(CultureInfo.InvariantCulture), xNum, _y, 9, Sub);
                 string label = f.IsOwnFiles ? Loc.T("PdfOwnFiles") : f.Name;
-                double nw = Text(label, xName, _y, 9.5, f.IsOwnFiles ? Sub : Ink, bold: !f.IsOwnFiles, maxWidth: 262);
-                if (f.Blocked) Text("  " + Loc.T("PdfBlocked"), xName + nw, _y + 1, 8, WarnInk, maxWidth: Math.Max(1, 262 - nw));
-                ShareBar(xBar, _y + 4.5, 80, pct, Accent);
+                double nw = Text(label, xName, _y, 9.5, f.IsOwnFiles ? Sub : Ink, bold: !f.IsOwnFiles, maxWidth: nameW);
+                if (f.Blocked) Text("  " + Loc.T("PdfBlocked"), xName + nw, _y + 1, 8, WarnInk, maxWidth: Math.Max(1, nameW - nw));
+                else if (f.IsNew) Text("  " + Loc.T("CompareNew"), xName + nw, _y + 1, 8, Accent, bold: true, maxWidth: Math.Max(1, nameW - nw));
+                ShareBar(xBar, _y + 4.5, barW, pct, Accent);
                 Text(Pct(pct), xPct, _y, 8.5, Sub, right: true);
                 Text(Size(f.Size), xSize, _y, 9.5, Ink, bold: true, right: true);
+                if (cmp && f.Change is long ch && (ch != 0 || f.IsNew))
+                    Text((ch < 0 ? "-" : "+") + Size(Math.Abs(ch)), xChange, _y, 9, ch < 0 ? ShrinkInk : GrowInk, bold: true, right: true);
                 Text(Count(f.Files), xFiles, _y, 9, Sub, right: true);
                 _y += 18;
             }
@@ -538,10 +564,10 @@ public static class PdfReport
 
     // ---------------- Hình ảnh (luồng giao diện) ----------------
 
-    /// <summary>Vẽ bản đồ dung lượng ngoài màn hình, độ phân giải gấp đôi để in rõ.</summary>
+    /// <summary>Vẽ bản đồ dung lượng ngoài màn hình, độ phân giải gấp đôi để in rõ. Báo cáo luôn dùng màu sáng.</summary>
     public static BitmapSource RenderTreemap(DirNode root, double width, double height)
     {
-        var map = new TreemapControl();
+        var map = new TreemapControl { AlwaysLight = true };
         map.Measure(new Size(width, height));
         map.Arrange(new Rect(0, 0, width, height));
         map.SetRoot(root);

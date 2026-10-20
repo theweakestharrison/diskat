@@ -1,6 +1,6 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using Diskat.Core;
 
 namespace Diskat.UI;
@@ -32,8 +32,8 @@ public partial class ConfirmDialog : Window
         if (permanent)
         {
             d.WarnBox.Visibility = Visibility.Visible;
-            d.IconBg.Background = new SolidColorBrush(Color.FromRgb(0xFD, 0xEC, 0xEC));
-            d.IconPath.Stroke = new SolidColorBrush(Color.FromRgb(0xD9, 0x3B, 0x3B));
+            d.IconBg.SetResourceReference(Border.BackgroundProperty, "WarnBg");
+            d.IconPath.SetResourceReference(System.Windows.Shapes.Shape.StrokeProperty, "DangerText");
             d.CancelBtn.IsDefault = true;
             d.Loaded += (_, _) => d.CancelBtn.Focus();
         }

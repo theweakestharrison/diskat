@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "website",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["wrangler", "dev", "--local", "--port", "8787"],
+      "port": 8787
+    },
+    {
+      "name": "website-merge",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["wrangler", "dev", "--local", "--port", "8788", "--config", "C:/Users/LanDoan/AppData/Local/Temp/claude/C--Users-LanDoan-Desktop-TreeSizeView/265e32f9-9dde-4087-a2f8-f6d872e6d095/scratchpad/merge-wt/wrangler.jsonc"],
+      "port": 8788
+    }
+  ]
+}
