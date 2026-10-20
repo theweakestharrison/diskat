@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cách xóa file đang được chương trình khác sử dụng · Diskat</title>
+  <meta name="description" content="Gặp lỗi &quot;file is open in another program&quot; khi xóa? Cách tìm chương trình đang giữ file trên Windows 10 và 11, đóng nó an toàn rồi xóa, kể cả khi khởi động lại.">
+  <link rel="canonical" href="https://diskat.cc/guides/xoa-file-dang-duoc-mo">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/xoa-file-dang-duoc-mo">
+  <meta property="og:title" content="Cách xóa file đang được chương trình khác sử dụng">
+  <meta property="og:description" content="Gặp lỗi &quot;file is open in another program&quot; khi xóa? Cách tìm chương trình đang giữ file trên Windows 10 và 11, đóng nó an toàn rồi xóa, kể cả khi khởi động lại.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=6">
+  <link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/xoa-file-dang-duoc-mo">
+  <link rel="alternate" hreflang="en" href="https://diskat.cc/guides/delete-file-in-use">
+  <link rel="alternate" hreflang="x-default" href="https://diskat.cc/guides/delete-file-in-use">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cách xóa file đang được chương trình khác sử dụng","description":"Gặp lỗi \"file is open in another program\" khi xóa? Cách tìm chương trình đang giữ file trên Windows 10 và 11, đóng nó an toàn rồi xóa, kể cả khi khởi động lại.","inLanguage":"vi","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/xoa-file-dang-duoc-mo","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Hướng dẫn","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"Cách xóa file đang được chương trình khác sử dụng","item":"https://diskat.cc/guides/xoa-file-dang-duoc-mo"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Vì sao đã đóng chương trình mà vẫn không xóa được file?","acceptedAnswer":{"@type":"Answer","text":"Chương trình có thể vẫn chạy ngầm, hoặc File Explorer, OneDrive, phần mềm diệt virus đang giữ file. Dùng Resource Monitor hoặc File Locksmith để biết chính xác tiến trình nào."}},{"@type":"Question","name":"Xóa bằng quyền Admin có vượt qua được lỗi này không?","acceptedAnswer":{"@type":"Answer","text":"Không. Đây là khóa do một chương trình đang mở file, không phải vấn đề quyền. Bạn phải đóng chương trình đó, hoặc xóa file sau khi khởi động lại."}},{"@type":"Question","name":"Làm sao biết chương trình nào đang dùng file?","acceptedAnswer":{"@type":"Answer","text":"Dùng Resource Monitor có sẵn trong Windows (thẻ CPU, mục Associated Handles), PowerToys File Locksmith hoặc Process Explorer. Diskat cũng tự chỉ ra chương trình đang giữ file khi xóa không thành công."}},{"@type":"Question","name":"Kết thúc tiến trình trong Task Manager có nguy hiểm không?","acceptedAnswer":{"@type":"Answer","text":"Với ứng dụng thông thường, bạn chỉ mất dữ liệu chưa lưu. Với tiến trình hệ thống, máy có thể treo hoặc khởi động lại đột ngột. Khi không chắc, hãy khởi động lại máy thay vì kết thúc tiến trình."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Tải về</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Hướng dẫn</a></nav>
+<article class="guide">
+<h1>Cách xóa file đang được chương trình khác sử dụng</h1>
+<p class="guide-meta">Cập nhật <time datetime="2026-10-20">2026-10-20</time></p>
+<p>Bạn bấm xóa một file và Windows hiện thông báo "The action can't be completed because the file is open in another program" (bản tiếng Việt: "Không thể hoàn tất thao tác vì tệp đang mở trong chương trình khác"). Với thư mục, thông báo sẽ nói thư mục hoặc một file bên trong đang được mở. Windows chặn lại vì xóa lúc này có thể làm chương trình kia lỗi hoặc mất dữ liệu. Việc của bạn là tìm ra chương trình đó và đóng nó. Bài này đi từ cách đơn giản nhất đến cách mạnh tay nhất.</p>
+<h2 id="vi-sao-file-bi-khoa">Vì sao file bị khóa</h2>
+<p>Khi một chương trình mở file, nó thường khóa file lại để chương trình khác không xóa hay sửa giữa chừng. Thủ phạm hay gặp:</p>
+<ul>
+<li>Chương trình bạn vừa dùng: Word, Excel, trình đọc PDF, trình phát video.</li>
+<li>File Explorer, khi khung xem trước hoặc hình thu nhỏ đang đọc file.</li>
+<li>OneDrive hoặc dịch vụ đồng bộ khác đang tải file lên.</li>
+<li>Phần mềm diệt virus đang quét file.</li>
+<li>Một chương trình vẫn chạy ngầm dù bạn đã đóng cửa sổ của nó.</li>
+</ul>
+<h2 id="cach-1-doc-ky-thong-bao-va-dong-chuong-trinh">Cách 1: Đọc kỹ thông báo và đóng chương trình</h2>
+<p>Nhiều khi thông báo nêu luôn tên chương trình, ví dụ "...because the file is open in Microsoft Word". Lưu công việc, đóng chương trình đó, rồi bấm <strong>Try Again</strong> (Thử lại).</p>
+<p>Nếu đã đóng cửa sổ mà vẫn lỗi, chương trình có thể vẫn chạy ngầm. Xem các biểu tượng ở khay hệ thống (góc phải thanh tác vụ) và thoát hẳn từ đó. Bạn cũng có thể mở Task Manager bằng <code>Ctrl + Shift + Esc</code>, chọn chương trình trong danh sách và bấm <strong>End task</strong> (Kết thúc tác vụ).</p>
+<h2 id="cach-2-tat-khung-xem-truoc-cua-file-explorer">Cách 2: Tắt khung xem trước của File Explorer</h2>
+<p>Khung xem trước (Preview pane) hiển thị nội dung file đang chọn, và trong lúc đó nó giữ file. Trong File Explorer, nhấn <code>Alt + P</code> để tắt khung này, bấm chọn một file khác, rồi thử xóa lại.</p>
+<p>Nếu vẫn không được, khởi động lại File Explorer: trong Task Manager, tìm <strong>Windows Explorer</strong>, chuột phải và chọn <strong>Restart</strong> (Khởi động lại). Thanh tác vụ sẽ biến mất vài giây rồi hiện lại, đó là bình thường.</p>
+<h2 id="cach-3-tim-chuong-trinh-dang-giu-file-bang-resource-monitor">Cách 3: Tìm chương trình đang giữ file bằng Resource Monitor</h2>
+<p>Resource Monitor có sẵn trong Windows và cho biết chính xác tiến trình nào đang mở file:</p>
+<ol>
+<li>Nhấn <code>Win + R</code>, gõ <code>resmon</code>, Enter.</li>
+<li>Mở thẻ <strong>CPU</strong>, rồi mở rộng mục <strong>Associated Handles</strong>.</li>
+<li>Gõ tên file, hoặc một phần tên, vào ô tìm kiếm của mục này.</li>
+<li>Cột <strong>Image</strong> cho biết tên tiến trình đang giữ file. Chuột phải vào dòng đó, chọn <strong>End Process</strong> để đóng tiến trình.</li>
+</ol>
+<p><strong>Cảnh báo:</strong> đóng tiến trình kiểu này làm mất mọi dữ liệu chưa lưu của chương trình đó. Đừng đóng các tiến trình hệ thống như <code>System</code>, <code>svchost.exe</code>, <code>csrss.exe</code> hay <code>lsass.exe</code>: máy có thể treo hoặc khởi động lại đột ngột. Nếu file bị một tiến trình hệ thống giữ, hãy khởi động lại máy (xem Cách 6).</p>
+<h2 id="cach-4-dung-file-locksmith-hoac-process-explorer">Cách 4: Dùng File Locksmith hoặc Process Explorer</h2>
+<p>Hai công cụ miễn phí của Microsoft làm việc này tiện hơn Resource Monitor:</p>
+<ul>
+<li><strong>File Locksmith</strong> trong bộ PowerToys: sau khi cài PowerToys, chuột phải vào file và chọn <strong>Unlock with File Locksmith</strong>. Cửa sổ hiện ra liệt kê các tiến trình đang dùng file, kèm nút kết thúc từng tiến trình. Trên Windows 11, nếu không thấy mục này, bấm <strong>Show more options</strong> (Hiển thị thêm tùy chọn) trước.</li>
+<li><strong>Process Explorer</strong> của Sysinternals: mở menu <strong>Find</strong>, chọn <strong>Find Handle or DLL</strong> (hoặc <code>Ctrl + F</code>), gõ tên file để thấy tiến trình đang giữ nó.</li>
+</ul>
+<p>Tải các công cụ này từ trang chính thức của Microsoft, không tải từ trang trung gian.</p>
+<h2 id="cach-5-de-diskat-chi-ra-chuong-trinh-dang-giu-file">Cách 5: Để Diskat chỉ ra chương trình đang giữ file</h2>
+<p>Nếu bạn đang dọn ổ đĩa bằng <a href="/download">Diskat</a>, không cần mở thêm công cụ nào. Khi một file không xóa được vì chương trình khác đang mở, Diskat cho biết chương trình nào đang giữ file và đưa ra hai lựa chọn:</p>
+<ul>
+<li>Đóng chương trình đó rồi xóa lại ngay. Hãy lưu công việc trong chương trình đó trước.</li>
+<li>Xóa file khi Windows khởi động lại, hữu ích khi chương trình đang giữ file không đóng được (cần chạy Diskat bằng quyền Admin).</li>
+</ul>
+<p>Như mọi lần xóa khác trong ứng dụng, bạn luôn thấy hộp xác nhận trước, và các thư mục hệ thống quan trọng vẫn bị khóa. Bạn cũng có thể <a href="/guides/tim-file-nang-tren-may-tinh">tìm file và thư mục nặng</a> rồi xóa ngay trong cùng một cửa sổ.</p>
+<h2 id="cach-6-khoi-dong-lai-may-hoac-vao-safe-mode">Cách 6: Khởi động lại máy hoặc vào Safe Mode</h2>
+<p>Khởi động lại sẽ đóng mọi chương trình. Hãy xóa file ngay sau khi đăng nhập, trước khi mở lại chương trình đã dùng nó.</p>
+<p>Nếu một chương trình tự chạy cùng Windows vẫn giữ file, hãy vào Chế độ an toàn (Safe Mode), nơi chỉ những thành phần tối thiểu của Windows được chạy:</p>
+<ol>
+<li>Mở Start, bấm nút nguồn, giữ phím <code>Shift</code> rồi bấm <strong>Restart</strong> (Khởi động lại).</li>
+<li>Chọn <strong>Troubleshoot</strong> &gt; <strong>Advanced options</strong> &gt; <strong>Startup Settings</strong> &gt; <strong>Restart</strong>.</li>
+<li>Khi máy hiện danh sách tùy chọn, nhấn phím <code>4</code> để vào Safe Mode.</li>
+<li>Xóa file, rồi khởi động lại máy như bình thường.</li>
+</ol>
+<h2 id="khi-loi-khong-phai-do-file-dang-mo">Khi lỗi không phải do file đang mở</h2>
+<p>Một số lỗi trông giống nhưng có nguyên nhân khác:</p>
+<ul>
+<li>"You need permission to perform this action": đây là lỗi quyền truy cập. File thuộc hệ thống hoặc một tài khoản khác. Hãy chắc rằng bạn thật sự nên xóa nó trước khi tìm cách lấy quyền.</li>
+<li>Ổ đĩa ở chế độ chỉ đọc, ví dụ thẻ nhớ có khóa gạt bảo vệ ghi: đóng chương trình nào cũng không giúp được.</li>
+</ul>
+<p>Sau khi xóa xong, nếu bạn đang cần lấy lại chỗ trống, xem thêm <a href="/guides/giai-phong-dung-luong-o-c">cách giải phóng dung lượng ổ C</a>.</p>
+<h2 id="cau-hoi-thuong-gap">Câu hỏi thường gặp</h2>
+<h3 id="vi-sao-da-dong-chuong-trinh-ma-van-khong-xoa-duoc-file">Vì sao đã đóng chương trình mà vẫn không xóa được file?</h3>
+<p>Chương trình có thể vẫn chạy ngầm, hoặc File Explorer, OneDrive, phần mềm diệt virus đang giữ file. Dùng Resource Monitor hoặc File Locksmith để biết chính xác tiến trình nào.</p>
+<h3 id="xoa-bang-quyen-admin-co-vuot-qua-duoc-loi-nay-khong">Xóa bằng quyền Admin có vượt qua được lỗi này không?</h3>
+<p>Không. Đây là khóa do một chương trình đang mở file, không phải vấn đề quyền. Bạn phải đóng chương trình đó, hoặc xóa file sau khi khởi động lại.</p>
+<h3 id="lam-sao-biet-chuong-trinh-nao-dang-dung-file">Làm sao biết chương trình nào đang dùng file?</h3>
+<p>Dùng Resource Monitor có sẵn trong Windows (thẻ CPU, mục Associated Handles), PowerToys File Locksmith hoặc Process Explorer. Diskat cũng tự chỉ ra chương trình đang giữ file khi xóa không thành công.</p>
+<h3 id="ket-thuc-tien-trinh-trong-task-manager-co-nguy-hiem-khong">Kết thúc tiến trình trong Task Manager có nguy hiểm không?</h3>
+<p>Với ứng dụng thông thường, bạn chỉ mất dữ liệu chưa lưu. Với tiến trình hệ thống, máy có thể treo hoặc khởi động lại đột ngột. Khi không chắc, hãy khởi động lại máy thay vì kết thúc tiến trình.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>Xem thứ gì đang chiếm ổ đĩa</h2><p>Diskat là phần mềm phân tích dung lượng ổ đĩa miễn phí, mã nguồn mở cho Windows 10 và 11. Chỉ một file .exe, không cần cài đặt.</p></div>
+  <a class="btn btn-primary" href="/download">Tải Diskat</a>
+</aside>
+<div class="guide-more"><h2>Hướng dẫn khác</h2><ul><li><a href="/guides/giai-phong-dung-luong-o-c">Cách giải phóng dung lượng ổ C trên Windows 10 và 11</a></li><li><a href="/guides/tim-file-nang-tren-may-tinh">Cách tìm file và thư mục nặng trên máy tính Windows</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Trang chủ</a><a href="/guides">Hướng dẫn</a><a href="/changelog">Nhật ký thay đổi</a><a href="/license">Giấy phép</a><a href="/privacy">Quyền riêng tư</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>

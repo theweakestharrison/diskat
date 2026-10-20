@@ -7,7 +7,14 @@
   <meta name="description" content="Every Diskat release and what changed in it.">
   <link rel="canonical" href="https://diskat.cc/changelog">
   <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="stylesheet" href="/assets/style.css?v=5">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://diskat.cc/changelog">
+  <meta property="og:title" content="Changelog">
+  <meta property="og:description" content="Every Diskat release and what changed in it.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=6">
 </head>
 <body>
 <header class="nav">
@@ -19,6 +26,29 @@
 <main class="wrap doc">
 <h1>Changelog</h1>
 <p>All notable changes to Diskat are documented here. The format is based on <a href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and the project uses <a href="https://semver.org/">Semantic Versioning</a>.</p>
+<h2 id="1.1.0-2026-10-20">1.1.0 - 2026-10-20</h2>
+<p>Files that won't delete, reports, and a closer look at what is using your space.</p>
+<h3 id="download">Download</h3>
+<ul>
+<li>Windows 10/11, 64-bit: <a href="https://diskat.cc/download/v1.1.0/Diskat.exe">Diskat.exe</a> (62.7 MB, portable). SHA-256: <code>9e86ca2e48a7cb106efcc817fa56b3972ae94d91507d40ae049276d5eed6ba57</code></li>
+</ul>
+<h3 id="added">Added</h3>
+<ul>
+<li><strong>Files in use</strong>: when a delete fails because another program has the file or folder open, Diskat shows which programs are holding it (Windows Restart Manager, plus the processes using a folder, such as a terminal window opened in it). It can ask them to close and retry, force-close the ones that don't respond only after you confirm, or schedule the delete for the next Windows restart (needs Run as Admin). Critical system processes, services and File Explorer are never closed.</li>
+<li><strong>PDF report</strong> of a scan: summary, drive free space, space map, largest folders and files, file types and file age, in the interface language. Fonts are picked per character, so Chinese, Japanese, Korean and Vietnamese names print correctly.</li>
+<li><strong>File types</strong> tab: space and file count per extension. Double-click a type to list every file of that type.</li>
+<li><strong>File age</strong> tab: space by last-modified date, from under a month to over 5 years. Double-click a row to list files older than that.</li>
+<li><strong>Find files</strong> on the Largest files tab: search the whole scan by name pattern (<code>*.log; *.tmp</code>), minimum size and age, largest first, then delete from the results.</li>
+<li><strong>CSV export</strong> of the folder tree and of the file list, UTF-8 with the separator Excel expects in your region.</li>
+<li><strong>"Scan with Diskat"</strong> in the Explorer right-click menu for folders, drives and folder backgrounds (optional, per user, no admin needed).</li>
+<li><strong>Check for updates</strong> (off by default): from the ⋯ menu, or once a day at startup if you turn it on. Downloads are checked against a SHA-256 hash before Diskat replaces itself. Store installs are updated by the Microsoft Store instead.</li>
+<li><strong>Command line</strong>: <code>Diskat.exe "D:\Data" --pdf report.pdf --csv folders.csv --files-csv files.csv --quit</code> for scripted reports, <code>--lang</code> to pick the language for one run, <code>--shell-menu on|off</code>.</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>Tab contents are now visible to screen readers and UI Automation.</li>
+<li>Recycle Bin errors are handled by Diskat instead of Explorer's own dialog, so a file in use leads to the dialog above.</li>
+</ul>
 <h2 id="1.0.0-2026-10-20">1.0.0 - 2026-10-20</h2>
 <p>First public release.</p>
 <h3 id="download">Download</h3>
@@ -53,7 +83,7 @@
 <footer class="foot">
   <div class="wrap foot-row">
     <span>© 2026 Diskat contributors · MIT License</span>
-    <nav aria-label="Footer"><a href="/">Home</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
   </div>
 </footer>
 </body>

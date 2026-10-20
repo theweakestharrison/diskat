@@ -2,10 +2,11 @@
 //
 //   /download                      -> 302 to the latest version (LATEST_VERSION in wrangler.jsonc)
 //   /download/v1.0.0/Diskat.exe    -> the file, streamed from R2 (resumable, cached for a year)
+//   /api/latest                    -> {version, url, sha256, size, notes} for the app's update check
 //
 // Publishing a new version:
 //   npx wrangler r2 object put diskat-downloads/releases/v<x.y.z>/Diskat.exe --file dist/Diskat.exe --remote
-//   then set LATEST_VERSION in wrangler.jsonc and run: npx wrangler deploy
+//   then set LATEST_VERSION, LATEST_SHA256 and LATEST_SIZE in wrangler.jsonc and run: npx wrangler deploy
 
 const VERSIONED = /^\/download\/v(\d+\.\d+\.\d+)\/Diskat\.exe$/;
 
@@ -18,6 +19,7 @@ export default {
     const m = url.pathname.match(VERSIONED);
     if (m) return serveRelease(request, env, m[1]);
     if (url.pathname.startsWith("/download/")) return notFound(request, env, url);
+    if (url.pathname === "/api/latest") return latest(env, url);
     return env.ASSETS.fetch(request);
   },
 };
@@ -61,6 +63,26 @@ async function serveRelease(request, env, version) {
 
   headers.set("Content-Length", String(object.size));
   return new Response(object.body, { status: 200, headers });
+}
+
+// Used by Diskat's "Check for updates" (only when the user asks, or turns on the startup check).
+// No cookies, no query parameters, nothing about the user is read or stored.
+function latest(env, url) {
+  const body = {
+    version: env.LATEST_VERSION,
+    url: new URL(`/download/v${env.LATEST_VERSION}/Diskat.exe`, url).toString(),
+    sha256: env.LATEST_SHA256,
+    size: Number(env.LATEST_SIZE),
+    notes: new URL("/changelog", url).toString(),
+  };
+  return new Response(JSON.stringify(body), {
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "public, max-age=300",
+      "Access-Control-Allow-Origin": "*",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
 }
 
 async function notFound(request, env, url) {

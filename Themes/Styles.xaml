@@ -134,7 +134,8 @@
                 <ControlTemplate TargetType="TextBox">
                     <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="1" CornerRadius="6">
-                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"/>
+                        <!-- TextBox tự áp Padding vào vùng chữ; không đặt thêm Margin để khỏi bị nhân đôi -->
+                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocused" Value="True">
@@ -142,6 +143,81 @@
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Hộp chọn phẳng (bộ lọc tìm file) -->
+    <Style x:Key="FlatComboToggle" TargetType="ToggleButton">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="bd" Background="{StaticResource CardBg}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="6">
+                        <TextBlock Text="&#xE70D;" FontFamily="{StaticResource IconFont}" FontSize="9" Foreground="{StaticResource SubText}"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bd" Property="BorderBrush" Value="#C5CEDC"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ComboBox">
+        <Setter Property="FontSize" Value="12.5"/>
+        <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <ToggleButton Style="{StaticResource FlatComboToggle}"
+                                      IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        <ContentPresenter Margin="10,0,26,0" VerticalAlignment="Center" HorizontalAlignment="Left" IsHitTestVisible="False"
+                                          Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"/>
+                        <Popup x:Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
+                               Focusable="False" PopupAnimation="Fade">
+                            <Border Background="{StaticResource CardBg}" BorderBrush="{StaticResource Border}" BorderThickness="1" CornerRadius="6"
+                                    Margin="0,4,8,8" Padding="4" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.15"/>
+                                </Border.Effect>
+                                <ScrollViewer MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ComboBoxItem">
+                                <Border x:Name="bd" Background="Transparent" CornerRadius="4" Padding="10,6">
+                                    <ContentPresenter/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsHighlighted" Value="True">
+                                        <Setter TargetName="bd" Property="Background" Value="{StaticResource RowHover}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="bd" Property="Background" Value="{StaticResource RowSelected}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
             </Setter.Value>
         </Setter>
     </Style>
@@ -297,7 +373,8 @@
                         <Border DockPanel.Dock="Top" BorderBrush="{StaticResource Border}" BorderThickness="0,0,0,1" Padding="6,0">
                             <TabPanel IsItemsHost="True"/>
                         </Border>
-                        <ContentPresenter ContentSource="SelectedContent"/>
+                        <!-- Tên PART_ bắt buộc để trình đọc màn hình / UI Automation thấy nội dung tab -->
+                        <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
                     </DockPanel>
                 </ControlTemplate>
             </Setter.Value>

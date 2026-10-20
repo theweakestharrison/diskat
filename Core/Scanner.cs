@@ -5,6 +5,52 @@ namespace Diskat.Core;
 
 public sealed record FileRecord(string Path, long Size, DateTime LastWriteUtc);
 
+/// <summary>Tổng theo phần mở rộng (".mp4", "" = không có phần mở rộng).</summary>
+public sealed record TypeStat(string Extension, long Size, long Count);
+
+/// <summary>Tổng theo tuổi file (lần sửa cuối). MaxDays = null: nhóm cũ nhất.</summary>
+public sealed record AgeStat(int? MaxDays, long Size, long Count);
+
+/// <summary>Thống kê riêng của một luồng quét, gộp lại khi quét xong (không cần khóa trong lúc quét).</summary>
+internal sealed class WorkerStats
+{
+    public sealed class Total { public long Size, Count; }
+
+    public static readonly int[] AgeLimitsDays = [30, 182, 365, 730, 1825];
+
+    public readonly Dictionary<string, Total> Types = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, Total>.AlternateLookup<ReadOnlySpan<char>> _lookup;
+    public readonly long[] AgeSize = new long[AgeLimitsDays.Length + 1];
+    public readonly long[] AgeCount = new long[AgeLimitsDays.Length + 1];
+    private readonly long[] _ageLimitTicks;
+
+    public WorkerStats(DateTime nowUtc)
+    {
+        _lookup = Types.GetAlternateLookup<ReadOnlySpan<char>>();
+        _ageLimitTicks = AgeLimitsDays.Select(d => (nowUtc - TimeSpan.FromDays(d)).Ticks).ToArray();
+    }
+
+    public void Add(ReadOnlySpan<char> fileName, long size, DateTime lastWriteUtc)
+    {
+        var ext = Path.GetExtension(fileName);
+        // Tên kiểu "bản sao.2023-01-01 cuối" không phải phần mở rộng thật
+        if (ext.Length > 12 || ext.Length == fileName.Length || ext.Contains(' ')) ext = default;
+        if (!_lookup.TryGetValue(ext, out var t))
+        {
+            t = new Total();
+            _lookup[ext] = t;
+        }
+        t.Size += size;
+        t.Count++;
+
+        long ticks = lastWriteUtc.Ticks;
+        int bucket = 0;
+        while (bucket < _ageLimitTicks.Length && ticks < _ageLimitTicks[bucket]) bucket++;
+        AgeSize[bucket] += size;
+        AgeCount[bucket]++;
+    }
+}
+
 /// <summary>
 /// Bộ quét song song: nhiều luồng cùng lấy thư mục từ một ngăn xếp chung,
 /// liệt kê bằng FileSystemEnumerable (NtQueryDirectoryFile, không tạo FileInfo),
@@ -32,6 +78,10 @@ public sealed class Scanner
     private volatile bool _finished;
     private int _errors;
     private CancellationToken _token;
+    private readonly List<WorkerStats> _stats = new();
+    private readonly DateTime _startedUtc = DateTime.UtcNow;
+
+    public DateTime StartedUtc => _startedUtc;
 
     public DirNode Root { get; }
     public int Errors => Volatile.Read(ref _errors);
@@ -53,6 +103,38 @@ public sealed class Scanner
             list.Sort((a, b) => b.Size.CompareTo(a.Size));
             return list;
         }
+    }
+
+    /// <summary>Dung lượng theo phần mở rộng, lớn nhất trước. Chỉ gọi khi đã quét xong (hoặc đã dừng).</summary>
+    public List<TypeStat> GetFileTypes()
+    {
+        var merged = new Dictionary<string, (long Size, long Count)>(StringComparer.OrdinalIgnoreCase);
+        lock (_stats)
+        {
+            foreach (var s in _stats)
+                foreach (var (ext, t) in s.Types)
+                {
+                    merged.TryGetValue(ext, out var cur);
+                    merged[ext] = (cur.Size + t.Size, cur.Count + t.Count);
+                }
+        }
+        return merged.Select(kv => new TypeStat(kv.Key.ToLowerInvariant(), kv.Value.Size, kv.Value.Count))
+                     .OrderByDescending(t => t.Size).ToList();
+    }
+
+    /// <summary>Dung lượng theo tuổi file (lần sửa cuối), từ mới đến cũ.</summary>
+    public List<AgeStat> GetAgeBuckets()
+    {
+        int n = WorkerStats.AgeLimitsDays.Length + 1;
+        var size = new long[n];
+        var count = new long[n];
+        lock (_stats)
+        {
+            foreach (var s in _stats)
+                for (int i = 0; i < n; i++) { size[i] += s.AgeSize[i]; count[i] += s.AgeCount[i]; }
+        }
+        return Enumerable.Range(0, n)
+            .Select(i => new AgeStat(i < n - 1 ? WorkerStats.AgeLimitsDays[i] : null, size[i], count[i])).ToList();
     }
 
     public Task RunAsync(CancellationToken token)
@@ -94,13 +176,15 @@ public sealed class Scanner
 
     private void Worker()
     {
+        var stats = new WorkerStats(_startedUtc);
+        lock (_stats) _stats.Add(stats);
         while (true)
         {
             _signal.Wait();
             if (_finished) return;
             if (!_stack.TryPop(out var node)) continue;
 
-            try { Process(node); }
+            try { Process(node, stats); }
             catch { Interlocked.Increment(ref _errors); }
 
             if (Interlocked.Decrement(ref _pending) == 0)
@@ -121,7 +205,7 @@ public sealed class Scanner
         public readonly DateTime LastWriteUtc = lastWrite;
     }
 
-    private void Process(DirNode node)
+    private void Process(DirNode node, WorkerStats stats)
     {
         if (_token.IsCancellationRequested) return;
 
@@ -140,9 +224,11 @@ public sealed class Scanner
                 if (e.IsDirectory)
                     return new Entry(e.FileName.ToString(), 0, true, e.Attributes, e.LastWriteTimeUtc.UtcDateTime);
                 long len = e.Length;
+                var lastWrite = e.LastWriteTimeUtc.UtcDateTime;
+                stats.Add(e.FileName, len, lastWrite);
                 // Chỉ cấp phát chuỗi tên cho file đủ lớn để lọt vào danh sách "file lớn nhất"
                 string? name = len >= threshold ? e.FileName.ToString() : null;
-                return new Entry(name, len, false, e.Attributes, e.LastWriteTimeUtc.UtcDateTime);
+                return new Entry(name, len, false, e.Attributes, lastWrite);
             }, Options);
 
             foreach (var e in en)

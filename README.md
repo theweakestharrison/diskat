@@ -17,12 +17,16 @@
 - **Folder tree** with size, "% of parent" bar, file and folder counts, modified date. Click a column header to sort.
 - **Space map** (squarified treemap): click a tile to select it, double-click to drill in, ↑ to go back up.
 - **Largest files** across the whole scan (top 500), with multi-select delete.
+- **Find files** by name pattern (`*.log; *.tmp`), minimum size and age across the whole scan.
+- **File types** and **File age** tabs: which extensions use the most space, and how old the data is.
+- **Files in use**: when a delete fails because a program has the file open, Diskat shows which program, can close it and retry, or delete at the next restart.
+- **Reports**: PDF report (summary, space map, largest folders and files, file types, file age) and CSV export of folders and files.
 - **Safe delete**: Recycle Bin by default (`Del`) or permanent (`Shift+Del`), always with a confirmation dialog.
   Drive roots, Windows, Program Files, ProgramData and user profile roots are protected.
 - **No double counting**: junctions and symlinks are listed but never followed.
 - **Run as Admin** to include protected system folders.
 - **11 languages**: English (default), Tiếng Việt, 简体中文, 日本語, 한국어, Español, Português, Deutsch, Français, Русский, Bahasa Indonesia.
-- Fully offline: no telemetry, no network access.
+- **Private**: no telemetry. The only network access is the optional update check, which is off by default (the Microsoft Store version never checks; the Store updates it).
 
 | Largest files | Safe delete |
 |---|---|
@@ -35,7 +39,19 @@ Download it from **[diskat.cc](https://diskat.cc/download)**. It is a single sel
 > The exe is not code-signed yet, so Windows SmartScreen may show "Windows protected your PC" the first time.
 > Click **More info** then **Run anyway**, or right-click the file > Properties > **Unblock**.
 
-You can also pass a folder on the command line: `Diskat.exe "D:\Projects"`.
+### Command line
+
+```powershell
+# Scan a folder on startup
+Diskat.exe "D:\Projects"
+
+# Scripted report: scan, write the files, then exit (exit code 1 if an export failed)
+Diskat.exe "D:\Projects" --pdf report.pdf --csv folders.csv --files-csv files.csv --quit
+
+# Other options
+Diskat.exe --lang vi                  # interface language for this run only
+Diskat.exe --shell-menu on --quit     # add or remove "Scan with Diskat" in Explorer (on|off)
+```
 
 ## Keyboard shortcuts
 
@@ -62,8 +78,9 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=
 
 | Path | Contents |
 |---|---|
-| `Core/` | Parallel scanner, directory tree model, delete / Recycle Bin operations, localization (EN/VI strings) |
-| `UI/` | Flattened tree rows, treemap control, confirmation dialog |
+| `Core/` | Parallel scanner (with file type and age totals), directory tree model, delete / Recycle Bin operations, locked-file finder (Restart Manager), file search, updater, Explorer menu entry, command line, localization (`Core/Lang`, 11 languages) |
+| `UI/` | Flattened tree rows, treemap control, confirmation, locked-file and update dialogs, PDF report (PDFsharp) |
+| `site-src/guides/` | Markdown sources of the website guides, built into `website/guides/` by `node tools/build-pages.js` |
 | `Themes/` | Styles and the vector logo (`Logo.xaml`, also used to generate `app.ico` and Store tiles) |
 | `MainWindow.*` | Main window: scanning, tree, map and actions |
 | `packaging/` | Microsoft Store (MSIX) packaging scripts, tiles, listing text and screenshots |

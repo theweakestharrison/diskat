@@ -129,6 +129,11 @@
                             <TextBlock Text="&#xE70D;" FontFamily="{StaticResource IconFont}" FontSize="9" VerticalAlignment="Center" Foreground="{StaticResource SubText}" Margin="7,1,0,0"/>
                         </StackPanel>
                     </Button>
+                    <!-- Menu "Thêm": báo cáo PDF, cập nhật, giới thiệu -->
+                    <Button x:Name="MoreBtn" Style="{StaticResource GhostButton}" Height="34" Margin="4,0,0,0" Padding="9,4"
+                            Focusable="False" Click="MoreBtn_Click" ToolTip="{core:T MenuMore}">
+                        <TextBlock Text="&#xE712;" FontFamily="{StaticResource IconFont}" FontSize="16" VerticalAlignment="Center"/>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>
@@ -329,8 +334,43 @@
                                        TextTrimming="CharacterEllipsis" Text="{core:T MapHint}"/>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="{core:T TabTopFiles}">
-                        <ListView x:Name="TopFiles" Style="{StaticResource FlatList}" SelectionMode="Extended" Margin="0,0,0,4"
+                    <TabItem x:Name="TopFilesTab" Header="{core:T TabTopFiles}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <!-- Tìm file theo tên / dung lượng / tuổi trong toàn bộ thư mục đã quét -->
+                            <!-- Ô tìm co giãn theo chỗ còn lại; hai bộ lọc và nút giữ độ rộng vừa chữ -->
+                            <Grid Margin="10,10,10,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" MinWidth="110"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Height="30" Margin="0,0,6,0">
+                                    <TextBox x:Name="FindText" Style="{StaticResource PathBox}" Padding="28,0,6,0" FontSize="12.5"
+                                             TextChanged="FindText_TextChanged" KeyDown="FindText_KeyDown" ToolTip="{core:T FindNameTip}"/>
+                                    <TextBlock Text="&#xE721;" FontFamily="{StaticResource IconFont}" FontSize="12" Foreground="{StaticResource SubText}"
+                                               HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" IsHitTestVisible="False"/>
+                                    <TextBlock x:Name="FindTextHint" Text="{core:T FindNameHint}" FontSize="12.5" Foreground="#9AA0AB"
+                                               VerticalAlignment="Center" Margin="30,0,6,0" IsHitTestVisible="False" TextTrimming="CharacterEllipsis"/>
+                                </Grid>
+                                <ComboBox x:Name="FindSize" Grid.Column="1" Height="30" Margin="0,0,6,0" VerticalContentAlignment="Center"/>
+                                <ComboBox x:Name="FindAge" Grid.Column="2" Height="30" Margin="0,0,6,0" VerticalContentAlignment="Center"/>
+                                <Button x:Name="FindBtn" Grid.Column="3" Style="{StaticResource PrimaryButton}" Height="30" Padding="14,4"
+                                        Click="FindSearch_Click" Content="{core:T FindSearch}"/>
+                            </Grid>
+                            <DockPanel Grid.Row="1" Margin="12,0,8,6">
+                                <Button x:Name="FindClearBtn" DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Padding="6,2" FontSize="12"
+                                        Foreground="{StaticResource Accent}" Click="FindClear_Click" Content="{core:T FindClear}" Visibility="Collapsed"
+                                        VerticalAlignment="Center"/>
+                                <TextBlock x:Name="FindInfo" FontSize="12" Foreground="{StaticResource SubText}" VerticalAlignment="Center"
+                                           TextWrapping="Wrap" Text="{core:T FindTopHint}"/>
+                            </DockPanel>
+                        <ListView x:Name="TopFiles" Grid.Row="2" Style="{StaticResource FlatList}" SelectionMode="Extended" Margin="0,0,0,4"
                                   MouseDoubleClick="TopFiles_MouseDoubleClick" PreviewKeyDown="TopFiles_PreviewKeyDown">
                             <ListView.ContextMenu>
                                 <ContextMenu>
@@ -367,6 +407,128 @@
                                 </GridView>
                             </ListView.View>
                         </ListView>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- Loại file: tổng theo phần mở rộng trong lần quét -->
+                    <TabItem Header="{core:T TabTypes}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TypesNote" Margin="12,10,12,6" FontSize="12" Foreground="{StaticResource SubText}" TextWrapping="Wrap"/>
+                            <ListView x:Name="TypesList" Grid.Row="1" Style="{StaticResource FlatList}" Margin="0,0,0,4"
+                                      MouseDoubleClick="TypesList_MouseDoubleClick">
+                                <ListView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{core:T MenuFindType}" Click="FindType_Click"/>
+                                    </ContextMenu>
+                                </ListView.ContextMenu>
+                                <ListView.View>
+                                    <GridView ColumnHeaderContainerStyle="{StaticResource FlatHeader}">
+                                        <GridViewColumn Header="{core:T ColType}" Width="150">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" Height="26">
+                                                        <Border Width="10" Height="10" CornerRadius="3" Background="{Binding Swatch}" Margin="4,0,10,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="{core:T ColShare}" Width="150">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <ProgressBar Style="{StaticResource SlimBar}" Width="78" Height="8" Maximum="100"
+                                                                     Value="{Binding Percent, Mode=OneWay}" Foreground="{Binding Swatch}" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding PercentText}" Foreground="{StaticResource SubText}" FontSize="12" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="{core:T ColSize}" Width="88">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding SizeText}" FontWeight="SemiBold" TextAlignment="Right"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="{core:T ColFiles}" Width="90">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding FilesText}" Foreground="{StaticResource SubText}" TextAlignment="Right"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- Tuổi file: theo lần sửa cuối -->
+                    <TabItem Header="{core:T TabAges}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="AgesNote" Margin="12,10,12,8" FontSize="12" Foreground="{StaticResource SubText}" TextWrapping="Wrap"/>
+                            <!-- Thanh xếp chồng: tỷ lệ từng nhóm tuổi -->
+                            <Border Grid.Row="1" Margin="12,0,12,8" Height="14" CornerRadius="4" ClipToBounds="True" Background="{StaticResource Track}">
+                                <Grid x:Name="AgesStrip"/>
+                            </Border>
+                            <ListView x:Name="AgesList" Grid.Row="2" Style="{StaticResource FlatList}" Margin="0,0,0,4"
+                                      MouseDoubleClick="AgesList_MouseDoubleClick">
+                                <ListView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{core:T MenuFindOlder}" Click="FindOlder_Click"/>
+                                    </ContextMenu>
+                                </ListView.ContextMenu>
+                                <ListView.View>
+                                    <GridView ColumnHeaderContainerStyle="{StaticResource FlatHeader}">
+                                        <GridViewColumn Header="{core:T ColModified}" Width="150">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" Height="26">
+                                                        <Border Width="10" Height="10" CornerRadius="3" Background="{Binding Swatch}" Margin="4,0,10,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding Label}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="{core:T ColShare}" Width="150">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <ProgressBar Style="{StaticResource SlimBar}" Width="78" Height="8" Maximum="100"
+                                                                     Value="{Binding Percent, Mode=OneWay}" Foreground="{Binding Swatch}" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding PercentText}" Foreground="{StaticResource SubText}" FontSize="12" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="{core:T ColSize}" Width="88">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding SizeText}" FontWeight="SemiBold" TextAlignment="Right"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="{core:T ColFiles}" Width="90">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding FilesText}" Foreground="{StaticResource SubText}" TextAlignment="Right"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
                     </TabItem>
                 </TabControl>
             </Border>

@@ -4,7 +4,7 @@
   "use strict";
 
   // Bump together with ?v= in the HTML whenever CSS/JS/translations change (assets are cached for 7 days)
-  var ASSET_VERSION = "5";
+  var ASSET_VERSION = "6";
 
   var LANGS = [
     { code: "en", name: "English", html: "en" },

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to delete a file that's open in another program · Diskat</title>
+  <meta name="description" content="Fix the Windows error that says a file is open in another program. Find the program that holds the file, close it, then delete the file safely.">
+  <link rel="canonical" href="https://diskat.cc/guides/delete-file-in-use">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/delete-file-in-use">
+  <meta property="og:title" content="How to delete a file that's open in another program">
+  <meta property="og:description" content="Fix the Windows error that says a file is open in another program. Find the program that holds the file, close it, then delete the file safely.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=6">
+  <link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/xoa-file-dang-duoc-mo">
+  <link rel="alternate" hreflang="en" href="https://diskat.cc/guides/delete-file-in-use">
+  <link rel="alternate" hreflang="x-default" href="https://diskat.cc/guides/delete-file-in-use">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to delete a file that's open in another program","description":"Fix the Windows error that says a file is open in another program. Find the program that holds the file, close it, then delete the file safely.","inLanguage":"en","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/delete-file-in-use","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"How to delete a file that's open in another program","item":"https://diskat.cc/guides/delete-file-in-use"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Why does Windows say the file is open when no program is open?","acceptedAnswer":{"@type":"Answer","text":"A program can hold a file without showing a window. Background apps in the system tray, the File Explorer preview pane, antivirus scans and OneDrive syncing are the usual causes. Resource Monitor shows which one it is."}},{"@type":"Question","name":"Is it safe to end a process in Task Manager to delete a file?","acceptedAnswer":{"@type":"Answer","text":"It's safe for programs you recognize, but any unsaved work in that program is lost. Don't end Windows system processes, because that can freeze or restart the PC."}},{"@type":"Question","name":"Does restarting the computer always unlock the file?","acceptedAnswer":{"@type":"Answer","text":"Usually, yes. If a program that starts with Windows opens the file again, disable that program at startup, or delete the file in Safe Mode."}},{"@type":"Question","name":"How do I delete a folder that is in use?","acceptedAnswer":{"@type":"Answer","text":"Use the same steps. Also close any File Explorer, Command Prompt or Terminal window that is open inside the folder, because those keep the folder busy."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Guides</a></nav>
+<article class="guide">
+<h1>How to delete a file that's open in another program</h1>
+<p class="guide-meta">Updated <time datetime="2026-10-20">2026-10-20</time></p>
+<p>You try to delete, move or rename a file and Windows shows a <strong>File In Use</strong> dialog: "The action can't be completed because the file is open in another program." Sometimes it names the program, sometimes it doesn't. Either way, the cause is the same. A running program has the file open, and Windows won't remove a file while it's in use. The fix is to find that program and close it. This guide shows how, from the quickest checks to tools that show exactly which process holds the file.</p>
+<h2 id="why-windows-locks-files">Why Windows locks files</h2>
+<p>When a program opens a file, it can tell Windows that no one else may delete or change it until it's done. That protects the file from damage while it's being written. The lock is released when the program closes the file or exits.</p>
+<p>The program holding the file isn't always one you opened yourself. Common hidden causes are:</p>
+<ul>
+<li>The File Explorer preview pane, which opens files to show a preview</li>
+<li>A program still running in the background after you closed its window</li>
+<li>Antivirus software scanning the file</li>
+<li>OneDrive or another sync or backup tool uploading it</li>
+<li>A Command Prompt or Terminal window whose current folder is the folder you're deleting</li>
+</ul>
+<h2 id="fix-1-close-the-program-windows-names">Fix 1: Close the program Windows names</h2>
+<p>If the dialog names a program, for example "open in Microsoft Word", switch to that program, save your work and close the file or the whole program. Then click <strong>Try Again</strong> in the dialog.</p>
+<p>If you don't see the program, check the system tray in the bottom right corner of the taskbar. Click the arrow to show hidden icons. Many apps keep running there after you close their window. Right-click the icon and choose the option to quit or exit.</p>
+<h2 id="fix-2-turn-off-the-preview-pane">Fix 2: Turn off the preview pane</h2>
+<p>The preview pane in File Explorer opens a file to show its contents, which can lock it. Click an empty spot in the folder, press Alt+P to hide the preview pane, then try again. If another File Explorer window shows the same folder, close it too.</p>
+<p>If you're deleting a folder, the message is slightly different: "The action can't be completed because the folder or a file in it is open in another program." Close any Command Prompt, PowerShell or Terminal window that is working inside that folder.</p>
+<h2 id="fix-3-find-the-program-with-resource-monitor">Fix 3: Find the program with Resource Monitor</h2>
+<p>Resource Monitor is built into Windows and can show which process has a file open.</p>
+<ol>
+<li>Press Win+R, type <code>resmon</code> and press Enter.</li>
+<li>Open the <strong>CPU</strong> tab.</li>
+<li>Expand the <strong>Associated Handles</strong> section.</li>
+<li>Type the file name (or part of it) in the search box of that section.</li>
+<li>Look at the <strong>Image</strong> column. It shows the name of each process that has the file open.</li>
+</ol>
+<p>Once you know the program, close it normally if you can. That's the safest way. If it won't close, right-click it in Resource Monitor and choose <strong>End Process</strong>. Any unsaved work in that program is lost. Don't end processes you don't recognize, and never end Windows processes such as <code>System</code>, <code>csrss.exe</code> or <code>svchost.exe</code>.</p>
+<p>If the process is <code>explorer.exe</code>, restart File Explorer instead. Press Ctrl+Shift+Esc to open Task Manager, find <strong>Windows Explorer</strong> in the list of processes, right-click it and choose <strong>Restart</strong>.</p>
+<h2 id="fix-4-use-a-tool-made-for-locked-files">Fix 4: Use a tool made for locked files</h2>
+<p>Two free Microsoft tools make this easier:</p>
+<ul>
+<li><strong>PowerToys File Locksmith.</strong> Install Microsoft PowerToys and turn on File Locksmith. Right-click the file and use the File Locksmith entry in the menu (on Windows 11 it may be under <strong>Show more options</strong>). It lists the processes using the file and can end them.</li>
+<li><strong>Process Explorer</strong> from Sysinternals. Open the <strong>Find</strong> menu, choose <strong>Find Handle or DLL</strong> and type the file name. It shows every process with a matching handle.</li>
+</ul>
+<h2 id="fix-5-restart-windows-then-delete">Fix 5: Restart Windows, then delete</h2>
+<p>A restart closes every program, so the lock is gone. Delete the file right after Windows starts, before you open other apps.</p>
+<p>If the file is locked again after a restart, a program that starts with Windows is opening it. In Task Manager, open <strong>Startup apps</strong> on Windows 11 or the <strong>Startup</strong> tab on Windows 10 and disable the program you suspect. As a last resort, start Windows in Safe Mode, where only essential drivers and services run, and delete the file there.</p>
+<h2 id="let-the-delete-happen-at-the-next-startup">Let the delete happen at the next startup</h2>
+<p>Windows can also delete a file during the next startup, before other programs load. That avoids the lock completely. Diskat, a free disk space analyzer, uses this from version 1.1. When a delete fails because another program has the file open, Diskat shows which program is holding it. It then offers to close that program and retry, or to delete the file the next time Windows starts (that option needs Diskat to run as administrator). Every delete still goes through a confirmation dialog, and by default files go to the Recycle Bin. You can <a href="/download">download Diskat</a> as a single portable file.</p>
+<h2 id="when-you-should-not-force-it">When you should not force it</h2>
+<p>A lock is sometimes a warning sign. Think twice in these cases:</p>
+<ul>
+<li><strong>Files inside <code>C:\Windows</code> or Program Files.</strong> Windows or an installed app needs them. Uninstall the app instead of deleting its files.</li>
+<li><strong><code>pagefile.sys</code> and <code>hiberfil.sys</code>.</strong> Windows always has these open. Change them through system settings, as described in <a href="/guides/c-drive-full">what to do when your C drive is full</a>.</li>
+<li><strong>App data in AppData.</strong> A database or cache that's open is in active use. Close the app first, and read <a href="/guides/appdata-folder-large">what's safe to delete in AppData</a>.</li>
+<li><strong>Files you don't recognize.</strong> Find out what they are before you end processes to remove them.</li>
+</ul>
+<h2 id="faq">FAQ</h2>
+<h3 id="why-does-windows-say-the-file-is-open-when-no-program-is-open">Why does Windows say the file is open when no program is open?</h3>
+<p>A program can hold a file without showing a window. Background apps in the system tray, the File Explorer preview pane, antivirus scans and OneDrive syncing are the usual causes. Resource Monitor shows which one it is.</p>
+<h3 id="is-it-safe-to-end-a-process-in-task-manager-to-delete-a-file">Is it safe to end a process in Task Manager to delete a file?</h3>
+<p>It's safe for programs you recognize, but any unsaved work in that program is lost. Don't end Windows system processes, because that can freeze or restart the PC.</p>
+<h3 id="does-restarting-the-computer-always-unlock-the-file">Does restarting the computer always unlock the file?</h3>
+<p>Usually, yes. If a program that starts with Windows opens the file again, disable that program at startup, or delete the file in Safe Mode.</p>
+<h3 id="how-do-i-delete-a-folder-that-is-in-use">How do I delete a folder that is in use?</h3>
+<p>Use the same steps. Also close any File Explorer, Command Prompt or Terminal window that is open inside the folder, because those keep the folder busy.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>See what's filling up your disk</h2><p>Diskat is a free, open-source disk space analyzer for Windows 10 and 11. One portable .exe, nothing to install.</p></div>
+  <a class="btn btn-primary" href="/download">Download Diskat</a>
+</aside>
+<div class="guide-more"><h2>More guides</h2><ul><li><a href="/guides/appdata-folder-large">Why is the AppData folder so big, and what can you safely delete?</a></li><li><a href="/guides/c-drive-full">C drive full? How to see what's taking up space and fix it</a></li><li><a href="/guides/find-large-files-windows">How to find large files on Windows</a></li><li><a href="/guides/free-up-disk-space-windows">How to free up disk space on Windows 10 and 11</a></li><li><a href="/guides/treesize-alternative">Diskat vs TreeSize Free</a></li><li><a href="/guides/windirstat-alternative">Diskat vs WinDirStat</a></li><li><a href="/guides/winsxs-folder">Can you delete the WinSxS folder? (and how to shrink it safely)</a></li><li><a href="/guides/wiztree-alternative">Diskat vs WizTree</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>

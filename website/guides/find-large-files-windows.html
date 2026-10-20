@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to find large files on Windows · Diskat</title>
+  <meta name="description" content="Find the large files filling your Windows 10 or 11 PC using File Explorer search, Storage settings or a disk space analyzer, then delete them safely.">
+  <link rel="canonical" href="https://diskat.cc/guides/find-large-files-windows">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/find-large-files-windows">
+  <meta property="og:title" content="How to find large files on Windows">
+  <meta property="og:description" content="Find the large files filling your Windows 10 or 11 PC using File Explorer search, Storage settings or a disk space analyzer, then delete them safely.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=6">
+  <link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/tim-file-nang-tren-may-tinh">
+  <link rel="alternate" hreflang="en" href="https://diskat.cc/guides/find-large-files-windows">
+  <link rel="alternate" hreflang="x-default" href="https://diskat.cc/guides/find-large-files-windows">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to find large files on Windows","description":"Find the large files filling your Windows 10 or 11 PC using File Explorer search, Storage settings or a disk space analyzer, then delete them safely.","inLanguage":"en","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/find-large-files-windows","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"How to find large files on Windows","item":"https://diskat.cc/guides/find-large-files-windows"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the fastest way to find large files on Windows?","acceptedAnswer":{"@type":"Answer","text":"A disk space analyzer is the fastest way, because it scans the whole drive once and sorts everything by size. File Explorer search with size:>1GB works too, but it's slower and doesn't show folder totals."}},{"@type":"Question","name":"Why can't I find some large files with File Explorer search?","acceptedAnswer":{"@type":"Answer","text":"File Explorer hides hidden and system files by default, and it can't search folders you don't have permission to open. Turn on hidden items, or use a tool that can scan with administrator rights."}},{"@type":"Question","name":"Is it safe to delete large files I don't recognize?","acceptedAnswer":{"@type":"Answer","text":"Not without checking. Look at where the file is and search its name first. Files in Windows, Program Files or ProgramData usually belong to the system or an app and should not be deleted by hand."}},{"@type":"Question","name":"Can I find large files on an external or USB drive?","acceptedAnswer":{"@type":"Answer","text":"Yes. All four methods work on external drives. In an analyzer, pick the external drive instead of C: and scan it the same way."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Guides</a></nav>
+<article class="guide">
+<h1>How to find large files on Windows</h1>
+<p class="guide-meta">Updated <time datetime="2026-10-20">2026-10-20</time></p>
+<p>A few large files often take up more space than thousands of small ones. An old video export, a forgotten ISO file or a virtual machine disk can each use tens of gigabytes. The hard part is finding them, because Windows doesn't show folder sizes in File Explorer. This guide covers four ways to track them down, from built-in tools to a dedicated analyzer, and what to check before you delete anything.</p>
+<h2 id="method-1-search-by-size-in-file-explorer">Method 1: Search by size in File Explorer</h2>
+<p>File Explorer can filter search results by size. It's built in and works well for a single drive or folder.</p>
+<ol>
+<li>Open File Explorer and go to the drive or folder you want to search, for example This PC or <code>C:\Users\YourName</code>.</li>
+<li>Click the search box in the top right corner.</li>
+<li>Type <code>size:&gt;1GB</code> and press Enter. You can use other values too, such as <code>size:&gt;500MB</code>.</li>
+<li>Switch to the <strong>Details</strong> view and click the <strong>Size</strong> column to sort the results, largest first.</li>
+</ol>
+<p>This search includes subfolders, so it can take a while on a full drive, especially in locations that Windows doesn't index. It also has limits. It only shows files, not folder totals, and it skips hidden and system files unless you turn on hidden items. On Windows 11 that option is under <strong>View &gt; Show &gt; Hidden items</strong>. On Windows 10 it's the <strong>Hidden items</strong> checkbox on the <strong>View</strong> tab.</p>
+<h2 id="method-2-check-folder-sizes-one-at-a-time">Method 2: Check folder sizes one at a time</h2>
+<p>In the Details view, File Explorer sorts files in a folder by size, but folders show no size at all. To see how big a folder is, right-click it and choose <strong>Properties</strong>. Windows counts the contents and shows the total.</p>
+<p>This works when you already suspect a folder. It's slow when you don't know where to look, because you have to check folders one by one and drill down by hand.</p>
+<h2 id="method-3-use-storage-settings">Method 3: Use Storage settings</h2>
+<p>Open <strong>Settings &gt; System &gt; Storage</strong>. Windows shows how your drive is used, split into categories such as apps, temporary files and documents. Click a category to see more detail.</p>
+<p>On Windows 11, <strong>Cleanup recommendations</strong> on the same page includes a list of large or unused files. It's a quick way to catch obvious candidates, but it only shows a selection, not everything on the drive.</p>
+<h2 id="method-4-use-a-disk-space-analyzer">Method 4: Use a disk space analyzer</h2>
+<p>A disk space analyzer scans a whole drive and sorts every folder and file by size. You see the answer in one view instead of searching by hand.</p>
+<p>Diskat is a free, open-source analyzer for Windows 10 and 11. It's a single portable file, so there's nothing to install. Here is how to find large files with it:</p>
+<ol>
+<li><a href="/download">Download Diskat</a> and run it.</li>
+<li>Click the card for the drive you want to check, or click <strong>Choose folder</strong> to scan one folder.</li>
+<li>Watch the folder tree. Sizes update while the scan runs and the heaviest folders move to the top.</li>
+<li>Open the <strong>Largest files</strong> tab. It lists the 500 biggest files in the scan, with the folder each one is in.</li>
+<li>Right-click a file and choose <strong>Show in Explorer</strong> to see it in context, or select several files and press Del to move them to the Recycle Bin.</li>
+<li>Use the <strong>Space map</strong> tab to spot big blocks visually. Double-click a tile to drill into a folder.</li>
+</ol>
+<p>If the status bar says some folders were blocked, click <strong>Run as Admin</strong> to include protected system folders in the scan.</p>
+<h2 id="where-large-files-usually-hide">Where large files usually hide</h2>
+<p>The same locations show up on most PCs. This table lists them and what to do about each one.</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Location</th><th>What it usually is</th><th>What to do</th></tr></thead><tbody>
+<tr><td><code>C:\Users\YourName\Downloads</code></td><td>Installers, ISO files, zip archives</td><td>Delete what you no longer need</td></tr>
+<tr><td><code>Videos</code>, <code>Pictures</code>, <code>Desktop</code></td><td>Recordings, phone imports, exports</td><td>Your data: move or back up before deleting</td></tr>
+<tr><td><code>C:\Users\YourName\AppData</code></td><td>App caches, chat media, virtual disks</td><td>Depends on the app, check first</td></tr>
+<tr><td><code>C:\hiberfil.sys</code></td><td>Hibernation file</td><td>Use <code>powercfg /hibernate off</code>, never delete it directly</td></tr>
+<tr><td><code>C:\pagefile.sys</code></td><td>Virtual memory</td><td>Leave it, or change it in system settings</td></tr>
+<tr><td><code>C:\Windows\MEMORY.DMP</code></td><td>Crash dump from a past system error</td><td>Remove with Disk Cleanup</td></tr>
+<tr><td><code>C:\Windows.old</code></td><td>Previous Windows installation</td><td>Remove with Disk Cleanup or Settings</td></tr>
+<tr><td>Game library folders</td><td>Installed games</td><td>Uninstall or move with the game launcher</td></tr>
+</tbody></table></div>
+<p>For more on the AppData folder, see <a href="/guides/appdata-folder-large">why AppData gets so big</a>. If your C: drive is the one that's full, the <a href="/guides/c-drive-full">C drive full guide</a> goes through each system item in more detail.</p>
+<h2 id="common-types-of-large-files">Common types of large files</h2>
+<p>Some file types are large by nature. When you sort by size, these are the usual suspects:</p>
+<ul>
+<li>Video files such as <code>.mp4</code>, <code>.mkv</code> and <code>.mov</code>, especially screen and game recordings</li>
+<li>Disk images such as <code>.iso</code> and <code>.img</code></li>
+<li>Virtual machine disks such as <code>.vhdx</code> and <code>.vmdk</code></li>
+<li>Archives such as <code>.zip</code>, <code>.7z</code> and <code>.rar</code></li>
+<li>Installers such as <code>.exe</code> and <code>.msi</code> left in Downloads</li>
+<li>Mail data files such as <code>.pst</code> and <code>.ost</code></li>
+<li>Phone and app backups</li>
+</ul>
+<h2 id="before-you-delete-a-large-file">Before you delete a large file</h2>
+<p>A file being big doesn't mean it's useless. Check these points first:</p>
+<ul>
+<li><strong>Know what it is.</strong> Look at the name, the extension, the folder and the date. Search the name online if you don't recognize it.</li>
+<li><strong>Don't delete program files.</strong> If a large file is inside Program Files or a game folder, uninstall the app instead.</li>
+<li><strong>Be careful with virtual disks and mail files.</strong> A <code>.vhdx</code> file may hold an entire virtual machine, and a <code>.pst</code> file may hold years of email.</li>
+<li><strong>Use the Recycle Bin first.</strong> Move files there, use your PC for a day or two, then empty it.</li>
+<li><strong>Back up personal files.</strong> If it's a video or photo archive you care about, copy it to an external drive or cloud storage before you remove it.</li>
+</ul>
+<h2 id="a-note-on-file-sizes">A note on file sizes</h2>
+<p>Analyzers can show different totals than File Explorer. Diskat shows the logical size of each file, the number you see as "Size" in the Properties window, not the "Size on disk". For most files these are close. They can differ a lot for OneDrive files that are online-only and for NTFS-compressed files, which use less real space than their size suggests. Files with several hard links are counted once for each link.</p>
+<h2 id="faq">FAQ</h2>
+<h3 id="what-is-the-fastest-way-to-find-large-files-on-windows">What is the fastest way to find large files on Windows?</h3>
+<p>A disk space analyzer is the fastest way, because it scans the whole drive once and sorts everything by size. File Explorer search with <code>size:&gt;1GB</code> works too, but it's slower and doesn't show folder totals.</p>
+<h3 id="why-can-t-i-find-some-large-files-with-file-explorer-search">Why can't I find some large files with File Explorer search?</h3>
+<p>File Explorer hides hidden and system files by default, and it can't search folders you don't have permission to open. Turn on hidden items, or use a tool that can scan with administrator rights.</p>
+<h3 id="is-it-safe-to-delete-large-files-i-don-t-recognize">Is it safe to delete large files I don't recognize?</h3>
+<p>Not without checking. Look at where the file is and search its name first. Files in Windows, Program Files or ProgramData usually belong to the system or an app and should not be deleted by hand.</p>
+<h3 id="can-i-find-large-files-on-an-external-or-usb-drive">Can I find large files on an external or USB drive?</h3>
+<p>Yes. All four methods work on external drives. In an analyzer, pick the external drive instead of C: and scan it the same way.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>See what's filling up your disk</h2><p>Diskat is a free, open-source disk space analyzer for Windows 10 and 11. One portable .exe, nothing to install.</p></div>
+  <a class="btn btn-primary" href="/download">Download Diskat</a>
+</aside>
+<div class="guide-more"><h2>More guides</h2><ul><li><a href="/guides/appdata-folder-large">Why is the AppData folder so big, and what can you safely delete?</a></li><li><a href="/guides/c-drive-full">C drive full? How to see what's taking up space and fix it</a></li><li><a href="/guides/delete-file-in-use">How to delete a file that's open in another program</a></li><li><a href="/guides/free-up-disk-space-windows">How to free up disk space on Windows 10 and 11</a></li><li><a href="/guides/treesize-alternative">Diskat vs TreeSize Free</a></li><li><a href="/guides/windirstat-alternative">Diskat vs WinDirStat</a></li><li><a href="/guides/winsxs-folder">Can you delete the WinSxS folder? (and how to shrink it safely)</a></li><li><a href="/guides/wiztree-alternative">Diskat vs WizTree</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>

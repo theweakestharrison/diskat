@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Why is the AppData folder so big, and what can you safely delete? · Diskat</title>
+  <meta name="description" content="Learn why the AppData folder grows so large on Windows, which caches and temp files are safe to delete, and which app data you should leave alone.">
+  <link rel="canonical" href="https://diskat.cc/guides/appdata-folder-large">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/appdata-folder-large">
+  <meta property="og:title" content="Why is the AppData folder so big, and what can you safely delete?">
+  <meta property="og:description" content="Learn why the AppData folder grows so large on Windows, which caches and temp files are safe to delete, and which app data you should leave alone.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=6">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Why is the AppData folder so big, and what can you safely delete?","description":"Learn why the AppData folder grows so large on Windows, which caches and temp files are safe to delete, and which app data you should leave alone.","inLanguage":"en","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/appdata-folder-large","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"Why is the AppData folder so big, and what can you safely delete?","item":"https://diskat.cc/guides/appdata-folder-large"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I delete the whole AppData folder?","acceptedAnswer":{"@type":"Answer","text":"No. It holds the settings and data of every app on your account. Deleting it would reset or break those apps and could lose data such as bookmarks, saved passwords, email and game saves."}},{"@type":"Question","name":"Is it safe to delete the Temp folder in AppData?","acceptedAnswer":{"@type":"Answer","text":"It's safe to delete the contents of AppData\\Local\\Temp, but not the folder itself. Close your apps first. Windows skips files that are still in use, and you can ignore those."}},{"@type":"Question","name":"Why does AppData keep growing back?","acceptedAnswer":{"@type":"Answer","text":"Caches refill as you use your apps. That's normal. Turning on Storage Sense and clearing large app caches now and then keeps it under control."}},{"@type":"Question","name":"Can I move AppData to another drive?","acceptedAnswer":{"@type":"Answer","text":"Moving the whole AppData folder is not a supported setup and can break apps and Windows updates. Instead, check whether the app that uses the most space lets you choose where it stores its cache or downloads."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Guides</a></nav>
+<article class="guide">
+<h1>Why is the AppData folder so big, and what can you safely delete?</h1>
+<p class="guide-meta">Updated <time datetime="2026-10-20">2026-10-20</time></p>
+<p>AppData is a hidden folder in your user profile where apps keep their settings, caches and working data. On a PC that has been in use for a few years, it's common for it to reach tens of gigabytes. Some of that space is safe to reclaim, and some of it is data you would really miss. This guide explains what is inside AppData, why it grows, and how to clean it up without breaking your apps.</p>
+<h2 id="what-the-appdata-folder-is">What the AppData folder is</h2>
+<p>Every Windows user account has its own AppData folder at <code>C:\Users\YourName\AppData</code>. It's hidden by default, so you won't see it in File Explorer unless you show hidden items. The quickest way in is to press Win+R and type <code>%LOCALAPPDATA%</code> or <code>%APPDATA%</code>, then press Enter.</p>
+<p>AppData has three subfolders:</p>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Folder</th><th>What it holds</th><th>Notes</th></tr></thead><tbody>
+<tr><td><code>Local</code></td><td>Caches, temporary files, large app data, Microsoft Store app data</td><td>Stays on this PC, usually the largest</td></tr>
+<tr><td><code>LocalLow</code></td><td>Data for apps that run with restricted rights, such as some games</td><td>Usually small</td></tr>
+<tr><td><code>Roaming</code></td><td>Settings and profiles, such as browser profiles, mail and chat data, game saves</td><td>Can follow you to other PCs on some work networks</td></tr>
+</tbody></table></div>
+<p><code>%LOCALAPPDATA%</code> opens the Local folder and <code>%APPDATA%</code> opens the Roaming folder.</p>
+<h2 id="why-appdata-gets-so-big">Why AppData gets so big</h2>
+<p>AppData grows because apps write to it constantly and rarely clean up after themselves. The usual causes are:</p>
+<ul>
+<li><strong>Browser caches.</strong> Chrome, Edge and Firefox store copies of web pages, images and videos.</li>
+<li><strong>Chat and meeting apps.</strong> Teams, Discord, Slack and similar apps cache images, videos and files from your conversations.</li>
+<li><strong>Temporary files.</strong> <code>AppData\Local\Temp</code> (the folder <code>%TEMP%</code> points to) collects leftovers from installers and apps.</li>
+<li><strong>Microsoft Store apps.</strong> Their data lives in <code>AppData\Local\Packages</code>.</li>
+<li><strong>Developer tools.</strong> Package managers such as npm and pip keep download caches.</li>
+<li><strong>Virtual disks.</strong> WSL Linux distributions and Docker Desktop store large disk images here.</li>
+<li><strong>Phone backups.</strong> iTunes for Windows saves iPhone backups under <code>AppData\Roaming\Apple Computer\MobileSync\Backup</code>.</li>
+<li><strong>Leftovers.</strong> Many uninstallers leave their AppData folder behind.</li>
+</ul>
+<h2 id="find-out-what-is-big">Find out what is big</h2>
+<p>File Explorer can't show folder sizes, so start with a disk space analyzer. In Diskat, type <code>C:\Users\YourName\AppData</code> into the path box and press Enter. Diskat includes hidden folders in the scan, so AppData shows up in full. Expand <code>Local</code> and <code>Roaming</code> and look at the top three or four folders. The space map shows at a glance whether one app is responsible or the space is spread out. For a wider search, see <a href="/guides/find-large-files-windows">how to find large files</a>.</p>
+<h2 id="what-you-can-usually-delete-safely">What you can usually delete safely</h2>
+<p>These are caches and temporary data. Apps rebuild them when needed, though the first start afterwards may be a little slower.</p>
+<ul>
+<li><strong>Contents of the Temp folder.</strong> Close your apps, open <code>%TEMP%</code>, select everything and delete it. Skip any file Windows says is in use. Delete the contents, not the Temp folder itself.</li>
+<li><strong>Browser caches.</strong> Use the browser's own cleanup. Press Ctrl+Shift+Delete in Chrome, Edge or Firefox and select only cached images and files. This keeps your passwords, bookmarks and history.</li>
+<li><strong>App cache folders.</strong> Folders named <code>Cache</code>, <code>Code Cache</code> or <code>GPUCache</code> inside an app's folder can be removed while the app is closed. For example, Discord keeps one in <code>AppData\Roaming\discord\Cache</code>. If the app has its own "clear cache" option, as Spotify does, use that instead.</li>
+<li><strong>Crash dumps.</strong> <code>AppData\Local\CrashDumps</code> holds crash reports. You only need them if you're sending them to a developer.</li>
+<li><strong>Graphics shader caches.</strong> For example <code>AppData\Local\NVIDIA\DXCache</code>. The driver rebuilds them, though games may stutter briefly the first time.</li>
+<li><strong>Developer caches.</strong> Use the tool's own command, such as <code>npm cache clean --force</code> or <code>pip cache purge</code>.</li>
+<li><strong>Leftover folders.</strong> If an app is gone from your installed apps list, its old AppData folder can go too.</li>
+</ul>
+<h2 id="what-you-should-not-delete">What you should not delete</h2>
+<ul>
+<li><strong>AppData, Local or Roaming themselves.</strong> Deleting them resets or breaks every app on your account.</li>
+<li><strong>Browser profile folders.</strong> <code>User Data</code> for Chrome and Edge, and the Firefox <code>Profiles</code> folder, hold your bookmarks, saved passwords, extensions and history.</li>
+<li><strong>Outlook data files.</strong> <code>AppData\Local\Microsoft\Outlook</code> can contain <code>.pst</code> files, which may be your only copy of some email. <code>.ost</code> files are offline copies of a mail account and can usually be rebuilt, but that means downloading all your mail again.</li>
+<li><strong>Store app folders in Packages.</strong> Uninstall the app, or reset it in <strong>Settings &gt; Apps &gt; Installed apps</strong> (Windows 11) or <strong>Apps &amp; features</strong> (Windows 10) under <strong>Advanced options</strong>.</li>
+<li><strong>Virtual disk files.</strong> A <code>.vhdx</code> file from WSL or Docker contains a whole Linux system or your containers. Remove those through the tool itself, and only if you no longer need the data.</li>
+<li><strong>Phone backups.</strong> Manage them from the app that made them, so you don't delete your only backup.</li>
+<li><strong>Game saves and password vaults.</strong> Some games and password managers keep their only copy of your data in Roaming or LocalLow.</li>
+</ul>
+<h2 id="a-safe-cleanup-routine">A safe cleanup routine</h2>
+<ol>
+<li>Close the apps whose data you want to clean.</li>
+<li>Scan AppData and note the largest folders.</li>
+<li>For each one, check which app it belongs to. Search the folder name online if it's unclear.</li>
+<li>Use the app's own cleanup option first, if it has one.</li>
+<li>Delete cache folders to the Recycle Bin, not permanently.</li>
+<li>Open the app and check that it works and that your data is still there.</li>
+<li>Empty the Recycle Bin after a day or two.</li>
+</ol>
+<p>Diskat helps with steps 2 and 5. It refuses to delete the <code>AppData\Local</code> and <code>AppData\Roaming</code> folders themselves, and every delete shows a confirmation with the full path and size. You can <a href="/download">download Diskat</a> as a single portable file. If space is still short afterwards, the <a href="/guides/c-drive-full">C drive full guide</a> covers system files and other large items.</p>
+<h2 id="faq">FAQ</h2>
+<h3 id="can-i-delete-the-whole-appdata-folder">Can I delete the whole AppData folder?</h3>
+<p>No. It holds the settings and data of every app on your account. Deleting it would reset or break those apps and could lose data such as bookmarks, saved passwords, email and game saves.</p>
+<h3 id="is-it-safe-to-delete-the-temp-folder-in-appdata">Is it safe to delete the Temp folder in AppData?</h3>
+<p>It's safe to delete the contents of <code>AppData\Local\Temp</code>, but not the folder itself. Close your apps first. Windows skips files that are still in use, and you can ignore those.</p>
+<h3 id="why-does-appdata-keep-growing-back">Why does AppData keep growing back?</h3>
+<p>Caches refill as you use your apps. That's normal. Turning on Storage Sense and clearing large app caches now and then keeps it under control.</p>
+<h3 id="can-i-move-appdata-to-another-drive">Can I move AppData to another drive?</h3>
+<p>Moving the whole AppData folder is not a supported setup and can break apps and Windows updates. Instead, check whether the app that uses the most space lets you choose where it stores its cache or downloads.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>See what's filling up your disk</h2><p>Diskat is a free, open-source disk space analyzer for Windows 10 and 11. One portable .exe, nothing to install.</p></div>
+  <a class="btn btn-primary" href="/download">Download Diskat</a>
+</aside>
+<div class="guide-more"><h2>More guides</h2><ul><li><a href="/guides/c-drive-full">C drive full? How to see what's taking up space and fix it</a></li><li><a href="/guides/delete-file-in-use">How to delete a file that's open in another program</a></li><li><a href="/guides/find-large-files-windows">How to find large files on Windows</a></li><li><a href="/guides/free-up-disk-space-windows">How to free up disk space on Windows 10 and 11</a></li><li><a href="/guides/treesize-alternative">Diskat vs TreeSize Free</a></li><li><a href="/guides/windirstat-alternative">Diskat vs WinDirStat</a></li><li><a href="/guides/winsxs-folder">Can you delete the WinSxS folder? (and how to shrink it safely)</a></li><li><a href="/guides/wiztree-alternative">Diskat vs WizTree</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>

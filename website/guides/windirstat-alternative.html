@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diskat vs WinDirStat · Diskat</title>
+  <meta name="description" content="Diskat and WinDirStat are both free, open-source disk space analyzers for Windows. Compare scanning, features, safe deletion and limits side by side.">
+  <link rel="canonical" href="https://diskat.cc/guides/windirstat-alternative">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/windirstat-alternative">
+  <meta property="og:title" content="Diskat vs WinDirStat">
+  <meta property="og:description" content="Diskat and WinDirStat are both free, open-source disk space analyzers for Windows. Compare scanning, features, safe deletion and limits side by side.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=6">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Diskat vs WinDirStat","description":"Diskat and WinDirStat are both free, open-source disk space analyzers for Windows. Compare scanning, features, safe deletion and limits side by side.","inLanguage":"en","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/windirstat-alternative","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"Diskat vs WinDirStat","item":"https://diskat.cc/guides/windirstat-alternative"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Diskat based on WinDirStat?","acceptedAnswer":{"@type":"Answer","text":"No. Diskat is a separate project written in C#. It has its own scanner, treemap and delete logic, and it's released under the MIT license."}},{"@type":"Question","name":"Which is faster, Diskat or WinDirStat?","acceptedAnswer":{"@type":"Answer","text":"It depends on the drive and on whether you run as administrator. Diskat scanned 1.95 million files on a laptop SSD in about 12.5 seconds without admin rights. WinDirStat scans NTFS faster when elevated. Test both on your own drive for a fair answer."}},{"@type":"Question","name":"Can I use Diskat and WinDirStat at work?","acceptedAnswer":{"@type":"Answer","text":"Yes. Both are open source. Diskat uses the MIT license and WinDirStat uses GPL-3.0, and both licenses allow use in a business."}},{"@type":"Question","name":"Can I use both on the same PC?","acceptedAnswer":{"@type":"Answer","text":"Yes. Diskat doesn't need to be installed, so it doesn't conflict with WinDirStat or any other tool."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Guides</a></nav>
+<article class="guide">
+<h1>Diskat vs WinDirStat</h1>
+<p class="guide-meta">Updated <time datetime="2026-10-20">2026-10-20</time></p>
+<p>Diskat and WinDirStat are both free, open-source disk space analyzers for Windows. Both scan a drive, show what is using the space and let you clean it up. They take different approaches. WinDirStat offers a wider set of tools for power users. Diskat focuses on a fast scan, a clear view of the biggest folders and files, and deleting safely. This page compares them honestly, including where WinDirStat is the better choice.</p>
+<p>The facts about WinDirStat on this page come from its official website, checked in October 2026. Features change over time, so check the current version before you decide.</p>
+<h2 id="at-a-glance">At a glance</h2>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Feature</th><th>Diskat</th><th>WinDirStat</th></tr></thead><tbody>
+<tr><td>Price</td><td>Free</td><td>Free</td></tr>
+<tr><td>License</td><td>MIT (open source)</td><td>GPL-3.0 (open source)</td></tr>
+<tr><td>Development</td><td>Active, first release in October 2026</td><td>Actively developed</td></tr>
+<tr><td>Where to get it</td><td>Portable single .exe from diskat.cc</td><td>Microsoft Store or its official website</td></tr>
+<tr><td>Treemap</td><td>Two-level space map</td><td>Yes</td></tr>
+<tr><td>Duplicate file detection</td><td>No</td><td>Yes</td></tr>
+<tr><td>Permissions features</td><td>No</td><td>Yes</td></tr>
+<tr><td>Deleted-file recovery</td><td>No</td><td>Yes</td></tr>
+<tr><td>Reports</td><td>PDF scan report (Diskat 1.1)</td><td>Yes</td></tr>
+<tr><td>Scanning</td><td>Parallel and multi-threaded, no admin rights needed</td><td>Faster NTFS scanning when run elevated</td></tr>
+</tbody></table></div>
+<h2 id="scanning">Scanning</h2>
+<p>Diskat scans many folders at once on several threads. In our test, it scanned a 476 GB laptop SSD with 1.95 million files in about 12.5 seconds, without administrator rights. Results appear while the scan runs: sizes update live and the heaviest folders move to the top, so you can start looking before it finishes. After you delete something, press F5 to rescan just that folder instead of the whole drive.</p>
+<p>According to its website, WinDirStat scans NTFS drives faster when you run it elevated, that is, as administrator.</p>
+<p>We haven't published a side-by-side benchmark under identical conditions. If speed is what matters most to you, try both on your own drive. Both are free, so it costs nothing to compare.</p>
+<h2 id="features">Features</h2>
+<p>WinDirStat has more features for power users. It includes treemaps, duplicate file detection, permissions features, deleted-file recovery and reports. If you need any of those, WinDirStat is the better fit, and Diskat does not try to replace them.</p>
+<p>Diskat keeps a narrower set of tools:</p>
+<ul>
+<li>A folder tree sorted by size, with a "% of parent" bar, file and folder counts, and modified dates</li>
+<li>A two-level space map (treemap): click a tile to select it, double-click to drill in</li>
+<li>A <strong>Largest files</strong> tab with the 500 biggest files in the scan, with multi-select delete</li>
+<li>Open in Explorer, Show in Explorer and Copy path from the right-click menu</li>
+<li>11 interface languages</li>
+<li>From Diskat 1.1, a PDF report of a scan with a summary, the space map, the biggest folders and files, and a breakdown by file type</li>
+</ul>
+<h2 id="deleting-safely">Deleting safely</h2>
+<p>Safe deletion is where Diskat puts most of its design effort:</p>
+<ul>
+<li><strong>Recycle Bin by default.</strong> Del moves items to the Recycle Bin. Shift+Del deletes permanently.</li>
+<li><strong>Always a confirmation.</strong> Every delete shows a dialog with the full path and size. It warns you when a folder wasn't fully scanned, because its real size may be larger than shown.</li>
+<li><strong>Protected folders.</strong> Diskat refuses to delete drive roots, <code>C:\Windows</code> and everything in it, Program Files, ProgramData, <code>ProgramData\Microsoft</code>, <code>C:\Users</code> and every user profile root, and the <code>AppData\Roaming</code> and <code>AppData\Local</code> folders.</li>
+<li><strong>No link surprises.</strong> Junctions and symbolic links are shown but never followed, so nothing is counted twice and a delete never reaches through a link into another location.</li>
+<li><strong>Files in use.</strong> From Diskat 1.1, when a file can't be deleted because another program has it open, Diskat shows which program is holding it. It offers to close that program and retry, or to delete the file the next time Windows starts.</li>
+</ul>
+<h2 id="privacy-and-footprint">Privacy and footprint</h2>
+<p>Diskat is a single portable .exe for Windows 10 and 11. There's nothing to install, and it sends no telemetry. The only network feature is an optional <strong>Check for updates</strong> (Diskat 1.1), which is off by default.</p>
+<h2 id="diskat-s-limitations">Diskat's limitations</h2>
+<p>To be fair, here is what Diskat doesn't do or does differently:</p>
+<ul>
+<li>It runs on 64-bit Windows 10 and 11 only.</li>
+<li>It shows logical file sizes, not size on disk. OneDrive files that are online-only and compressed files can look larger than the space they really use.</li>
+<li>Files with hard links are counted once per link. Folders such as <code>C:\Windows</code>, which use many hard links, look larger than their real footprint.</li>
+<li>It has no duplicate finder, permissions view or file recovery.</li>
+<li>The .exe isn't code-signed yet, so Windows SmartScreen may warn you the first time you run it.</li>
+</ul>
+<h2 id="when-to-choose-diskat">When to choose Diskat</h2>
+<ul>
+<li>You mainly want to find what is filling your drive and clean it up, without extra tools you won't use.</li>
+<li>You care about not deleting the wrong thing. Protected folders, the Recycle Bin by default and the confirmation dialog help here.</li>
+<li>You want a single portable .exe you can run without installing anything.</li>
+<li>You want a fast scan without running as administrator.</li>
+<li>You prefer the MIT license.</li>
+</ul>
+<h2 id="when-to-choose-windirstat">When to choose WinDirStat</h2>
+<ul>
+<li>You need duplicate file detection, permissions features or deleted-file recovery.</li>
+<li>You want a tool with more options and reports for detailed analysis.</li>
+<li>You prefer to install from the Microsoft Store.</li>
+<li>You run scans as administrator anyway and want the faster elevated NTFS scan.</li>
+</ul>
+<p>Many people keep both. If you want to try Diskat, <a href="/download">download Diskat</a> and run it next to WinDirStat on the same drive. For practical cleanup steps, see <a href="/guides/free-up-disk-space-windows">how to free up disk space</a> and <a href="/guides/find-large-files-windows">how to find large files</a>.</p>
+<h2 id="faq">FAQ</h2>
+<h3 id="is-diskat-based-on-windirstat">Is Diskat based on WinDirStat?</h3>
+<p>No. Diskat is a separate project written in C#. It has its own scanner, treemap and delete logic, and it's released under the MIT license.</p>
+<h3 id="which-is-faster-diskat-or-windirstat">Which is faster, Diskat or WinDirStat?</h3>
+<p>It depends on the drive and on whether you run as administrator. Diskat scanned 1.95 million files on a laptop SSD in about 12.5 seconds without admin rights. WinDirStat scans NTFS faster when elevated. Test both on your own drive for a fair answer.</p>
+<h3 id="can-i-use-diskat-and-windirstat-at-work">Can I use Diskat and WinDirStat at work?</h3>
+<p>Yes. Both are open source. Diskat uses the MIT license and WinDirStat uses GPL-3.0, and both licenses allow use in a business.</p>
+<h3 id="can-i-use-both-on-the-same-pc">Can I use both on the same PC?</h3>
+<p>Yes. Diskat doesn't need to be installed, so it doesn't conflict with WinDirStat or any other tool.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>See what's filling up your disk</h2><p>Diskat is a free, open-source disk space analyzer for Windows 10 and 11. One portable .exe, nothing to install.</p></div>
+  <a class="btn btn-primary" href="/download">Download Diskat</a>
+</aside>
+<div class="guide-more"><h2>More guides</h2><ul><li><a href="/guides/appdata-folder-large">Why is the AppData folder so big, and what can you safely delete?</a></li><li><a href="/guides/c-drive-full">C drive full? How to see what's taking up space and fix it</a></li><li><a href="/guides/delete-file-in-use">How to delete a file that's open in another program</a></li><li><a href="/guides/find-large-files-windows">How to find large files on Windows</a></li><li><a href="/guides/free-up-disk-space-windows">How to free up disk space on Windows 10 and 11</a></li><li><a href="/guides/treesize-alternative">Diskat vs TreeSize Free</a></li><li><a href="/guides/winsxs-folder">Can you delete the WinSxS folder? (and how to shrink it safely)</a></li><li><a href="/guides/wiztree-alternative">Diskat vs WizTree</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>

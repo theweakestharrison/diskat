@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cách giải phóng dung lượng ổ C trên Windows 10 và 11 · Diskat</title>
+  <meta name="description" content="Ổ C đầy? Cách giải phóng dung lượng ổ C trên Windows 10 và 11 bằng công cụ có sẵn, từng bước, kèm những gì xóa an toàn và những gì không nên đụng vào.">
+  <link rel="canonical" href="https://diskat.cc/guides/giai-phong-dung-luong-o-c">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/giai-phong-dung-luong-o-c">
+  <meta property="og:title" content="Cách giải phóng dung lượng ổ C trên Windows 10 và 11">
+  <meta property="og:description" content="Ổ C đầy? Cách giải phóng dung lượng ổ C trên Windows 10 và 11 bằng công cụ có sẵn, từng bước, kèm những gì xóa an toàn và những gì không nên đụng vào.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=6">
+  <link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/giai-phong-dung-luong-o-c">
+  <link rel="alternate" hreflang="en" href="https://diskat.cc/guides/free-up-disk-space-windows">
+  <link rel="alternate" hreflang="x-default" href="https://diskat.cc/guides/free-up-disk-space-windows">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cách giải phóng dung lượng ổ C trên Windows 10 và 11","description":"Ổ C đầy? Cách giải phóng dung lượng ổ C trên Windows 10 và 11 bằng công cụ có sẵn, từng bước, kèm những gì xóa an toàn và những gì không nên đụng vào.","inLanguage":"vi","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/giai-phong-dung-luong-o-c","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Hướng dẫn","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"Cách giải phóng dung lượng ổ C trên Windows 10 và 11","item":"https://diskat.cc/guides/giai-phong-dung-luong-o-c"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Xóa file trong thư mục %TEMP% có an toàn không?","acceptedAnswer":{"@type":"Answer","text":"Có. Đây là file tạm do chương trình tạo ra. File nào đang được dùng thì Windows không cho xóa, bạn chỉ cần bỏ qua chúng."}},{"@type":"Question","name":"Vì sao dọn xong mà ổ C vẫn đầy?","acceptedAnswer":{"@type":"Answer","text":"Phần lớn dung lượng thường là file cá nhân, ứng dụng và game, không phải file rác. Hãy tìm thư mục nặng nhất rồi quyết định giữ hay xóa."}},{"@type":"Question","name":"Có nên xóa thư mục Windows.old không?","acceptedAnswer":{"@type":"Answer","text":"Nên, nếu máy đã chạy ổn sau khi nâng cấp và bạn không cần quay lại bản cũ. Hãy xóa bằng Dọn đĩa với \"Dọn tệp hệ thống\", không xóa bằng tay."}},{"@type":"Question","name":"Tắt ngủ đông có ảnh hưởng gì?","acceptedAnswer":{"@type":"Answer","text":"Bạn mất chế độ ngủ đông và Khởi động nhanh. Chế độ ngủ (Sleep) vẫn hoạt động bình thường."}},{"@type":"Question","name":"Có cần cài phần mềm dọn rác không?","acceptedAnswer":{"@type":"Answer","text":"Thường là không. Cài đặt, Dọn đĩa và Cảm biến lưu trữ đã dọn được file tạm."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Tải về</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Hướng dẫn</a></nav>
+<article class="guide">
+<h1>Cách giải phóng dung lượng ổ C trên Windows 10 và 11</h1>
+<p class="guide-meta">Cập nhật <time datetime="2026-10-20">2026-10-20</time></p>
+<p>Ổ C đầy làm Windows chậm đi và không tải được bản cập nhật. Phần lớn dung lượng có thể lấy lại bằng công cụ có sẵn trong Windows. Bài này đi từ bước an toàn nhất đến bước nâng cao, và nói rõ chỗ nào có rủi ro.</p>
+<h2 id="xem-o-c-dang-dung-bao-nhieu">Xem ổ C đang dùng bao nhiêu</h2>
+<p>Nhấn <code>Win + I</code> để mở Cài đặt, rồi vào <strong>Cài đặt &gt; Hệ thống &gt; Lưu trữ</strong>. Windows hiển thị dung lượng đã dùng của ổ C, chia theo nhóm: ứng dụng, tệp tạm thời, tài liệu, ảnh, video. Ghi lại con số này để so sánh sau khi dọn.</p>
+<p>Trang này chỉ cho biết nhóm, không cho biết thư mục cụ thể. Nếu nhóm "Khác" (Other) chiếm nhiều, bạn cần một công cụ quét thư mục, xem Bước 4.</p>
+<h2 id="buoc-1-xoa-tep-tam-thoi">Bước 1: Xóa tệp tạm thời</h2>
+<p>Trong trang <strong>Lưu trữ</strong>, bấm <strong>Tệp tạm thời</strong> (Temporary files). Windows liệt kê các nhóm có thể xóa, kèm dung lượng từng nhóm.</p>
+<ol>
+<li>Tick các mục hệ thống như tệp tạm thời, tệp Tối ưu hóa phân phối (Delivery Optimization Files), dọn dẹp Windows Update (Windows Update Cleanup), hình thu nhỏ (Thumbnails).</li>
+<li>Cẩn thận với <strong>Thùng rác</strong> và <strong>Downloads</strong> (Tải xuống). Hai mục này chứa file của bạn. Nếu tick Downloads, toàn bộ file trong thư mục Downloads sẽ bị xóa.</li>
+<li>Bấm <strong>Remove files</strong> (Xóa tệp).</li>
+</ol>
+<p>Bạn cũng có thể dọn thư mục tạm của tài khoản bằng tay: nhấn <code>Win + R</code>, gõ <code>%TEMP%</code>, Enter, chọn tất cả bằng <code>Ctrl + A</code> rồi xóa. File nào đang được dùng sẽ báo lỗi, bấm <strong>Skip</strong> (Bỏ qua). Nếu một file cụ thể không chịu xóa, xem <a href="/guides/xoa-file-dang-duoc-mo">cách xóa file đang được chương trình khác sử dụng</a>.</p>
+<h2 id="buoc-2-dung-don-dia-va-don-tep-he-thong">Bước 2: Dùng Dọn đĩa và "Dọn tệp hệ thống"</h2>
+<p>Dọn đĩa (Disk Cleanup) là công cụ cũ nhưng vẫn hữu ích, nhất là sau khi nâng cấp Windows.</p>
+<ol>
+<li>Nhấn <code>Win + R</code>, gõ <code>cleanmgr</code>, Enter, chọn ổ C.</li>
+<li>Bấm <strong>Dọn tệp hệ thống</strong> (Clean up system files) và chọn lại ổ C. Bước này cần quyền quản trị và hiện thêm các mục của hệ thống.</li>
+<li>Tick các mục muốn xóa, bấm OK.</li>
+</ol>
+<p>Mục đáng chú ý nhất là bản cài đặt Windows trước (Previous Windows installation(s)), tức thư mục <code>C:\Windows.old</code>. Nó có thể chiếm hàng chục GB sau khi nâng cấp. <strong>Cảnh báo:</strong> xóa nó thì bạn không quay lại được phiên bản Windows cũ. Nếu máy đã chạy ổn vài ngày, xóa là hợp lý. Windows cũng tự xóa thư mục này sau khoảng 10 ngày. Đừng xóa <code>Windows.old</code> bằng tay trong File Explorer, hãy dùng Dọn đĩa.</p>
+<h2 id="buoc-3-bat-cam-bien-luu-tru">Bước 3: Bật Cảm biến lưu trữ</h2>
+<p>Cảm biến lưu trữ (Storage Sense) tự xóa tệp tạm và dọn Thùng rác theo lịch. Trong <strong>Cài đặt &gt; Hệ thống &gt; Lưu trữ</strong>, bật <strong>Cảm biến lưu trữ</strong>, rồi bấm vào nó để chỉnh:</p>
+<ul>
+<li>Tần suất chạy: hằng ngày, hằng tuần, hằng tháng, hoặc khi ổ sắp hết chỗ.</li>
+<li>Số ngày giữ file trong Thùng rác.</li>
+<li>Số ngày giữ file chưa mở trong Downloads. Nếu bạn hay để file quan trọng ở đây, chọn <strong>Never</strong> (Không bao giờ).</li>
+</ul>
+<h2 id="buoc-4-tim-xem-cai-gi-thuc-su-dang-chiem-cho">Bước 4: Tìm xem cái gì thực sự đang chiếm chỗ</h2>
+<p>Dọn file tạm thường chỉ lấy lại vài GB. Phần lớn dung lượng nằm ở file của chính bạn: video, file ISO, game, máy ảo, file cài đặt cũ. File Explorer lại không hiển thị dung lượng thư mục, nên bạn cần một công cụ phân tích dung lượng.</p>
+<p><a href="/download">Diskat</a> là phần mềm miễn phí, mã nguồn mở, chạy từ một file .exe không cần cài. Bạn bấm vào ổ C, cây thư mục được sắp theo dung lượng, thư mục nặng nhất nằm trên cùng. Trên một ổ SSD 476 GB có 1,95 triệu file, lần quét mất khoảng 12,5 giây, không cần quyền Admin. Thẻ <strong>File lớn nhất</strong> gom 500 file lớn nhất trên cả ổ vào một danh sách.</p>
+<p>Xóa trong Diskat mặc định là chuyển vào Thùng rác (phím <code>Del</code>) và luôn có hộp xác nhận. Gốc ổ đĩa, <code>C:\Windows</code>, <code>Program Files</code>, <code>ProgramData</code> và thư mục gốc của các tài khoản người dùng bị khóa, nên bạn không thể lỡ tay xóa chúng. Hướng dẫn chi tiết có trong bài <a href="/guides/tim-file-nang-tren-may-tinh">cách tìm file và thư mục nặng</a>.</p>
+<h2 id="buoc-5-go-ung-dung-khong-dung">Bước 5: Gỡ ứng dụng không dùng</h2>
+<p>Mở <strong>Cài đặt &gt; Ứng dụng &gt; Ứng dụng đã cài đặt</strong> (Installed apps) trên Windows 11, hoặc <strong>Cài đặt &gt; Ứng dụng &gt; Ứng dụng và tính năng</strong> (Apps &amp; features) trên Windows 10. Sắp xếp theo kích thước, gỡ những gì bạn không còn dùng. Game thường chiếm nhiều nhất.</p>
+<p>Đừng xóa thư mục trong <code>Program Files</code> bằng tay. Chương trình sẽ bị gỡ dở dang và để lại rác trong hệ thống.</p>
+<h2 id="buoc-6-nang-cao-thu-gon-thu-muc-winsxs">Bước 6 (nâng cao): Thu gọn thư mục WinSxS</h2>
+<p><code>C:\Windows\WinSxS</code> chứa các thành phần của Windows và bản cũ của chúng sau mỗi lần cập nhật. Không bao giờ xóa file trong thư mục này bằng tay. Thay vào đó, gõ <code>cmd</code> trong Start, chuột phải vào Command Prompt, chọn <strong>Chạy với tư cách quản trị viên</strong> (Run as administrator), rồi chạy:</p>
+<p><code>DISM /Online /Cleanup-Image /StartComponentCleanup</code></p>
+<p>Lệnh này xóa các bản thành phần cũ đã được thay thế và có thể chạy hơn mười phút. Lưu ý: nhiều công cụ đo dung lượng thấy WinSxS lớn hơn thực tế, vì nhiều file trong đó là hard link dùng chung với thư mục hệ thống khác.</p>
+<h2 id="buoc-7-nang-cao-tat-ngu-dong-de-xoa-hiberfil-sys">Bước 7 (nâng cao): Tắt ngủ đông để xóa hiberfil.sys</h2>
+<p><code>C:\hiberfil.sys</code> lưu nội dung RAM khi máy ngủ đông (Hibernate) và thường chiếm vài GB, tùy dung lượng RAM. Nếu bạn không dùng ngủ đông, chạy lệnh sau trong Command Prompt quyền quản trị:</p>
+<p><code>powercfg /hibernate off</code></p>
+<p>File sẽ tự biến mất. <strong>Cảnh báo:</strong> lệnh này cũng tắt Khởi động nhanh (Fast Startup), nên máy có thể khởi động chậm hơn một chút. Muốn bật lại, chạy <code>powercfg /hibernate on</code>. Đừng xóa trực tiếp file <code>hiberfil.sys</code>.</p>
+<h2 id="khong-xoa-pagefile-sys">Không xóa pagefile.sys</h2>
+<p><code>C:\pagefile.sys</code> là bộ nhớ ảo (virtual memory) của Windows. Đừng xóa hay tắt nó: chương trình có thể báo thiếu bộ nhớ hoặc bị đóng đột ngột. Cứ để Windows tự quản lý.</p>
+<h2 id="khi-thu-muc-ban-cap-nhat-qua-lon">Khi thư mục bản cập nhật quá lớn</h2>
+<p><code>C:\Windows\SoftwareDistribution\Download</code> chứa file tải về của Windows Update. Bình thường Windows tự dọn nó. Nếu thư mục này phình to vì bản cập nhật bị kẹt, bạn có thể làm sạch:</p>
+<ol>
+<li>Mở Command Prompt quyền quản trị, chạy <code>net stop wuauserv</code> rồi <code>net stop bits</code>.</li>
+<li>Xóa mọi thứ bên trong <code>C:\Windows\SoftwareDistribution\Download</code>, giữ lại chính thư mục.</li>
+<li>Chạy <code>net start wuauserv</code> rồi <code>net start bits</code>.</li>
+</ol>
+<p>Chỉ làm khi không có bản cập nhật nào đang cài. Windows sẽ tải lại những gì còn cần.</p>
+<h2 id="tom-tat-xoa-gi-va-xoa-the-nao">Tóm tắt: xóa gì và xóa thế nào</h2>
+<div class="table-wrap"><table class="doc-table">
+<thead><tr><th>Mục</th><th>Xóa được không</th><th>Cách đúng</th></tr></thead><tbody>
+<tr><td>%TEMP%</td><td>Có</td><td>Xóa trực tiếp, bỏ qua file đang dùng</td></tr>
+<tr><td>Thùng rác, Downloads</td><td>Có, nhưng xem lại trước</td><td>Kiểm tra từng file trước khi xóa</td></tr>
+<tr><td>Windows.old</td><td>Có, nếu không cần quay lại bản cũ</td><td>Dọn đĩa, Dọn tệp hệ thống</td></tr>
+<tr><td>WinSxS</td><td>Không xóa tay</td><td>Lệnh DISM</td></tr>
+<tr><td>hiberfil.sys</td><td>Không xóa tay</td><td>powercfg /hibernate off</td></tr>
+<tr><td>pagefile.sys</td><td>Không</td><td>Để Windows quản lý</td></tr>
+<tr><td>SoftwareDistribution\Download</td><td>Có, sau khi dừng dịch vụ</td><td>Dừng wuauserv và bits trước</td></tr>
+</tbody></table></div>
+<h2 id="cau-hoi-thuong-gap">Câu hỏi thường gặp</h2>
+<h3 id="xoa-file-trong-thu-muc-temp-co-an-toan-khong">Xóa file trong thư mục %TEMP% có an toàn không?</h3>
+<p>Có. Đây là file tạm do chương trình tạo ra. File nào đang được dùng thì Windows không cho xóa, bạn chỉ cần bỏ qua chúng.</p>
+<h3 id="vi-sao-don-xong-ma-o-c-van-day">Vì sao dọn xong mà ổ C vẫn đầy?</h3>
+<p>Phần lớn dung lượng thường là file cá nhân, ứng dụng và game, không phải file rác. Hãy tìm thư mục nặng nhất rồi quyết định giữ hay xóa.</p>
+<h3 id="co-nen-xoa-thu-muc-windows-old-khong">Có nên xóa thư mục Windows.old không?</h3>
+<p>Nên, nếu máy đã chạy ổn sau khi nâng cấp và bạn không cần quay lại bản cũ. Hãy xóa bằng Dọn đĩa với "Dọn tệp hệ thống", không xóa bằng tay.</p>
+<h3 id="tat-ngu-dong-co-anh-huong-gi">Tắt ngủ đông có ảnh hưởng gì?</h3>
+<p>Bạn mất chế độ ngủ đông và Khởi động nhanh. Chế độ ngủ (Sleep) vẫn hoạt động bình thường.</p>
+<h3 id="co-can-cai-phan-mem-don-rac-khong">Có cần cài phần mềm dọn rác không?</h3>
+<p>Thường là không. Cài đặt, Dọn đĩa và Cảm biến lưu trữ đã dọn được file tạm.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>Xem thứ gì đang chiếm ổ đĩa</h2><p>Diskat là phần mềm phân tích dung lượng ổ đĩa miễn phí, mã nguồn mở cho Windows 10 và 11. Chỉ một file .exe, không cần cài đặt.</p></div>
+  <a class="btn btn-primary" href="/download">Tải Diskat</a>
+</aside>
+<div class="guide-more"><h2>Hướng dẫn khác</h2><ul><li><a href="/guides/tim-file-nang-tren-may-tinh">Cách tìm file và thư mục nặng trên máy tính Windows</a></li><li><a href="/guides/xoa-file-dang-duoc-mo">Cách xóa file đang được chương trình khác sử dụng</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Trang chủ</a><a href="/guides">Hướng dẫn</a><a href="/changelog">Nhật ký thay đổi</a><a href="/license">Giấy phép</a><a href="/privacy">Quyền riêng tư</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>

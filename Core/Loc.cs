@@ -70,6 +70,12 @@ public sealed class Loc : INotifyPropertyChanged
         catch { }
     }
 
+    /// <summary>Dùng ngôn ngữ này cho lần chạy hiện tại mà không lưu lại (tham số --lang).</summary>
+    public static void UseForSession(string code)
+    {
+        if (Tables.ContainsKey(code)) Lang = code;
+    }
+
     public static void SetLanguage(string code)
     {
         if (code == Lang || !Tables.ContainsKey(code)) return;
