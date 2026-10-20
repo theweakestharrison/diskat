@@ -21,7 +21,7 @@
   Drive roots, Windows, Program Files, ProgramData and user profile roots are protected.
 - **No double counting**: junctions and symlinks are listed but never followed.
 - **Run as Admin** to include protected system folders.
-- **English and Vietnamese** UI (EN / VI toggle, remembered between runs).
+- **11 languages**: Tiếng Việt (default), English, 简体中文, 日本語, 한국어, Español, Português, Deutsch, Français, Русский, Bahasa Indonesia.
 - Fully offline: no telemetry, no network access.
 
 | Largest files | Safe delete |
@@ -90,7 +90,15 @@ npx wrangler deploy   # publish to https://diskat.cc
 
 ## Contributing
 
-Issues and pull requests are welcome. UI strings live in `Core/Loc.cs`; please add both English and Vietnamese text for anything user-facing.
+Issues and pull requests are welcome.
+
+**Translations.** App strings live in `Core/Lang/Strings.<code>.cs` (English is the source and the fallback for missing keys); website strings live in `website/assets/i18n/<code>.js`. To add a language, copy the English files, translate the values, register the language in `Core/Loc.cs` and `website/assets/app.js`, then run:
+
+```powershell
+node tools/check-i18n.js <code>
+```
+
+It checks that every key exists and that placeholders such as `{0}` and HTML tags are kept.
 
 ## License
 

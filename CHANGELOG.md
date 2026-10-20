@@ -16,7 +16,7 @@ First public release.
 - **Delete** to the Recycle Bin (`Del`) or permanently (`Shift+Del`), always behind a confirmation dialog that shows the full path and size.
 - **Rescan** a single folder with `F5` without rescanning the whole drive.
 - **Run as Admin** button to include protected system folders.
-- **English and Vietnamese** interface with an EN / VI toggle that is remembered between runs (English by default).
+- **11 interface languages**: Vietnamese (default), English, Simplified Chinese, Japanese, Korean, Spanish, Portuguese, German, French, Russian and Indonesian, picked from a menu and remembered between runs.
 - Drive cards with used / free space for every ready drive.
 - Command-line argument to scan a folder on startup: `Diskat.exe "D:\Projects"`.
 - Single self-contained `Diskat.exe` (no .NET install needed) and an MSIX package for the Microsoft Store.

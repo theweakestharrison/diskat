@@ -32,7 +32,7 @@ Copy each field into Partner Center > Diskat > Store listings. The package decla
 - Protects drive roots, Windows, Program Files and your user profile folder
 - Live results while scanning; junctions and symlinks are never double-counted
 - Optional "Run as Admin" to include protected system folders
-- English and Vietnamese interface
+- Interface in 11 languages, Vietnamese by default
 - Works offline, no data collection
 
 **Search terms** (max 7):
@@ -76,7 +76,7 @@ disk space, storage analyzer, treemap, folder size, free up space, disk cleanup,
 - Bảo vệ gốc ổ đĩa, Windows, Program Files và thư mục người dùng
 - Kết quả cập nhật ngay khi đang quét; không đếm trùng junction/symlink
 - Tùy chọn "Quyền Admin" để quét cả thư mục hệ thống bị chặn
-- Giao diện tiếng Anh và tiếng Việt
+- Giao diện 11 ngôn ngữ, mặc định tiếng Việt
 - Hoạt động ngoại tuyến, không thu thập dữ liệu
 
 **Từ khóa tìm kiếm:**

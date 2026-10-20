@@ -120,16 +120,15 @@
                             <TextBlock Text="{core:T Admin}" Foreground="{StaticResource SubText}"/>
                         </StackPanel>
                     </Button>
-                    <!-- Chuyển ngôn ngữ EN / VI -->
-                    <Border CornerRadius="7" BorderBrush="{StaticResource Border}" BorderThickness="1" Margin="8,0,0,0" Height="32"
-                            VerticalAlignment="Center" Padding="2" ToolTip="{core:T LangTip}">
+                    <!-- Chọn ngôn ngữ: menu thả xuống, danh sách lấy từ Loc.Languages -->
+                    <Button x:Name="LangBtn" Style="{StaticResource BaseButton}" Height="34" Margin="8,0,0,0" Padding="10,4"
+                            Focusable="False" Click="LangBtn_Click" ToolTip="{core:T LangTip}">
                         <StackPanel Orientation="Horizontal">
-                            <Button x:Name="LangEnBtn" Content="EN" Tag="en" Click="Lang_Click" Style="{StaticResource GhostButton}" Focusable="False"
-                                    Padding="9,2" FontSize="12" FontWeight="SemiBold"/>
-                            <Button x:Name="LangViBtn" Content="VI" Tag="vi" Click="Lang_Click" Style="{StaticResource GhostButton}" Focusable="False"
-                                    Padding="9,2" FontSize="12" FontWeight="SemiBold"/>
+                            <TextBlock Text="&#xE774;" FontFamily="{StaticResource IconFont}" VerticalAlignment="Center" Foreground="{StaticResource Accent}" Margin="0,0,7,0"/>
+                            <TextBlock x:Name="LangLabel" Text="VI" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                            <TextBlock Text="&#xE70D;" FontFamily="{StaticResource IconFont}" FontSize="9" VerticalAlignment="Center" Foreground="{StaticResource SubText}" Margin="7,1,0,0"/>
                         </StackPanel>
-                    </Border>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>

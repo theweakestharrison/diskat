@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Security.Principal;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -74,23 +76,34 @@ public partial class MainWindow : Window
         StatusText.Text = status();
     }
 
-    private void Lang_Click(object sender, RoutedEventArgs e)
+    /// <summary>Mở menu chọn ngôn ngữ ngay dưới nút.</summary>
+    private void LangBtn_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is FrameworkElement { Tag: string lang }) Loc.SetLanguage(lang);
-        if (_root != null) FocusSelectedRow();
+        var menu = new ContextMenu { PlacementTarget = LangBtn, Placement = PlacementMode.Bottom };
+        foreach (var lang in Loc.Languages)
+        {
+            var item = new MenuItem
+            {
+                Header = lang.Name,
+                InputGestureText = lang.Code.ToUpperInvariant(),
+                IsCheckable = true,
+                IsChecked = lang.Code == Loc.Lang,
+                Tag = lang.Code,
+            };
+            item.Click += (_, _) =>
+            {
+                Loc.SetLanguage(lang.Code);
+                if (_root != null) FocusSelectedRow();
+            };
+            menu.Items.Add(item);
+        }
+        menu.IsOpen = true;
     }
 
     private void ApplyLanguage()
     {
         Title = Loc.T("WindowTitle") + (_isAdmin ? " (Administrator)" : "");
-
-        var accent = (Brush)FindResource("Accent");
-        foreach (var (btn, lang) in new[] { (LangEnBtn, "en"), (LangViBtn, "vi") })
-        {
-            bool on = Loc.Lang == lang;
-            btn.Background = on ? accent : Brushes.Transparent;
-            btn.Foreground = on ? Brushes.White : (Brush)FindResource("SubText");
-        }
+        LangLabel.Text = Loc.Lang.ToUpperInvariant();
 
         UpdateHeaderCaptions();
         LoadDrives();
