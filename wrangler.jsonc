@@ -21,9 +21,12 @@
     "LATEST_VERSION": "1.1.0",
     "LATEST_SHA256": "9e86ca2e48a7cb106efcc817fa56b3972ae94d91507d40ae049276d5eed6ba57",
     "LATEST_SIZE": "65703166",
-    // macOS version that /download/mac points to (versioned separately from Windows).
-    // Upload releases/v<version>/Diskat-<version>.dmg to R2 first.
-    "LATEST_MAC_VERSION": "1.0.0"
+    // macOS version that /download/mac and /api/latest/mac point to (versioned separately from Windows).
+    // Upload releases/v<version>/Diskat-<version>.dmg to R2 first, then set its SHA-256 and size in bytes.
+    // While the hash is empty, the Mac app's update check opens the download page instead of downloading.
+    "LATEST_MAC_VERSION": "1.1.0",
+    "LATEST_MAC_SHA256": "831d9952444e262289d1288ba0d13d2bd4a521ce9eeb39a0a6f257fe31857a95",
+    "LATEST_MAC_SIZE": "3133553"
   },
   "routes": [
     { "pattern": "diskat.cc", "custom_domain": true }

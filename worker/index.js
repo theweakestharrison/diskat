@@ -5,11 +5,13 @@
 //   /download/mac                      -> 302 to the latest macOS version (LATEST_MAC_VERSION in wrangler.jsonc)
 //   /download/v1.0.0/Diskat-1.0.0.dmg  -> the macOS disk image, served the same way
 //   /api/latest                        -> {version, url, sha256, size, notes} for the Windows app's update check
+//   /api/latest/mac                    -> the same for the macOS app (LATEST_MAC_* in wrangler.jsonc)
 //
 // The Windows and macOS apps are versioned separately. Publishing a new version:
 //   npx wrangler r2 object put diskat-downloads/releases/v<x.y.z>/Diskat.exe --file dist/Diskat.exe --remote
 //   npx wrangler r2 object put diskat-downloads/releases/v<x.y.z>/Diskat-<x.y.z>.dmg --file macos/dist/Diskat-<x.y.z>.dmg --remote
-//   then set LATEST_VERSION, LATEST_SHA256 and LATEST_SIZE (Windows) or LATEST_MAC_VERSION in wrangler.jsonc
+//   then set LATEST_VERSION, LATEST_SHA256 and LATEST_SIZE (Windows) or LATEST_MAC_VERSION, LATEST_MAC_SHA256 and
+//   LATEST_MAC_SIZE (macOS) in wrangler.jsonc
 //   and run: npx wrangler deploy
 
 const EXE = /^\/download\/v(\d+\.\d+\.\d+)\/Diskat\.exe$/;
@@ -29,6 +31,7 @@ export default {
     if ((m = url.pathname.match(DMG))) return serveRelease(request, env, m[1], MAC);
     if (url.pathname.startsWith("/download/")) return notFound(request, env, url);
     if (url.pathname === "/api/latest") return apiLatest(env, url);
+    if (url.pathname === "/api/latest/mac") return apiLatestMac(env, url);
     return env.ASSETS.fetch(request);
   },
 };
@@ -83,13 +86,28 @@ async function serveRelease(request, env, version, app) {
 // Used by Diskat's "Check for updates" (only when the user asks, or turns on the startup check).
 // No cookies, no query parameters, nothing about the user is read or stored.
 function apiLatest(env, url) {
-  const body = {
+  return json({
     version: env.LATEST_VERSION,
     url: new URL(`/download/v${env.LATEST_VERSION}/Diskat.exe`, url).toString(),
     sha256: env.LATEST_SHA256,
     size: Number(env.LATEST_SIZE),
     notes: new URL("/changelog", url).toString(),
-  };
+  });
+}
+
+// Used by the macOS app's "Check for Updates". Without a published hash the app opens the download page instead.
+function apiLatestMac(env, url) {
+  const v = env.LATEST_MAC_VERSION;
+  return json({
+    version: v,
+    url: new URL(`/download/v${v}/Diskat-${v}.dmg`, url).toString(),
+    sha256: env.LATEST_MAC_SHA256 || null,
+    size: Number(env.LATEST_MAC_SIZE) || null,
+    notes: new URL("/changelog", url).toString(),
+  });
+}
+
+function json(body) {
   return new Response(JSON.stringify(body), {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
