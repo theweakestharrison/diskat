@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cách xem dung lượng thư mục trong File Explorer trên Windows · Diskat</title>
+  <meta name="description" content="File Explorer để trống cột Kích thước của thư mục. Năm cách xem dung lượng thư mục trên Windows 10 và 11, từ Thuộc tính, PowerShell đến phần mềm miễn phí.">
+  <link rel="canonical" href="https://diskat.cc/guides/xem-dung-luong-thu-muc">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/xem-dung-luong-thu-muc">
+  <meta property="og:title" content="Cách xem dung lượng thư mục trong File Explorer trên Windows">
+  <meta property="og:description" content="File Explorer để trống cột Kích thước của thư mục. Năm cách xem dung lượng thư mục trên Windows 10 và 11, từ Thuộc tính, PowerShell đến phần mềm miễn phí.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=7">
+  <link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/xem-dung-luong-thu-muc">
+  <link rel="alternate" hreflang="en" href="https://diskat.cc/guides/show-folder-size-windows">
+  <link rel="alternate" hreflang="x-default" href="https://diskat.cc/guides/show-folder-size-windows">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cách xem dung lượng thư mục trong File Explorer trên Windows","description":"File Explorer để trống cột Kích thước của thư mục. Năm cách xem dung lượng thư mục trên Windows 10 và 11, từ Thuộc tính, PowerShell đến phần mềm miễn phí.","inLanguage":"vi","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/xem-dung-luong-thu-muc","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Hướng dẫn","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"Cách xem dung lượng thư mục trong File Explorer trên Windows","item":"https://diskat.cc/guides/xem-dung-luong-thu-muc"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Vì sao File Explorer không hiện dung lượng thư mục?","acceptedAnswer":{"@type":"Answer","text":"Vì dung lượng thư mục là tổng của mọi file bên trong nó và trong tất cả thư mục con. Tính như vậy cho từng thư mục trong danh sách nghĩa là phải đọc cả cây thư mục mỗi lần bạn mở một thư mục, khiến Explorer chậm đi."}},{"@type":"Question","name":"Làm sao xem dung lượng tất cả thư mục cùng lúc?","acceptedAnswer":{"@type":"Answer","text":"Dùng một phần mềm phân tích ổ đĩa như Diskat. Nó quét một lần và hiện dung lượng mọi thư mục trong một cây xếp theo dung lượng. Với PowerShell, lệnh thứ hai ở trên liệt kê các thư mục của một vị trí kèm dung lượng."}},{"@type":"Question","name":"Có thêm được cột dung lượng thư mục vào File Explorer không?","acceptedAnswer":{"@type":"Answer","text":"Không thể bằng cài đặt của Windows. Cột Size của Explorer chỉ áp dụng cho file. Mẹo thư mục cho thấy dung lượng khi rê chuột, còn phần mềm phân tích ổ đĩa cho thấy dung lượng của mọi thư mục cùng lúc."}},{"@type":"Question","name":"Thư mục nào thường nặng nhất?","acceptedAnswer":{"@type":"Answer","text":"Trên một máy bình thường: Downloads, Videos và Pictures trong thư mục tài khoản, thư viện game, AppData chứa dữ liệu và bộ nhớ đệm của ứng dụng, và C:\\Windows với các file cập nhật. Bài giải phóng dung lượng ổ C giải thích những gì xóa được an toàn."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Tải về</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Hướng dẫn</a></nav>
+<article class="guide">
+<h1>Cách xem dung lượng thư mục trong File Explorer trên Windows</h1>
+<p class="guide-meta">Cập nhật <time datetime="2026-10-20">2026-10-20</time></p>
+<p>Mở một thư mục trong File Explorer, chuyển sang chế độ xem <strong>Details</strong> (Chi tiết), và cột <strong>Size</strong> (Kích thước) có số cho từng file nhưng để trống cho mọi thư mục. Windows chưa bao giờ hiện dung lượng thư mục ở đây. Để biết một thư mục nặng bao nhiêu, Explorer phải cộng dung lượng của mọi file trong mọi thư mục con, và làm việc đó cho cả một danh sách thư mục sẽ khiến việc duyệt file chậm đi. Dưới đây là năm cách để vẫn có con số, từ xem nhanh một thư mục đến danh sách tất cả thư mục xếp theo dung lượng.</p>
+<h2 id="1-thuoc-tinh-dung-luong-cua-mot-thu-muc">1. Thuộc tính: dung lượng của một thư mục</h2>
+<p>Chuột phải vào thư mục và chọn <strong>Thuộc tính</strong> (Properties), hoặc chọn thư mục rồi nhấn Alt+Enter. Thẻ General cho biết:</p>
+<ul>
+<li><strong>Kích thước</strong> (Size): tổng dung lượng các file bên trong, tính cả mọi thư mục con</li>
+<li><strong>Kích thước trên đĩa</strong> (Size on disk): số chỗ các file đó thực sự chiếm trên ổ</li>
+<li><strong>Chứa</strong> (Contains): số file và thư mục bên trong</li>
+</ul>
+<p>Với thư mục lớn, con số sẽ tăng dần trong vài giây khi Windows cộng hết. Bạn có thể chọn nhiều thư mục rồi mở Thuộc tính một lần để xem tổng dung lượng của chúng.</p>
+<p>Cách này ổn cho một hai thư mục. Nhưng muốn biết thư mục nào nặng nhất trong hai mươi thư mục thì phải mở Thuộc tính hai mươi lần.</p>
+<h2 id="2-meo-thu-muc-xem-dung-luong-khi-re-chuot">2. Mẹo thư mục: xem dung lượng khi rê chuột</h2>
+<p>File Explorer có thể hiện dung lượng thư mục trong khung nhỏ xuất hiện khi bạn rê chuột lên nó:</p>
+<ol>
+<li>Trong File Explorer, mở <strong>Options</strong> (Tùy chọn). Trên Windows 11, bấm dấu ba chấm (<strong>See more</strong>) trên thanh công cụ rồi chọn <strong>Options</strong>. Trên Windows 10, nút này nằm ở thẻ <strong>View</strong>.</li>
+<li>Ở thẻ <strong>View</strong> của Folder Options, tick <strong>Display file size information in folder tips</strong> (hiển thị thông tin kích thước tệp trong mẹo thư mục).</li>
+<li>Bấm <strong>OK</strong>, rồi rê chuột lên một thư mục.</li>
+</ol>
+<p>Khung gợi ý sẽ có dung lượng với thư mục nhỏ và vừa. Với thư mục rất lớn, nó có thể hiện chậm hoặc không có dung lượng.</p>
+<h2 id="3-cai-dat-luu-tru-nhin-tong-quat">3. Cài đặt Lưu trữ: nhìn tổng quát</h2>
+<p><strong>Cài đặt &gt; Hệ thống &gt; Lưu trữ</strong> cho thấy dung lượng ổ đĩa được chia theo các nhóm như Ứng dụng, Tài liệu, Ảnh và Tệp tạm thời. Bấm vào một nhóm để xem chi tiết hoặc dọn dẹp, ví dụ Tệp tạm thời.</p>
+<p>Đây là cách xem tổng quát tốt khi ổ C bị đầy, nhưng nó gom theo nhóm chứ không theo thư mục, nên sẽ không cho bạn biết một thư mục dự án hay một game cụ thể đang chiếm 80 GB.</p>
+<h2 id="4-powershell-hoac-command-prompt">4. PowerShell hoặc Command Prompt</h2>
+<p>Muốn có con số chính xác mà không mở cửa sổ nào, hãy dùng PowerShell. Lệnh này in ra dung lượng thư mục Videos theo GB:</p>
+<p><code>"{0:N2} GB" -f ((Get-ChildItem "$env:USERPROFILE\Videos" -Recurse -File -Force -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum / 1GB)</code></p>
+<p>Còn lệnh này liệt kê mọi thư mục trong thư mục tài khoản của bạn kèm dung lượng, lớn nhất trước:</p>
+<p><code>Get-ChildItem "$env:USERPROFILE" -Directory -Force | ForEach-Object { [pscustomobject]@{ Folder = $_.Name; GB = [math]::Round((Get-ChildItem $_.FullName -Recurse -File -Force -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum / 1GB, 2) } } | Sort-Object GB -Descending</code></p>
+<p>Trong Command Prompt, lệnh <code>dir /s "C:\Users\TenBan\Videos"</code> liệt kê mọi file và kết thúc bằng tổng dung lượng ở dòng <strong>Total Files Listed</strong>.</p>
+<p>Cả hai cách đều được, nhưng chậm với thư mục có nhiều file, lặng lẽ bỏ qua các thư mục bạn không có quyền đọc, và bạn phải chạy lại cho từng thư mục muốn xem sâu hơn.</p>
+<h2 id="5-phan-mem-xem-dung-luong-thu-muc-moi-thu-muc-cung-luc">5. Phần mềm xem dung lượng thư mục: mọi thư mục cùng lúc</h2>
+<p>Phần mềm phân tích ổ đĩa làm được điều Explorer không làm: quét một ổ hoặc thư mục một lần rồi hiện dung lượng của mọi thư mục, xếp từ lớn đến nhỏ. <a href="/download">Diskat</a> là một phần mềm như vậy, miễn phí và mã nguồn mở, cho Windows 10 và 11. Nó chỉ là một file .exe nên không cần cài đặt.</p>
+<ol>
+<li>Mở Diskat và bấm vào một ổ đĩa, hoặc <strong>Chọn thư mục…</strong> để chọn một thư mục.</li>
+<li>Cây thư mục hiện dần trong lúc quét. Mỗi thư mục có dung lượng, thanh "% thư mục cha", số file và thư mục con, ngày sửa cuối, và thư mục nặng nhất tự nổi lên đầu.</li>
+<li>Mở một thư mục để xem bên trong, cũng xếp theo dung lượng. Tab <strong>Bản đồ dung lượng</strong> bên cạnh vẽ chính các thư mục đó thành những ô có kích thước theo dung lượng.</li>
+</ol>
+<p>Để mở nhanh từ Explorer, bật <strong>Hiện "Quét bằng Diskat" trong Explorer</strong> trong menu ⋯ của Diskat. Sau đó chuột phải vào bất kỳ thư mục hay ổ đĩa nào và chọn <strong>Quét bằng Diskat</strong>. Trên Windows 11, mục này nằm trong <strong>Show more options</strong> (Hiển thị thêm tùy chọn).</p>
+<p>Nếu mục đích là giải phóng dung lượng, bạn xử lý luôn trong cửa sổ đó: tab <strong>File lớn nhất</strong> liệt kê các file lớn nhất, và xóa thì mặc định vào Thùng rác, còn thư mục hệ thống được khóa sẵn.</p>
+<h2 id="kich-thuoc-hay-kich-thuoc-tren-dia">Kích thước hay kích thước trên đĩa?</h2>
+<p>Cửa sổ Thuộc tính có hai con số, và chúng có thể chênh nhau nhiều:</p>
+<ul>
+<li><strong>Kích thước</strong> là tổng độ dài các file. Đây là con số mà hầu hết các phần mềm, kể cả Diskat, hiển thị.</li>
+<li><strong>Kích thước trên đĩa</strong> là số chỗ các file chiếm trên ổ. Nó thường lớn hơn một chút vì ổ đĩa cấp chỗ theo từng khối nhỏ. Nó cũng có thể nhỏ hơn nhiều: file nén chiếm ít hơn, và file OneDrive chỉ có trên mạng hầu như không chiếm chỗ cho tới khi bạn mở.</li>
+</ul>
+<p>Nếu một thư mục trong OneDrive trông rất lớn mà ổ đĩa vẫn chưa đầy, hãy xem Kích thước trên đĩa. Có thể phần lớn file đang nằm trên đám mây.</p>
+<h2 id="cau-hoi-thuong-gap">Câu hỏi thường gặp</h2>
+<h3 id="vi-sao-file-explorer-khong-hien-dung-luong-thu-muc">Vì sao File Explorer không hiện dung lượng thư mục?</h3>
+<p>Vì dung lượng thư mục là tổng của mọi file bên trong nó và trong tất cả thư mục con. Tính như vậy cho từng thư mục trong danh sách nghĩa là phải đọc cả cây thư mục mỗi lần bạn mở một thư mục, khiến Explorer chậm đi.</p>
+<h3 id="lam-sao-xem-dung-luong-tat-ca-thu-muc-cung-luc">Làm sao xem dung lượng tất cả thư mục cùng lúc?</h3>
+<p>Dùng một phần mềm phân tích ổ đĩa như Diskat. Nó quét một lần và hiện dung lượng mọi thư mục trong một cây xếp theo dung lượng. Với PowerShell, lệnh thứ hai ở trên liệt kê các thư mục của một vị trí kèm dung lượng.</p>
+<h3 id="co-them-duoc-cot-dung-luong-thu-muc-vao-file-explorer-khong">Có thêm được cột dung lượng thư mục vào File Explorer không?</h3>
+<p>Không thể bằng cài đặt của Windows. Cột Size của Explorer chỉ áp dụng cho file. Mẹo thư mục cho thấy dung lượng khi rê chuột, còn phần mềm phân tích ổ đĩa cho thấy dung lượng của mọi thư mục cùng lúc.</p>
+<h3 id="thu-muc-nao-thuong-nang-nhat">Thư mục nào thường nặng nhất?</h3>
+<p>Trên một máy bình thường: Downloads, Videos và Pictures trong thư mục tài khoản, thư viện game, <code>AppData</code> chứa dữ liệu và bộ nhớ đệm của ứng dụng, và <code>C:\Windows</code> với các file cập nhật. Bài <a href="/guides/giai-phong-dung-luong-o-c">giải phóng dung lượng ổ C</a> giải thích những gì xóa được an toàn.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>Xem thứ gì đang chiếm ổ đĩa</h2><p>Diskat là phần mềm phân tích dung lượng ổ đĩa miễn phí, mã nguồn mở cho Windows 10 và 11. Chỉ một file .exe, không cần cài đặt.</p></div>
+  <a class="btn btn-primary" href="/download">Tải Diskat</a>
+</aside>
+<div class="guide-more"><h2>Hướng dẫn khác</h2><ul><li><a href="/guides/giai-phong-dung-luong-o-c">Cách giải phóng dung lượng ổ C trên Windows 10 và 11</a></li><li><a href="/guides/phan-mem-phan-tich-o-dia">Phần mềm phân tích dung lượng ổ đĩa miễn phí tốt nhất 2026</a></li><li><a href="/guides/tim-file-nang-tren-may-tinh">Cách tìm file và thư mục nặng trên máy tính Windows</a></li><li><a href="/guides/tim-file-trung-lap">Cách tìm và xóa file trùng lặp trên Windows</a></li><li><a href="/guides/xoa-file-dang-duoc-mo">Cách xóa file đang được chương trình khác sử dụng</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Trang chủ</a><a href="/guides">Hướng dẫn</a><a href="/changelog">Nhật ký thay đổi</a><a href="/license">Giấy phép</a><a href="/privacy">Quyền riêng tư</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>

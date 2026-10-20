@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to find and delete duplicate files on Windows · Diskat</title>
+  <meta name="description" content="Find duplicate files on Windows 10 and 11 by their content, not their names, and remove the extra copies safely. With a free tool or with PowerShell.">
+  <link rel="canonical" href="https://diskat.cc/guides/find-duplicate-files-windows">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://diskat.cc/guides/find-duplicate-files-windows">
+  <meta property="og:title" content="How to find and delete duplicate files on Windows">
+  <meta property="og:description" content="Find duplicate files on Windows 10 and 11 by their content, not their names, and remove the extra copies safely. With a free tool or with PowerShell.">
+  <meta property="og:image" content="https://diskat.cc/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/assets/style.css?v=7">
+  <link rel="alternate" hreflang="vi" href="https://diskat.cc/guides/tim-file-trung-lap">
+  <link rel="alternate" hreflang="en" href="https://diskat.cc/guides/find-duplicate-files-windows">
+  <link rel="alternate" hreflang="x-default" href="https://diskat.cc/guides/find-duplicate-files-windows">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to find and delete duplicate files on Windows","description":"Find duplicate files on Windows 10 and 11 by their content, not their names, and remove the extra copies safely. With a free tool or with PowerShell.","inLanguage":"en","datePublished":"2026-10-20","dateModified":"2026-10-20","mainEntityOfPage":"https://diskat.cc/guides/find-duplicate-files-windows","image":"https://diskat.cc/assets/og.png","author":{"@type":"Organization","name":"Diskat","url":"https://diskat.cc"},"publisher":{"@type":"Organization","name":"Diskat","logo":{"@type":"ImageObject","url":"https://diskat.cc/assets/logo-256.png"}}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Diskat","item":"https://diskat.cc/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://diskat.cc/guides"},{"@type":"ListItem","position":3,"name":"How to find and delete duplicate files on Windows","item":"https://diskat.cc/guides/find-duplicate-files-windows"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is it safe to delete duplicate files?","acceptedAnswer":{"@type":"Answer","text":"Yes, if they're really identical and they're your own files. Compare content rather than names, keep one copy of each, use the Recycle Bin, and stay out of Windows, Program Files, ProgramData and AppData."}},{"@type":"Question","name":"Does Windows have a built-in duplicate file finder?","acceptedAnswer":{"@type":"Answer","text":"No. File Explorer can sort by name and size, which helps spot obvious copies, but it can't compare content. You need a tool or a PowerShell command like the one above."}},{"@type":"Question","name":"Why do two files with the same name show up as different?","acceptedAnswer":{"@type":"Answer","text":"Because their content differs. A duplicate finder that compares content will only group files whose bytes are identical, whatever they're called."}},{"@type":"Question","name":"Will a duplicate finder download my OneDrive files?","acceptedAnswer":{"@type":"Answer","text":"Many will, because they have to read a file to compare it. Diskat skips online-only OneDrive files and opens files in a way that doesn't trigger a download."}},{"@type":"Question","name":"How much space can I get back?","acceptedAnswer":{"@type":"Answer","text":"It depends on your habits. Photo and video folders that were copied or imported more than once are the usual winners. Diskat shows the wasted space for each group and in total before you delete anything. Once duplicates are gone, find the largest files or follow the full guide to freeing disk space."}}]}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="brand" href="/"><img src="/assets/logo-100.png" alt="" width="30" height="30">Diskat</a>
+    <a class="btn btn-primary btn-sm nav-dl" href="/download">Download</a>
+  </div>
+</header>
+<main class="wrap doc">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Diskat</a><span>/</span><a href="/guides">Guides</a></nav>
+<article class="guide">
+<h1>How to find and delete duplicate files on Windows</h1>
+<p class="guide-meta">Updated <time datetime="2026-10-20">2026-10-20</time></p>
+<p>Duplicate files pile up without anyone noticing: the same photos imported from your phone twice, a download you saved again, a backup copied into a second folder "just in case", a video sitting both in Downloads and in Videos. Each copy uses the full space again. This guide shows how to find real duplicates on Windows 10 and 11, decide which copy to keep, and remove the rest without losing anything.</p>
+<h2 id="what-counts-as-a-duplicate">What counts as a duplicate</h2>
+<p>Two files are duplicates when their content is identical, byte for byte. Names don't tell you much:</p>
+<ul>
+<li><code>IMG_2041.jpg</code> and <code>IMG_2041 (1).jpg</code> are often the same photo, but not always.</li>
+<li>Two files called <code>report.docx</code> in different folders may be completely different documents.</li>
+<li>A file renamed to <code>holiday.mp4</code> can be an exact copy of <code>VID_0815.mp4</code>.</li>
+</ul>
+<p>So a good duplicate finder compares content. It first groups files by size, since files of different sizes can't be identical, and then compares the content of files that have the same size, usually with a hash: a short fingerprint calculated from the file's bytes.</p>
+<h2 id="before-you-start-what-not-to-touch">Before you start: what not to touch</h2>
+<p>Some duplicates are there on purpose. Deleting them frees a little space and can break things:</p>
+<ul>
+<li><strong>Windows, Program Files and ProgramData.</strong> Programs often ship identical copies of the same file in several folders. Leave these folders alone.</li>
+<li><strong>AppData.</strong> Apps keep their data, caches and sometimes whole installations here.</li>
+<li><strong>OneDrive and other sync folders.</strong> Deleting a file in a synced folder deletes it in the cloud and on your other devices too. Also, files that are "online-only" have to be downloaded before a tool can read them.</li>
+<li><strong>Photo and music libraries managed by an app.</strong> Apps such as Lightroom or iTunes keep a catalog that points to files by path. Remove duplicates from inside the app instead.</li>
+<li><strong>Hard links.</strong> Two names for the same data on the disk aren't two copies. Deleting one of them frees nothing.</li>
+</ul>
+<p>The safest targets are your own folders: Downloads, Desktop, Documents, Pictures, Videos and backup folders on an external drive.</p>
+<h2 id="find-duplicates-with-diskat">Find duplicates with Diskat</h2>
+<p>From Diskat 1.2, the free <a href="/download">Diskat</a> disk space analyzer has a <strong>Duplicates</strong> tab. It compares content, skips the risky places listed above by default, and never lets you delete every copy of a file.</p>
+<ol>
+<li>Start Diskat and scan the folder or drive you want to clean, for example <code>C:\Users\YourName</code> or an external backup drive.</li>
+<li>Open the <strong>Duplicates</strong> tab on the right.</li>
+<li>Pick the minimum size. The default of 1 MB skips the thousands of tiny files whose duplicates free almost nothing. Choose 100 MB to look only for big videos and disk images.</li>
+<li>Leave <strong>Skip Windows and program folders</strong> ticked. It leaves out Windows, Program Files, ProgramData, every AppData folder and system files.</li>
+<li>Click <strong>Find duplicates</strong>. Diskat only reads files that have the same size as another file: first their first 64 KB, then the whole file. A progress bar shows how far it is, and you can stop at any time.</li>
+<li>The results are groups of identical files, sorted by how much space each group wastes. Expand a group to see every copy with its folder and its last-modified date.</li>
+<li>Tick the copies you want to remove, or click <strong>Select all but newest</strong> to tick every copy except the most recently changed one in each group.</li>
+<li>Click <strong>Delete selected</strong>. The copies go to the Recycle Bin, so you can restore them if you change your mind. Shift+Del deletes permanently.</li>
+</ol>
+<p>A few safety rules are built in. You can't tick the last copy of a group. Online-only OneDrive files are skipped and never downloaded. Hard links count as one file and can't be ticked. Just before deleting, Diskat checks again that the copy you keep is still there and that nothing changed since the search.</p>
+<h2 id="find-duplicates-with-powershell">Find duplicates with PowerShell</h2>
+<p>If you'd rather not install anything, PowerShell can find exact duplicates. This command looks in your Pictures folder for files over 1 MB, groups them by size, hashes only the files that share a size, and lists the copies:</p>
+<p><code>Get-ChildItem "$env:USERPROFILE\Pictures" -Recurse -File | Where-Object Length -gt 1MB | Group-Object Length | Where-Object Count -gt 1 | ForEach-Object { $_.Group | Get-FileHash -Algorithm SHA256 } | Group-Object Hash | Where-Object Count -gt 1 | ForEach-Object { $_.Group.Path; "" }</code></p>
+<p>Each block of paths is one set of identical files. Open them in Explorer and delete the extras by hand, so they go to the Recycle Bin.</p>
+<p>Keep in mind:</p>
+<ul>
+<li>Hashing reads every candidate file completely, so it can take a while on a large folder.</li>
+<li>If the folder is inside OneDrive, hashing an online-only file downloads it first.</li>
+<li>The command doesn't know about hard links, so two names of the same file show up as duplicates.</li>
+</ul>
+<h2 id="which-copy-to-keep">Which copy to keep</h2>
+<p>When two copies are identical, the content doesn't care which one survives, but you do. Some rules of thumb:</p>
+<ul>
+<li>Keep the copy in the folder where you'd look for it: Pictures rather than Downloads, the organized backup rather than the "New folder (3)" copy.</li>
+<li>Keep the newest copy if you're not sure. It's the one most likely to be the "current" file. That's what <strong>Select all but newest</strong> does.</li>
+<li>Before you delete a whole batch, sort the results by wasted space and start with the biggest groups. A handful of duplicate videos often frees more than thousands of photos.</li>
+</ul>
+<h2 id="faq">FAQ</h2>
+<h3 id="is-it-safe-to-delete-duplicate-files">Is it safe to delete duplicate files?</h3>
+<p>Yes, if they're really identical and they're your own files. Compare content rather than names, keep one copy of each, use the Recycle Bin, and stay out of Windows, Program Files, ProgramData and AppData.</p>
+<h3 id="does-windows-have-a-built-in-duplicate-file-finder">Does Windows have a built-in duplicate file finder?</h3>
+<p>No. File Explorer can sort by name and size, which helps spot obvious copies, but it can't compare content. You need a tool or a PowerShell command like the one above.</p>
+<h3 id="why-do-two-files-with-the-same-name-show-up-as-different">Why do two files with the same name show up as different?</h3>
+<p>Because their content differs. A duplicate finder that compares content will only group files whose bytes are identical, whatever they're called.</p>
+<h3 id="will-a-duplicate-finder-download-my-onedrive-files">Will a duplicate finder download my OneDrive files?</h3>
+<p>Many will, because they have to read a file to compare it. Diskat skips online-only OneDrive files and opens files in a way that doesn't trigger a download.</p>
+<h3 id="how-much-space-can-i-get-back">How much space can I get back?</h3>
+<p>It depends on your habits. Photo and video folders that were copied or imported more than once are the usual winners. Diskat shows the wasted space for each group and in total before you delete anything. Once duplicates are gone, <a href="/guides/find-large-files-windows">find the largest files</a> or follow the <a href="/guides/free-up-disk-space-windows">full guide to freeing disk space</a>.</p>
+</article>
+<aside class="guide-cta">
+  <div><h2>See what's filling up your disk</h2><p>Diskat is a free, open-source disk space analyzer for Windows 10 and 11. One portable .exe, nothing to install.</p></div>
+  <a class="btn btn-primary" href="/download">Download Diskat</a>
+</aside>
+<div class="guide-more"><h2>More guides</h2><ul><li><a href="/guides/appdata-folder-large">Why is the AppData folder so big, and what can you safely delete?</a></li><li><a href="/guides/best-disk-space-analyzer">The best free disk space analyzers for Windows (2026)</a></li><li><a href="/guides/c-drive-full">C drive full? How to see what's taking up space and fix it</a></li><li><a href="/guides/delete-file-in-use">How to delete a file that's open in another program</a></li><li><a href="/guides/find-large-files-windows">How to find large files on Windows</a></li><li><a href="/guides/free-up-disk-space-windows">How to free up disk space on Windows 10 and 11</a></li><li><a href="/guides/show-folder-size-windows">How to see folder sizes in Windows File Explorer</a></li><li><a href="/guides/spacesniffer-alternative">Diskat vs SpaceSniffer</a></li><li><a href="/guides/treesize-alternative">Diskat vs TreeSize Free</a></li><li><a href="/guides/windirstat-alternative">Diskat vs WinDirStat</a></li><li><a href="/guides/winsxs-folder">Can you delete the WinSxS folder? (and how to shrink it safely)</a></li><li><a href="/guides/wiztree-alternative">Diskat vs WizTree</a></li></ul></div>
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>© 2026 Diskat contributors · MIT License</span>
+    <nav aria-label="Footer"><a href="/">Home</a><a href="/guides">Guides</a><a href="/changelog">Changelog</a><a href="/license">License</a><a href="/privacy">Privacy</a><a href="/github">GitHub</a></nav>
+  </div>
+</footer>
+</body>
+</html>
