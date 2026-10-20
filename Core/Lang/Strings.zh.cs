@@ -1,4 +1,4 @@
-namespace Diskat.Core;
+﻿namespace Diskat.Core;
 
 internal static partial class Strings
 {

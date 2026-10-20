@@ -91,7 +91,7 @@
   "log.a2": "Ordnerbaum mit Anteilsbalken (% vom übergeordneten Ordner), zweistufige Belegungskarte, Liste der größten Dateien",
   "log.a3": "Löschen in den Papierkorb oder endgültig; einzelnen Ordner mit F5 neu scannen",
   "log.a4": "Als Admin starten, Laufwerkskarten in der Übersicht, Ordner als Befehlszeilenargument",
-  "log.a5": "Oberfläche in 11 Sprachen, standardmäßig Vietnamesisch",
+  "log.a5": "Oberfläche in 11 Sprachen",
   "log.safety": "## Sicherheit",
   "log.s1": "Geschützte System- und Profilordner, geprüft anhand des echten Pfads",
   "log.s2": "Folgt nie Junctions oder Symlinks, weder beim Scannen noch beim Löschen",

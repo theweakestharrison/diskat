@@ -91,7 +91,7 @@
   "log.a2": "Cây thư mục có thanh “% thư mục cha”, bản đồ dung lượng hai cấp, danh sách File lớn nhất",
   "log.a3": "Xóa vào Thùng rác hoặc xóa vĩnh viễn; quét lại từng thư mục bằng F5",
   "log.a4": "Quyền Admin, thẻ tổng quan ổ đĩa, truyền thư mục qua dòng lệnh",
-  "log.a5": "Giao diện 11 ngôn ngữ, mặc định tiếng Việt",
+  "log.a5": "Giao diện 11 ngôn ngữ",
   "log.safety": "## An toàn",
   "log.s1": "Bảo vệ thư mục hệ thống và thư mục tài khoản, kiểm tra trên đường dẫn thật",
   "log.s2": "Không bao giờ đi theo junction hay symlink, cả khi quét lẫn khi xóa",

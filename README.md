@@ -21,7 +21,7 @@
   Drive roots, Windows, Program Files, ProgramData and user profile roots are protected.
 - **No double counting**: junctions and symlinks are listed but never followed.
 - **Run as Admin** to include protected system folders.
-- **11 languages**: Tiếng Việt (default), English, 简体中文, 日本語, 한국어, Español, Português, Deutsch, Français, Русский, Bahasa Indonesia.
+- **11 languages**: English (default), Tiếng Việt, 简体中文, 日本語, 한국어, Español, Português, Deutsch, Français, Русский, Bahasa Indonesia.
 - Fully offline: no telemetry, no network access.
 
 | Largest files | Safe delete |

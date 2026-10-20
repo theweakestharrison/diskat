@@ -2,7 +2,7 @@
 
 internal static partial class Strings
 {
-    /// <summary>Tiếng Việt (default language).</summary>
+    /// <summary>Tiếng Việt.</summary>
     public static readonly Dictionary<string, string> Vi = new()
     {
         ["WindowTitle"] = "Diskat",

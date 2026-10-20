@@ -91,7 +91,7 @@
   "log.a2": "Folder tree with “% of parent” bars, two-level space map, Largest files list",
   "log.a3": "Delete to Recycle Bin or permanently; rescan a single folder with F5",
   "log.a4": "Run as Admin, drive overview cards, command-line folder argument",
-  "log.a5": "Interface in 11 languages, Vietnamese by default",
+  "log.a5": "Interface in 11 languages",
   "log.safety": "## Safety",
   "log.s1": "Protected system and profile folders, checked against the real path",
   "log.s2": "Never follows junctions or symlinks, when scanning or deleting",

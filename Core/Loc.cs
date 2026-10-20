@@ -7,7 +7,7 @@ using System.Windows.Markup;
 namespace Diskat.Core;
 
 /// <summary>
-/// Bản địa hóa: mỗi ngôn ngữ là một file Core/Lang/Strings.&lt;mã&gt;.cs, mặc định tiếng Việt.
+/// Bản địa hóa: mỗi ngôn ngữ là một file Core/Lang/Strings.&lt;mã&gt;.cs, mặc định tiếng Anh.
 /// Chuỗi thiếu trong một bản dịch sẽ lấy từ tiếng Anh.
 /// XAML dùng {core:T Key}; mã C# dùng Loc.T("Key") / Loc.F("Key", args).
 /// </summary>
@@ -15,13 +15,13 @@ public sealed class Loc : INotifyPropertyChanged
 {
     public sealed record Language(string Code, string Name);
 
-    public const string DefaultLanguage = "vi";
+    public const string DefaultLanguage = "en";
 
     /// <summary>Thêm ngôn ngữ mới: tạo Strings.&lt;mã&gt;.cs (trường tên viết hoa chữ đầu, ví dụ "Zh") rồi thêm vào danh sách này.</summary>
     private static readonly Language[] AllLanguages =
     [
-        new("vi", "Tiếng Việt"),
         new("en", "English"),
+        new("vi", "Tiếng Việt"),
         new("zh", "简体中文"),
         new("ja", "日本語"),
         new("ko", "한국어"),

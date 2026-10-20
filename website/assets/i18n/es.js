@@ -91,7 +91,7 @@
   "log.a2": "Árbol de carpetas con barras de “% de carpeta padre”, mapa de espacio de dos niveles, lista de Archivos más grandes",
   "log.a3": "Eliminar a la Papelera de reciclaje o de forma permanente; volver a escanear una sola carpeta con F5",
   "log.a4": "Ejecutar como admin, tarjetas de resumen de unidades, carpeta como argumento de línea de comandos",
-  "log.a5": "Interfaz en 11 idiomas, vietnamita por defecto",
+  "log.a5": "Interfaz en 11 idiomas",
   "log.safety": "## Seguridad",
   "log.s1": "Carpetas protegidas del sistema y del perfil, comprobadas contra la ruta real",
   "log.s2": "Nunca sigue uniones (junctions) ni enlaces simbólicos, ni al escanear ni al eliminar",

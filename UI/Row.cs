@@ -77,7 +77,7 @@ public sealed class Row : INotifyPropertyChanged
         get
         {
             var t = Kind == RowKind.Dir ? Dir!.LastWriteUtc : _fileTime;
-            return t == default || t.Year < 1980 ? "" : t.ToLocalTime().ToString(Loc.T("DateFormat"));
+            return t == default || t.Year < 1980 ? "" : t.ToLocalTime().ToString(Loc.T("DateFormat"), System.Globalization.CultureInfo.InvariantCulture);
         }
     }
 

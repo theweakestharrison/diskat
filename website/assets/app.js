@@ -100,18 +100,14 @@
   document.addEventListener("click", function (e) { if (!sel.contains(e.target)) close(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
 
-  // Saved choice, else the browser's language if we have it, else English
+  // ?lang=xx in the URL (shareable links), else the saved choice, else English (the default)
   function initialLang() {
+    var codes = LANGS.map(function (l) { return l.code; });
+    var fromUrl = new URLSearchParams(location.search).get("lang");
+    if (fromUrl && codes.indexOf(fromUrl) >= 0) return fromUrl;
     var saved = null;
     try { saved = localStorage.getItem("diskat-lang"); } catch (e) { /* storage blocked */ }
-    var codes = LANGS.map(function (l) { return l.code; });
-    if (saved && codes.indexOf(saved) >= 0) return saved;
-    var prefs = navigator.languages || [navigator.language || "en"];
-    for (var i = 0; i < prefs.length; i++) {
-      var p = String(prefs[i]).toLowerCase().split("-")[0];
-      if (codes.indexOf(p) >= 0) return p;
-    }
-    return "en";
+    return saved && codes.indexOf(saved) >= 0 ? saved : "en";
   }
   var first = initialLang();
   if (first !== "en") setLang(first, false); else apply("en");

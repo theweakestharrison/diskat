@@ -91,7 +91,7 @@
   "log.a2": "Árvore de pastas com barras de “% da pasta pai”, mapa de espaço em dois níveis, lista de Maiores arquivos",
   "log.a3": "Excluir para a Lixeira ou permanentemente; escanear de novo uma única pasta com F5",
   "log.a4": "Executar como admin, cartões de visão geral das unidades, pasta como argumento de linha de comando",
-  "log.a5": "Interface em 11 idiomas, vietnamita por padrão",
+  "log.a5": "Interface em 11 idiomas",
   "log.safety": "## Segurança",
   "log.s1": "Pastas protegidas do sistema e do perfil, verificadas pelo caminho real",
   "log.s2": "Nunca segue junctions nem links simbólicos, ao escanear ou excluir",

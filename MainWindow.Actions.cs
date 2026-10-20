@@ -14,7 +14,7 @@ public sealed class TopFileVM
     public string Name => System.IO.Path.GetFileName(Path);
     public string Folder => System.IO.Path.GetDirectoryName(Path) ?? "";
     public string SizeText => FileOps.FormatSize(Size);
-    public string Modified => LastWriteUtc.Year < 1980 ? "" : LastWriteUtc.ToLocalTime().ToString(Loc.T("DateFormat"));
+    public string Modified => LastWriteUtc.Year < 1980 ? "" : LastWriteUtc.ToLocalTime().ToString(Loc.T("DateFormat"), System.Globalization.CultureInfo.InvariantCulture);
 }
 
 public partial class MainWindow
