@@ -1,32 +1,46 @@
 // diskat.cc Worker: serves Diskat downloads from R2; everything else is the static site in ./website.
 //
-//   /download                      -> 302 to the latest version (LATEST_VERSION in wrangler.jsonc)
-//   /download/v1.0.0/Diskat.exe    -> the file, streamed from R2 (resumable, cached for a year)
+//   /download                          -> 302 to the latest Windows version (LATEST_VERSION in wrangler.jsonc)
+//   /download/v1.0.0/Diskat.exe        -> the file, streamed from R2 (resumable, cached for a year)
+//   /download/mac                      -> 302 to the latest macOS version (LATEST_MAC_VERSION in wrangler.jsonc)
+//   /download/v1.0.0/Diskat-1.0.0.dmg  -> the macOS disk image, served the same way
 //
-// Publishing a new version:
+// The Windows and macOS apps are versioned separately. Publishing a new version:
 //   npx wrangler r2 object put diskat-downloads/releases/v<x.y.z>/Diskat.exe --file dist/Diskat.exe --remote
-//   then set LATEST_VERSION in wrangler.jsonc and run: npx wrangler deploy
+//   npx wrangler r2 object put diskat-downloads/releases/v<x.y.z>/Diskat-<x.y.z>.dmg --file macos/dist/Diskat-<x.y.z>.dmg --remote
+//   then set LATEST_VERSION or LATEST_MAC_VERSION in wrangler.jsonc and run: npx wrangler deploy
 
-const VERSIONED = /^\/download\/v(\d+\.\d+\.\d+)\/Diskat\.exe$/;
+const EXE = /^\/download\/v(\d+\.\d+\.\d+)\/Diskat\.exe$/;
+const DMG = /^\/download\/v(\d+\.\d+\.\d+)\/Diskat-\1\.dmg$/;
+
+const WINDOWS = { name: () => "Diskat.exe", type: "application/vnd.microsoft.portable-executable" };
+const MAC = { name: (v) => `Diskat-${v}.dmg`, type: "application/x-apple-diskimage" };
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (url.pathname === "/download" || url.pathname === "/download/") {
-      return Response.redirect(new URL(`/download/v${env.LATEST_VERSION}/Diskat.exe`, url), 302);
-    }
-    const m = url.pathname.match(VERSIONED);
-    if (m) return serveRelease(request, env, m[1]);
+    const path = url.pathname.replace(/\/+$/, "");
+    if (path === "/download") return latest(request, env, url, WINDOWS, env.LATEST_VERSION);
+    if (path === "/download/mac") return latest(request, env, url, MAC, env.LATEST_MAC_VERSION);
+    let m;
+    if ((m = url.pathname.match(EXE))) return serveRelease(request, env, m[1], WINDOWS);
+    if ((m = url.pathname.match(DMG))) return serveRelease(request, env, m[1], MAC);
     if (url.pathname.startsWith("/download/")) return notFound(request, env, url);
     return env.ASSETS.fetch(request);
   },
 };
 
-async function serveRelease(request, env, version) {
+function latest(request, env, url, app, version) {
+  if (!version) return notFound(request, env, url);
+  return Response.redirect(new URL(`/download/v${version}/${app.name(version)}`, url), 302);
+}
+
+async function serveRelease(request, env, version, app) {
   if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response("Method not allowed", { status: 405, headers: { Allow: "GET, HEAD" } });
   }
-  const key = `releases/v${version}/Diskat.exe`;
+  const filename = app.name(version);
+  const key = `releases/v${version}/${filename}`;
   const object = request.method === "HEAD"
     ? await env.DOWNLOADS.head(key)
     : await env.DOWNLOADS.get(key, { range: request.headers, onlyIf: request.headers });
@@ -34,8 +48,8 @@ async function serveRelease(request, env, version) {
 
   const headers = new Headers();
   object.writeHttpMetadata(headers);
-  headers.set("Content-Type", "application/vnd.microsoft.portable-executable");
-  headers.set("Content-Disposition", 'attachment; filename="Diskat.exe"');
+  headers.set("Content-Type", app.type);
+  headers.set("Content-Disposition", `attachment; filename="${filename}"`);
   headers.set("ETag", object.httpEtag);
   headers.set("Accept-Ranges", "bytes");
   headers.set("Cache-Control", "public, max-age=31536000, immutable");
@@ -63,7 +77,8 @@ async function serveRelease(request, env, version) {
   return new Response(object.body, { status: 200, headers });
 }
 
+// "/404", not "/404.html": with html_handling the .html URL is a redirect, which would leave an empty 404
 async function notFound(request, env, url) {
-  const page = await env.ASSETS.fetch(new Request(new URL("/404.html", url), request));
+  const page = await env.ASSETS.fetch(new Request(new URL("/404", url), request));
   return new Response(page.body, { status: 404, headers: page.headers });
 }

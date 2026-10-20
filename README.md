@@ -81,7 +81,10 @@ Store tiles are generated from the logo with `powershell -STA -File packaging\ma
 ### Website (diskat.cc)
 
 The landing page in `website/` is plain HTML/CSS/JS, served by a Cloudflare Worker with static assets (`wrangler.jsonc`).
-`/download` is handled by `worker/index.js`, which streams `Diskat.exe` from the R2 bucket `diskat-downloads`.
+Downloads are handled by `worker/index.js`, which streams them from the R2 bucket `diskat-downloads`:
+`/download` redirects to the latest Windows build (`releases/v<version>/Diskat.exe`) and `/download/mac` to the latest
+macOS build (`releases/v<version>/Diskat-<version>.dmg`). The two apps are versioned separately (`LATEST_VERSION` and
+`LATEST_MAC_VERSION` in `wrangler.jsonc`). On a Mac, the page makes the macOS button the main one.
 `/changelog` and `/license` are generated from `CHANGELOG.md` and `LICENSE` by `node tools/build-pages.js`.
 
 ```powershell
@@ -89,7 +92,7 @@ npx wrangler dev      # preview at http://localhost:8787
 npx wrangler deploy   # publish to https://diskat.cc
 ```
 
-Publishing a new version:
+Publishing a new Windows version:
 
 ```powershell
 npx wrangler r2 object put diskat-downloads/releases/v1.1.0/Diskat.exe --file dist\Diskat.exe --remote
@@ -97,6 +100,18 @@ npx wrangler r2 object put diskat-downloads/releases/v1.1.0/Diskat.exe --file di
 node tools/build-pages.js
 npx wrangler deploy
 ```
+
+Publishing a new macOS version (on a Mac):
+
+```bash
+VERSION=1.1.0 macos/scripts/build-app.sh   # macos/dist/Diskat-1.1.0.dmg
+npx wrangler r2 object put diskat-downloads/releases/v1.1.0/Diskat-1.1.0.dmg --file macos/dist/Diskat-1.1.0.dmg --remote
+# then set LATEST_MAC_VERSION in wrangler.jsonc, update the version and size on the macOS button in website/index.html, and run:
+npx wrangler deploy
+```
+
+Once the DMG is signed with a Developer ID and notarized (`SIGN_ID` and `NOTARY_PROFILE`, see the macOS section),
+remove the Gatekeeper FAQ entry (`faq.q8`) from `website/index.html`.
 
 ## Contributing
 

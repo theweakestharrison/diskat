@@ -1,10 +1,27 @@
-// Diskat landing page: language menu (11 languages, English by default). No tracking, no third-party requests.
-// Translations live in /assets/i18n/<code>.js and load on demand.
+// Diskat landing page: language menu (11 languages, English by default) and the Windows/macOS download buttons.
+// No tracking, no third-party requests. Translations live in /assets/i18n/<code>.js and load on demand.
 (function () {
   "use strict";
 
   // Bump together with ?v= in the HTML whenever CSS/JS/translations change (assets are cached for 7 days)
-  var ASSET_VERSION = "5";
+  var ASSET_VERSION = "6";
+
+  // Mac visitors get the macOS download as the main button and in the nav (iPads also report "Mac" but have touch).
+  // Without script every page still works: Windows is the default.
+  var platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
+  if (/mac/i.test(platform) && !(navigator.maxTouchPoints > 1)) {
+    document.querySelectorAll("a.nav-dl").forEach(function (a) { a.href = "/download/mac"; });
+    document.querySelectorAll(".cta").forEach(function (cta) {
+      var win = cta.querySelector('[data-os="windows"]'), mac = cta.querySelector('[data-os="mac"]');
+      if (!win || !mac) return;
+      var cls = win.className; win.className = mac.className; mac.className = cls;
+      var spot = document.createComment("");
+      win.replaceWith(spot); mac.replaceWith(win); spot.replaceWith(mac);
+    });
+  }
+
+  // The language menu is only on the home page; the other pages are English only
+  if (!document.getElementById("langsel")) return;
 
   var LANGS = [
     { code: "en", name: "English", html: "en" },
@@ -23,8 +40,8 @@
 
   // English text comes from the HTML itself; the meta tags are the only strings set from script
   var english = {
-    "meta.title": document.title,
-    "meta.desc2": document.querySelector('meta[name="description"]').content
+    "meta.title2": document.title,
+    "meta.desc3": document.querySelector('meta[name="description"]').content
   };
   document.querySelectorAll("[data-i18n]").forEach(function (n) {
     var k = n.getAttribute("data-i18n");
@@ -59,8 +76,8 @@
       n.innerHTML = t(n.getAttribute("data-i18n"));
     });
     document.documentElement.lang = lang.html;
-    document.title = t("meta.title");
-    document.querySelector('meta[name="description"]').content = t("meta.desc2");
+    document.title = t("meta.title2");
+    document.querySelector('meta[name="description"]').content = t("meta.desc3");
     // The app has a Vietnamese screenshot; every other language shows the English one
     var hero = document.getElementById("hero-shot");
     if (hero) hero.src = code === "vi" ? "/assets/overview-vi.png" : "/assets/overview.png";
