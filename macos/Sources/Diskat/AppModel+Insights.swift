@@ -4,9 +4,10 @@ import DiskatCore
 
 /// Cờ hủy dùng chung giữa luồng giao diện và luồng nền.
 final class CancelToken: @unchecked Sendable {
-    private let state = OSAllocatedUnfairLock(initialState: false)
-    func cancel() { state.withLockUnchecked { $0 = true } }
-    var isCancelled: Bool { state.withLockUnchecked { $0 } }
+    private let state = NSLock()
+    private var cancelled = false
+    func cancel() { state.lock(); cancelled = true; state.unlock() }
+    var isCancelled: Bool { state.lock(); defer { state.unlock() }; return cancelled }
 }
 
 /// Tab Loại file, Tuổi file và thanh tìm file (theo tên, dung lượng, tuổi) ở tab File lớn nhất
@@ -122,7 +123,7 @@ extension AppModel {
 
         let counter = FileFinder.Counter()
         let timer = Timer(timeInterval: 0.2, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { if self?.findProgress != nil { self?.findProgress = counter.found } }
+            Task { @MainActor [weak self] in if self?.findProgress != nil { self?.findProgress = counter.found } }
         }
         RunLoop.main.add(timer, forMode: .common)
         defer {

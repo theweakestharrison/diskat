@@ -4,7 +4,7 @@ import os
 /// Khóa chung bảo vệ dữ liệu quét của mọi DirNode (dung lượng, danh sách con, cờ trạng thái).
 /// Mỗi luồng quét chỉ giữ khóa một lần cho mỗi thư mục nên tranh chấp rất thấp;
 /// giao diện giữ khóa trong vài chục nano giây cho mỗi lần đọc.
-let treeLock = OSAllocatedUnfairLock()
+let treeLock = LockedState()
 
 /// Một thư mục trong cây đã quét. Các bộ đếm tổng hợp (size/fileCount/dirCount)
 /// được cộng dồn từ nhiều luồng quét song song, luôn dưới `treeLock`.

@@ -151,9 +151,9 @@ final class TreeController: NSObject, NSOutlineViewDataSource, NSOutlineViewDele
 
         scroll.onLayout = { [weak self] in self?.fitNameColumn() }
         NotificationCenter.default.addObserver(forName: NSTableView.columnDidResizeNotification, object: outline, queue: .main) { [weak self] n in
-            MainActor.assumeIsolated {
-                let col = n.userInfo?["NSTableColumn"] as? NSTableColumn
-                if col?.identifier.rawValue != "name" { self?.fitNameColumn() }
+            let isNameColumn = (n.userInfo?["NSTableColumn"] as? NSTableColumn)?.identifier.rawValue == "name"
+            Task { @MainActor [weak self] in
+                if !isNameColumn { self?.fitNameColumn() }
             }
         }
         scroll.documentView = outline

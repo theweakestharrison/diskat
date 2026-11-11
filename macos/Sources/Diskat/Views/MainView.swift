@@ -2,11 +2,10 @@ import SwiftUI
 import DiskatCore
 
 struct MainView: View {
-    @Environment(AppModel.self) private var model
-    @FocusState private var pathFocused: Bool
+    @EnvironmentObject private var model: AppModel
+    @State private var pathFocused = false
 
     var body: some View {
-        @Bindable var model = model
         VStack(spacing: 0) {
             DrivesBar()
             Divider()
@@ -14,17 +13,20 @@ struct MainView: View {
             Divider()
             StatusBar()
         }
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(Color(.windowBackgroundColor))
         .navigationTitle(Loc.t("WindowTitle"))
         .navigationSubtitle(Loc.t("AppSubtitle"))
         .toolbar { toolbar }
-        .overlay {
+        .compatibleOverlay {
             if let text = model.busyText { BusyOverlay(text: text) }
         }
         .sheet(item: $model.confirm) { ConfirmSheet(request: $0) }
-        .dropDestination(for: URL.self) { urls, _ in
-            guard let dir = urls.first(where: { FileOps.isDirectory($0.path) }) else { return false }
-            model.startScan(dir.path)
+        .onDrop(of: ["public.file-url"], isTargeted: nil) { providers in
+            guard let provider = providers.first else { return false }
+            _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                guard let url = url, FileOps.isDirectory(url.path) else { return }
+                Task { @MainActor in model.startScan(url.path) }
+            }
             return true
         }
         // Thả thư mục lên biểu tượng Dock / "Mở bằng Diskat" trong Finder / Diskat.app/Contents/MacOS/Diskat <thư mục>.
@@ -32,20 +34,16 @@ struct MainView: View {
         .onOpenURL { url in
             if url.isFileURL, FileOps.isDirectory(url.path) { model.startScan(url.path) }
         }
-        .onChange(of: pathFocused) { model.pathFieldFocused = pathFocused }
+        .onChange(of: pathFocused) { _ in model.pathFieldFocused = pathFocused }
     }
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            @Bindable var model = model
             HStack(spacing: 6) {
                 Image(systemName: "folder.fill")
-                    .foregroundStyle(Theme.accent)
-                TextField(Loc.t("PathPlaceholder"), text: $model.pathText)
-                    .textFieldStyle(.plain)
-                    .focused($pathFocused)
-                    .onSubmit { model.scanFromField() }
+                    .foregroundColor(Theme.accent)
+                CompatibleTextField(placeholder: Loc.t("PathPlaceholder"), text: $model.pathText, bordered: false, onCommit: { model.scanFromField() }, onFocus: { pathFocused = $0 })
             }
             .padding(.horizontal, 9)
             .frame(minWidth: 240, idealWidth: 460, maxWidth: 560, minHeight: 26)
@@ -55,20 +53,20 @@ struct MainView: View {
         ToolbarItemGroup(placement: .primaryAction) {
             Button { model.browse() } label: {
                 Label(Loc.t("Browse"), systemImage: "folder.badge.plus")
-                    .labelStyle(.titleAndIcon)
+                    .labelStyle(CompatibleTitleAndIconStyle())
             }
             .help(Loc.t("BrowseTip"))
 
             if model.isScanning {
                 Button { model.stopScan() } label: {
                     Label(Loc.t("Stop"), systemImage: "stop.fill")
-                        .labelStyle(.titleAndIcon)
-                        .foregroundStyle(Theme.danger)
+                        .labelStyle(CompatibleTitleAndIconStyle())
+                        .foregroundColor(Theme.danger)
                 }
             } else {
                 Button { model.scanFromField() } label: {
                     Label(Loc.t("Scan"), systemImage: "magnifyingglass")
-                        .labelStyle(.titleAndIcon)
+                        .labelStyle(CompatibleTitleAndIconStyle())
                 }
                 .help(Loc.t("PathTip"))
             }
@@ -76,8 +74,8 @@ struct MainView: View {
             if !model.hasFullDiskAccess {
                 Button { model.requestFullDiskAccess() } label: {
                     Label(Loc.t("FullDiskAccess"), systemImage: "lock.shield")
-                        .labelStyle(.titleAndIcon)
-                        .foregroundStyle(Theme.amber)
+                        .labelStyle(CompatibleTitleAndIconStyle())
+                        .foregroundColor(Theme.amber)
                 }
                 .help(Loc.t("FullDiskAccessTip"))
             }
@@ -89,7 +87,7 @@ struct MainView: View {
                 }
             } label: {
                 Label(Loc.lang.uppercased(), systemImage: "globe")
-                    .labelStyle(.titleAndIcon)
+                    .labelStyle(CompatibleTitleAndIconStyle())
             }
             .help(Loc.t("LangTip"))
 
@@ -111,8 +109,8 @@ private struct PathFieldChrome: ViewModifier {
             content
         } else {
             content
-                .background(RoundedRectangle(cornerRadius: 7).fill(Color(nsColor: .controlBackgroundColor)))
-                .overlay(RoundedRectangle(cornerRadius: 7).strokeBorder(Color(nsColor: .separatorColor)))
+                .background(RoundedRectangle(cornerRadius: 7).fill(Color(.controlBackgroundColor)))
+                .overlay(RoundedRectangle(cornerRadius: 7).strokeBorder(Color(.separatorColor)))
         }
     }
 }
@@ -133,9 +131,9 @@ struct SplitPanes<Left: View, Right: View>: View {
             HStack(spacing: 0) {
                 left.frame(width: leftWidth)
                 Rectangle()
-                    .fill(Color(nsColor: .separatorColor))
+                    .fill(Color(.separatorColor))
                     .frame(width: 1)
-                    .overlay {
+                    .compatibleOverlay {
                         Color.clear
                             .frame(width: 9)
                             .contentShape(Rectangle())
@@ -163,7 +161,7 @@ struct SplitPanes<Left: View, Right: View>: View {
 // ================= Ổ đĩa =================
 
 struct DrivesBar: View {
-    @Environment(AppModel.self) private var model
+    @EnvironmentObject private var model: AppModel
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -177,23 +175,23 @@ struct DrivesBar: View {
 }
 
 struct DriveCard: View {
-    @Environment(AppModel.self) private var model
+    @EnvironmentObject private var model: AppModel
     let volume: VolumeInfo
     @State private var hovering = false
 
     private var symbol: String {
         switch volume.kind {
-        case .internal: "internaldrive"
-        case .external: "externaldrive"
-        case .network: "server.rack"
+        case .internal: return "internaldrive"
+        case .external: return "externaldrive"
+        case .network: return "server.rack"
         }
     }
 
     private var kindText: String {
         switch volume.kind {
-        case .internal: Loc.t("DriveInternal")
-        case .external: Loc.t("DriveExternal")
-        case .network: Loc.t("DriveNetwork")
+        case .internal: return Loc.t("DriveInternal")
+        case .external: return Loc.t("DriveExternal")
+        case .network: return Loc.t("DriveNetwork")
         }
     }
 
@@ -202,27 +200,27 @@ struct DriveCard: View {
             HStack(spacing: 10) {
                 Image(systemName: symbol)
                     .font(.system(size: 20))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundColor(Theme.accent)
                     .frame(width: 26)
                 VStack(alignment: .leading, spacing: 5) {
                     HStack(alignment: .firstTextBaseline) {
                         Text(volume.name).fontWeight(.semibold).lineLimit(1)
                         Spacer(minLength: 6)
                         Text("\(Int(volume.usedPercent.rounded()))%")
-                            .font(.caption).foregroundStyle(.secondary).monospacedDigit()
+                            .font(.caption).foregroundColor(.secondary).compatibleMonospacedDigit()
                     }
                     SlimBar(fraction: volume.usedPercent / 100, color: Theme.driveColor(percent: volume.usedPercent))
                         .frame(height: 5)
                     Text(Loc.f("DriveFree", FileOps.formatSize(volume.available), FileOps.formatSize(volume.total)))
-                        .font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                        .font(.caption).foregroundColor(.secondary).lineLimit(1)
                 }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 9)
             .frame(width: 230)
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color(nsColor: .controlBackgroundColor)))
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.controlBackgroundColor)))
             .overlay(RoundedRectangle(cornerRadius: 10)
-                .strokeBorder(hovering ? Theme.accent.opacity(0.7) : Color(nsColor: .separatorColor)))
+                .strokeBorder(hovering ? Theme.accent.opacity(0.7) : Color(.separatorColor)))
             .contentShape(RoundedRectangle(cornerRadius: 10))
         }
         .buttonStyle(.plain)
@@ -251,7 +249,7 @@ struct SlimBar: View {
 // ================= Cây thư mục =================
 
 struct TreePane: View {
-    @Environment(AppModel.self) private var model
+    @EnvironmentObject private var model: AppModel
 
     var body: some View {
         VStack(spacing: 0) {
@@ -260,7 +258,7 @@ struct TreePane: View {
                     Text(Loc.t("TreeTitle")).font(.headline)
                     Text(model.selectionText)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundColor(.secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
                 }
@@ -268,7 +266,7 @@ struct TreePane: View {
 
                 Button(Loc.t("Collapse")) { model.collapseAll() }
                     .buttonStyle(.borderless)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
                     .disabled(model.root == nil)
                     .help(Loc.t("CollapseTip"))
                 Button { model.revealSelected() } label: {
@@ -279,12 +277,12 @@ struct TreePane: View {
                 Button { Task { await model.deleteSelected(permanent: false) } } label: {
                     Label(Loc.t("Delete"), systemImage: "trash")
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(Theme.danger)
+                .compatibleProminentButton()
+                .compatibleTint(Theme.danger)
                 .disabled(!model.canDeleteSelection)
                 .help(Loc.t("DeleteTip"))
                 Button { Task { await model.deleteSelected(permanent: true) } } label: {
-                    Text(Loc.t("DeletePerm")).foregroundStyle(model.canDeleteSelection ? Theme.danger : Color.secondary)
+                    Text(Loc.t("DeletePerm")).foregroundColor(model.canDeleteSelection ? Theme.danger : Color.secondary)
                 }
                 .disabled(!model.canDeleteSelection)
                 .help(Loc.t("DeletePermTip"))
@@ -307,7 +305,7 @@ struct TreePane: View {
                 }
             }
         }
-        .background(Color(nsColor: .controlBackgroundColor))
+        .background(Color(.controlBackgroundColor))
     }
 }
 
@@ -320,18 +318,18 @@ struct CompareBar: View {
     var body: some View {
         HStack(spacing: 9) {
             Image(systemName: "clock.arrow.circlepath")
-                .foregroundStyle(Theme.accent)
+                .foregroundColor(Theme.accent)
             VStack(alignment: .leading, spacing: 2) {
                 Text(summary).fontWeight(.semibold).lineLimit(1).truncationMode(.tail).help(summary)
                 if stopped {
-                    Text(Loc.t("CompareStopped")).font(.caption).foregroundStyle(.secondary)
+                    Text(Loc.t("CompareStopped")).font(.caption).foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
             Spacer(minLength: 8)
             Button(Loc.t("CompareStop"), action: stop)
                 .buttonStyle(.borderless)
-                .foregroundStyle(Theme.accent)
+                .foregroundColor(Theme.accent)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -345,29 +343,30 @@ struct EmptyState: View {
             LogoView().frame(width: 76, height: 76).opacity(0.9)
             Text(Loc.t("EmptyTitle"))
                 .font(.title3)
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
                 .padding(.top, 6)
             Text(Loc.t("EmptySub"))
                 .font(.callout)
-                .foregroundStyle(.tertiary)
+                .foregroundColor(Color.secondary.opacity(0.6))
             Text(Loc.t("EmptyDrop"))
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundColor(Color.secondary.opacity(0.6))
         }
         .multilineTextAlignment(.center)
         .padding(30)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(nsColor: .controlBackgroundColor))
+        .background(Color(.controlBackgroundColor))
     }
 }
 
 /// Logo vẽ từ hình vector dùng chung với biểu tượng ứng dụng.
-struct LogoView: View {
-    var body: some View {
-        Canvas { ctx, size in
-            ctx.withCGContext { cg in
-                LogoArt.draw(in: cg, rect: CGRect(origin: .zero, size: size), flipped: true)
-            }
+struct LogoView: NSViewRepresentable {
+    func makeNSView(context: Context) -> LogoCanvas { LogoCanvas() }
+    func updateNSView(_ view: LogoCanvas, context: Context) { view.needsDisplay = true }
+    final class LogoCanvas: NSView {
+        override func draw(_ dirtyRect: NSRect) {
+            guard let cg = NSGraphicsContext.current?.cgContext else { return }
+            LogoArt.draw(in: cg, rect: bounds)
         }
     }
 }
@@ -377,30 +376,29 @@ struct LogoView: View {
 extension RightTab {
     var titleKey: String {
         switch self {
-        case .map: "TabMap"
-        case .largest: "TabTopFiles"
-        case .types: "TabTypes"
-        case .ages: "TabAges"
-        case .duplicates: "TabDuplicates"
+        case .map: return "TabMap"
+        case .largest: return "TabTopFiles"
+        case .types: return "TabTypes"
+        case .ages: return "TabAges"
+        case .duplicates: return "TabDuplicates"
         }
     }
 }
 
 struct RightPane: View {
-    @Environment(AppModel.self) private var model
+    @EnvironmentObject private var model: AppModel
 
     var body: some View {
-        @Bindable var model = model
         VStack(spacing: 0) {
             // Khung hẹp (hoặc ngôn ngữ có nhãn dài): thanh phân đoạn không vừa thì chuyển thành menu
-            ViewThatFits(in: .horizontal) {
-                HStack {
-                    tabPicker(segmented: true)
-                    Spacer(minLength: 0)
-                }
-                HStack {
-                    tabPicker(segmented: false)
-                    Spacer(minLength: 0)
+            Group {
+                if #available(macOS 13, *) {
+                    ViewThatFits(in: .horizontal) {
+                        HStack { tabPicker(segmented: true); Spacer(minLength: 0) }
+                        HStack { tabPicker(segmented: false); Spacer(minLength: 0) }
+                    }
+                } else {
+                    HStack { tabPicker(segmented: false); Spacer(minLength: 0) }
                 }
             }
             .padding(.horizontal, 12)
@@ -416,12 +414,11 @@ struct RightPane: View {
             case .duplicates: DuplicatesPane()
             }
         }
-        .background(Color(nsColor: .controlBackgroundColor))
+        .background(Color(.controlBackgroundColor))
     }
 
     @ViewBuilder
     private func tabPicker(segmented: Bool) -> some View {
-        @Bindable var model = model
         let picker = Picker("", selection: $model.rightTab) {
             ForEach(RightTab.allCases, id: \.self) { Text(Loc.t($0.titleKey)).tag($0) }
         }
@@ -435,7 +432,7 @@ struct RightPane: View {
 }
 
 struct MapPane: View {
-    @Environment(AppModel.self) private var model
+    @EnvironmentObject private var model: AppModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -446,21 +443,21 @@ struct MapPane: View {
                 .disabled(!model.canMapUp)
                 .help(Loc.t("MapUpTip"))
                 Text(model.mapRoot?.fullPath ?? "")
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
                     .lineLimit(1)
                     .truncationMode(.middle)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text(mapSize)
                     .fontWeight(.semibold)
-                    .foregroundStyle(Theme.accent)
-                    .monospacedDigit()
+                    .foregroundColor(Theme.accent)
+                    .compatibleMonospacedDigit()
             }
             TreemapCanvas(model: model)
-                .background(Color(nsColor: .underPageBackgroundColor))
+                .background(Color(.underPageBackgroundColor))
                 .clipShape(RoundedRectangle(cornerRadius: 6))
             Text(model.mapHoverText ?? Loc.t("MapHint"))
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
                 .lineLimit(1)
                 .truncationMode(.middle)
         }
@@ -476,20 +473,20 @@ struct MapPane: View {
 // ================= Thanh trạng thái / lớp phủ =================
 
 struct StatusBar: View {
-    @Environment(AppModel.self) private var model
+    @EnvironmentObject private var model: AppModel
 
     var body: some View {
         HStack(spacing: 10) {
             if model.isScanning || model.isRescanning {
-                ProgressView().controlSize(.small)
+                ProgressView().compatibleControlSize(.small)
             }
             Text(model.status())
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
                 .lineLimit(1)
                 .truncationMode(.middle)
             Spacer(minLength: 12)
             Text(model.statsText)
-                .monospacedDigit()
+                .compatibleMonospacedDigit()
                 .lineLimit(1)
         }
         .font(.system(size: 12))
@@ -506,11 +503,11 @@ struct BusyOverlay: View {
             Color.black.opacity(0.08)
             VStack(spacing: 14) {
                 Text(text).font(.headline)
-                ProgressView().progressViewStyle(.linear).frame(width: 240)
+                ProgressView().progressViewStyle(LinearProgressViewStyle()).frame(width: 240)
             }
             .padding(.horizontal, 28)
             .padding(.vertical, 20)
-            .background(RoundedRectangle(cornerRadius: 12).fill(.regularMaterial))
+            .background(RoundedRectangle(cornerRadius: 12).fill(Color(NSColor.windowBackgroundColor)))
             .shadow(radius: 12, y: 3)
         }
         .ignoresSafeArea()

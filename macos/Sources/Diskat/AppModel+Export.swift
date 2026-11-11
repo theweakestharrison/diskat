@@ -38,7 +38,7 @@ extension AppModel {
             isBusy = false
         }
         // Cho lớp phủ kịp hiện trước khi bắt đầu
-        try? await Task.sleep(for: .milliseconds(30))
+        try? await Task.sleep(nanoseconds: 30000000)
         do {
             if let mainWork { try mainWork() }
             if background { try await Task.detached(priority: .userInitiated) { try work() }.value }

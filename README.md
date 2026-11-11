@@ -122,14 +122,17 @@ Other macOS details: scanning uses `getattrlistbulk` on all cores (about 1.7 mil
 hard links are counted once, iCloud files that are not downloaded count as 0, scanning `/` does not count the
 Data volume twice, and you can drop a folder on the window or the Dock icon.
 
-Requires macOS 14 or later. Build with Xcode 16+ (or just the Command Line Tools with Swift 6):
+Requires macOS 11 (Big Sur) or later, including macOS 12 (Monterey). Build with Xcode 14.1+ (Swift 5.7+):
 
 ```bash
 cd macos
 swift run Diskat               # run in debug (or open Package.swift in Xcode)
 swift test                     # unit tests
 scripts/build-app.sh           # universal Diskat.app + Diskat-<version>.dmg in macos/dist
+ARCH=x86_64 OUT=dist/intel scripts/build-app.sh # Intel-only app and DMG, macOS 11+
 ```
+
+See [`macos/COMPATIBILITY.md`](macos/COMPATIBILITY.md) for the shared compatibility implementation, package verification, and runtime validation.
 
 `build-app.sh` signs ad-hoc by default. For a release, pass a Developer ID and a notarytool profile:
 `SIGN_ID="Developer ID Application: <Name> (<TEAMID>)" NOTARY_PROFILE=<profile> scripts/build-app.sh`.

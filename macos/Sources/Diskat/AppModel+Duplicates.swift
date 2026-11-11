@@ -1,14 +1,13 @@
 import AppKit
-import Observation
+import Combine
 import DiskatCore
 
 /// Một bản trong nhóm trùng lặp.
 @MainActor
-@Observable
-final class DupFileState: Identifiable {
+final class DupFileState: ObservableObject, Identifiable {
     let file: DupFile
     unowned let group: DupGroupState
-    var isChecked = false
+    @Published var isChecked = false
 
     init(_ file: DupFile, group: DupGroupState) {
         self.file = file
@@ -42,21 +41,30 @@ final class DupFileState: Identifiable {
 
 /// Tiêu đề của một nhóm file giống hệt nhau.
 @MainActor
-@Observable
-final class DupGroupState: Identifiable {
+final class DupGroupState: ObservableObject, Identifiable {
     let id = UUID()
     let size: Int64
     /// Dung lượng giải phóng được theo bộ tìm (đã trừ hard link và bản clone APFS dùng chung dữ liệu)
     private let baseWasted: Int64
     private let baseCount: Int
-    var files: [DupFileState] = []
-    var isExpanded = true
+    private var fileChanges: [AnyCancellable] = []
+    @Published var files: [DupFileState] = [] {
+        didSet {
+            fileChanges = files.map { file in
+                file.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }
+            }
+        }
+    }
+    @Published var isExpanded = true
 
     init(_ group: DupGroup) {
         size = group.size
         baseWasted = group.wasted
         baseCount = group.files.count
         files = group.files.map { DupFileState($0, group: self) }
+        fileChanges = files.map { file in
+            file.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }
+        }
     }
 
     var name: String { files.first?.name ?? "" }
@@ -75,30 +83,36 @@ final class DupGroupState: Identifiable {
 /// Trạng thái tab Trùng lặp: tìm file giống hệt nhau trong thư mục đã quét, đánh dấu các bản thừa rồi xóa an toàn
 /// (tương ứng MainWindow.Duplicates.cs của bản Windows).
 @MainActor
-@Observable
-final class DuplicatesModel {
+final class DuplicatesModel: ObservableObject {
     // Đơn vị thập phân giống Finder
     static let sizes: [Int64] = [100_000, 1_000_000, 10_000_000, 100_000_000, 1_000_000_000]
     static let sizeLabels = ["100 KB", "1 MB", "10 MB", "100 MB", "1 GB"]
 
-    var minSizeIndex = 1 // 1 MB
-    var skipSystem = true
-    private(set) var groups: [DupGroupState]?
-    private(set) var result: DupResult?
-    private(set) var minLabel = ""
+    @Published var minSizeIndex = 1 // 1 MB
+    @Published var skipSystem = true
+    private var groupChanges: [AnyCancellable] = []
+    @Published private(set) var groups: [DupGroupState]? {
+        didSet {
+            groupChanges = (groups ?? []).map { group in
+                group.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }
+            }
+        }
+    }
+    @Published private(set) var result: DupResult?
+    @Published private(set) var minLabel = ""
     /// Đang tìm: tiến độ để hiển thị
-    private(set) var running = false
-    private(set) var progressText = ""
+    @Published private(set) var running = false
+    @Published private(set) var progressText = ""
     /// nil: chưa biết tổng (đang liệt kê file)
-    private(set) var progressFraction: Double?
-    var error: String?
+    @Published private(set) var progressFraction: Double?
+    @Published var error: String?
     /// Thông báo tạm (vd. "phải giữ lại ít nhất một bản")
-    var notice: String?
-    var selection: Set<String> = []
-    @ObservationIgnored private var cancelFlag: DuplicateFinder.CancelFlag?
+    @Published var notice: String?
+    @Published var selection: Set<String> = []
+    private var cancelFlag: DuplicateFinder.CancelFlag?
     // Đang xóa nhiều file: gom việc cập nhật danh sách vào một lần ở cuối
-    @ObservationIgnored var batch = false
-    @ObservationIgnored var dirty = false
+    var batch = false
+    var dirty = false
 
     var checkedFiles: [DupFileState] { (groups ?? []).flatMap { $0.files.filter(\.isChecked) } }
     var checkedCount: Int { (groups ?? []).reduce(0) { $0 + $1.checkedCount } }
@@ -169,7 +183,7 @@ final class DuplicatesModel {
             }
         }
         show()
-        let timer = Timer(timeInterval: 0.2, repeats: true) { _ in MainActor.assumeIsolated { show() } }
+        let timer = Timer(timeInterval: 0.2, repeats: true) { _ in Task { @MainActor in show() } }
         RunLoop.main.add(timer, forMode: .common)
         defer {
             timer.invalidate()
@@ -187,7 +201,7 @@ final class DuplicatesModel {
             self.result = result
             minLabel = Self.sizeLabels[index]
             // Nhóm chỉ gồm các clone APFS của nhau (thường là thư mục build): xóa bản nào cũng không lấy lại được chỗ
-            groups = result.groups.filter { $0.wasted > 0 }.map(DupGroupState.init)
+            groups = result.groups.filter { $0.wasted > 0 }.map { DupGroupState($0) }
         } catch is CancellationError {
         } catch {
             self.error = error.localizedDescription

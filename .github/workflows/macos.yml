@@ -1,0 +1,35 @@
+name: macOS compatibility
+
+on:
+  pull_request:
+    paths: ['macos/**', '.github/workflows/macos.yml']
+  push:
+    branches: [main]
+    paths: ['macos/**', '.github/workflows/macos.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Swift version
+        run: swift --version
+      - name: Core tests
+        run: swift test --package-path macos -c release
+      - name: Debug app
+        run: swift build --package-path macos --product Diskat
+      - name: Universal app and DMG (macOS 11+)
+        run: macos/scripts/build-app.sh
+      - name: Verify disk image
+        run: |
+          for image in macos/dist/*.dmg; do
+            hdiutil verify "$image"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Diskat-macOS-universal
+          path: macos/dist/*.dmg

@@ -69,7 +69,7 @@ enum PdfReport {
     static let growInk = rgb(0xB4380F)
     static let shrinkInk = rgb(0x146C36)
     // Màu nhóm tuổi file: mới (xanh) đến cũ (cam đất), giống tab Tuổi file
-    static let ageColors: [NSColor] = [0x2F6FED, 0x2EA8D6, 0x2FB59C, 0xA3B835, 0xF2B12E, 0xF07F3C].map(rgb)
+    static let ageColors: [NSColor] = [0x2F6FED, 0x2EA8D6, 0x2FB59C, 0xA3B835, 0xF2B12E, 0xF07F3C].map { rgb($0) }
 
     static func write(_ data: ReportData, to path: String) throws {
         // Lượt 1 chỉ đo để biết tổng số trang ("Trang 1 / 3"), lượt 2 mới vẽ

@@ -7,7 +7,7 @@ final class ServiceProvider: NSObject {
     @objc func scanWithDiskat(_ pboard: NSPasteboard, userData: String?, error: AutoreleasingUnsafeMutablePointer<NSString?>) {
         let urls = pboard.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL] ?? []
         guard let dir = urls.first(where: { FileOps.isDirectory($0.path) }) else { return }
-        MainActor.assumeIsolated {
+        Task { @MainActor in
             NSApp.activate(ignoringOtherApps: true)
             AppModel.shared.startScan(dir.path)
         }

@@ -47,7 +47,7 @@ enum Icons {
     static let lockedFolder: NSImage = {
         let base = folder
         let lock = NSImage(systemSymbolName: "lock.fill", accessibilityDescription: nil)!
-            .withSymbolConfiguration(.init(pointSize: 8, weight: .bold).applying(.init(paletteColors: [Theme.dangerNS])))!
+            .withSymbolConfiguration(.init(pointSize: 8, weight: .bold))!
         return NSImage(size: NSSize(width: 16, height: 16), flipped: false) { rect in
             base.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 0.55)
             let s = lock.size

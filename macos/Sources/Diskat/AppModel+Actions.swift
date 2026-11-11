@@ -246,7 +246,7 @@ extension AppModel {
         pathsPruned(under: path)
     }
 
-    /// Chỉ gán khi khác: @Observable báo thay đổi cả khi gán cùng giá trị, làm bảng SwiftUI vẽ lại
+    /// Chỉ gán khi khác: ObservableObject báo thay đổi cả khi gán cùng giá trị, làm bảng SwiftUI vẽ lại
     /// ngay trong lúc nó đang cập nhật dòng (AppKit cảnh báo "reentrant operation").
     func setTopSelection(_ value: Set<String>) {
         if value != topSelection { topSelection = value }

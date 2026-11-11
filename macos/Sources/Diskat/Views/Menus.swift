@@ -3,7 +3,7 @@ import DiskatCore
 
 /// Nội dung menu "Thêm" (⋯), dùng cả trên thanh công cụ lẫn thanh menu.
 struct MoreMenuItems: View {
-    let model: AppModel
+    @ObservedObject var model: AppModel
 
     var body: some View {
         CompareMenu(model: model)
@@ -21,7 +21,7 @@ struct MoreMenuItems: View {
 }
 
 struct ExportMenuItems: View {
-    let model: AppModel
+    @ObservedObject var model: AppModel
 
     var body: some View {
         Button(Loc.t("MenuExportPdf")) { Task { await model.exportPdf() } }
@@ -35,7 +35,7 @@ struct ExportMenuItems: View {
 
 /// Giao diện: theo hệ thống, sáng hoặc tối (đổi ngay, lưu lại).
 struct ThemePicker: View {
-    let model: AppModel
+    @ObservedObject var model: AppModel
 
     var body: some View {
         Picker(Loc.t("MenuTheme"), selection: Binding(get: { model.theme }, set: { model.setTheme($0) })) {
@@ -48,7 +48,7 @@ struct ThemePicker: View {
 
 /// "So sánh với lần quét trước": các lần quét đã lưu của thư mục đang xem, mới nhất trước.
 struct CompareMenu: View {
-    let model: AppModel
+    @ObservedObject var model: AppModel
 
     var body: some View {
         Menu(Loc.t("MenuCompare")) {

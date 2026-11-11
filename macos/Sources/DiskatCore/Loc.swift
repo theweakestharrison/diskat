@@ -1,13 +1,12 @@
 import Foundation
-import Observation
+import Combine
 
 /// Bản địa hóa: mỗi ngôn ngữ là một file Lang/Strings+<mã>.swift, mặc định theo ngôn ngữ hệ thống
 /// (nếu có bản dịch), không thì tiếng Anh. Chuỗi thiếu trong một bản dịch sẽ lấy từ tiếng Anh.
 /// Chỗ giữ chỗ dùng cú pháp như bản Windows: {0}, {1:0.0} (số chữ số thập phân), {0:X} (hệ 16).
 ///
-/// `Loc.t` đọc `lang` của một đối tượng @Observable nên mọi view SwiftUI gọi nó sẽ tự vẽ lại khi đổi ngôn ngữ.
-@Observable
-public final class Loc {
+/// Language changes are propagated through AppModel to redraw the interface.
+public final class Loc: ObservableObject {
     public struct Language: Hashable, Sendable {
         public let code: String
         public let name: String
@@ -39,7 +38,7 @@ public final class Loc {
     public static let shared = Loc()
     private static let settingsKey = "language"
 
-    public private(set) var lang: String
+    @Published public private(set) var lang: String
 
     private init() {
         let saved = UserDefaults.standard.string(forKey: Self.settingsKey)
