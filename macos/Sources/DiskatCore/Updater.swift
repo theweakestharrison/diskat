@@ -45,9 +45,35 @@ public enum Updater {
         return URLSession(configuration: config)
     }()
 
+    private static func responseData(from url: URL) async throws -> (Data, URLResponse) {
+        try await withCheckedThrowingContinuation { continuation in
+            session.dataTask(with: url) { data, response, error in
+                if let error = error { continuation.resume(throwing: error) }
+                else if let data = data, let response = response { continuation.resume(returning: (data, response)) }
+                else { continuation.resume(throwing: URLError(.badServerResponse)) }
+            }.resume()
+        }
+    }
+
+    private static func downloadedFile(from url: URL) async throws -> (URL, URLResponse) {
+        try await withCheckedThrowingContinuation { continuation in
+            session.downloadTask(with: url) { temporary, response, error in
+                if let error = error { continuation.resume(throwing: error); return }
+                guard let temporary = temporary, let response = response else {
+                    continuation.resume(throwing: URLError(.badServerResponse)); return
+                }
+                let saved = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+                do {
+                    try FileManager.default.moveItem(at: temporary, to: saved)
+                    continuation.resume(returning: (saved, response))
+                } catch { continuation.resume(throwing: error) }
+            }.resume()
+        }
+    }
+
     /// Trả về thông tin bản mới nếu có bản mới hơn bản đang chạy, ngược lại nil.
     public static func check() async throws -> UpdateInfo? {
-        let (data, response) = try await session.data(from: apiURL)
+        let (data, response) = try await responseData(from: apiURL)
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
             throw URLError(.badServerResponse)
         }
@@ -80,25 +106,20 @@ public enum Updater {
             if !completed { try? FileManager.default.removeItem(at: partial) }
         }
 
-        let (bytes, response) = try await session.bytes(from: info.url)
+        let (download, response) = try await downloadedFile(from: info.url)
+        defer { try? FileManager.default.removeItem(at: download) }
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else { throw URLError(.badServerResponse) }
         let total = info.size ?? (response.expectedContentLength > 0 ? response.expectedContentLength : 0)
         var hasher = SHA256()
-        var buffer = Data()
-        buffer.reserveCapacity(1 << 16)
+        let input = try FileHandle(forReadingFrom: download)
+        defer { try? input.close() }
         var received: Int64 = 0
-        for try await byte in bytes {
-            buffer.append(byte)
-            if buffer.count >= 1 << 16 {
-                hasher.update(data: buffer)
-                try out.write(contentsOf: buffer)
-                received += Int64(buffer.count)
-                buffer.removeAll(keepingCapacity: true)
-                if total > 0 { progress(Double(received) / Double(total)) }
-            }
+        while let buffer = try input.read(upToCount: 1 << 16), !buffer.isEmpty {
+            hasher.update(data: buffer)
+            try out.write(contentsOf: buffer)
+            received += Int64(buffer.count)
+            if total > 0 { progress(Double(received) / Double(total)) }
         }
-        hasher.update(data: buffer)
-        try out.write(contentsOf: buffer)
         try out.close()
 
         let digest = hasher.finalize().map { String(format: "%02x", $0) }.joined()

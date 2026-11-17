@@ -3,6 +3,7 @@ import DiskatCore
 
 /// Hộp xác nhận xóa. Với xóa vĩnh viễn, nút mặc định (Return) là "Hủy" để tránh bấm nhầm.
 struct ConfirmSheet: View {
+    @ObservedObject private var localization = Loc.shared
     let request: ConfirmRequest
 
     private var tint: Color { request.permanent ? Theme.danger : Theme.amber }
@@ -14,14 +15,14 @@ struct ConfirmSheet: View {
                     Circle().fill(tint.opacity(0.15))
                     Image(systemName: "trash")
                         .font(.system(size: 17, weight: .medium))
-                        .foregroundStyle(tint)
+                        .foregroundColor(tint)
                 }
                 .frame(width: 40, height: 40)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(Loc.f(request.permanent ? "ConfirmPermTitle" : "ConfirmTrashTitle", request.what))
                         .font(.system(size: 15, weight: .semibold))
                     Text(Loc.t(request.permanent ? "ConfirmPermSub" : "ConfirmTrashSub"))
-                        .foregroundStyle(.secondary)
+                        .foregroundColor(.secondary)
                 }
             }
 
@@ -29,16 +30,16 @@ struct ConfirmSheet: View {
                 ScrollView {
                     Text(request.path)
                         .font(.system(size: 12, design: .monospaced))
-                        .textSelection(.enabled)
+                        .compatibleTextSelection()
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(maxHeight: 110)
                 .fixedSize(horizontal: false, vertical: true)
                 HStack(spacing: 0) {
-                    Text(Loc.t("ConfirmSize")).foregroundStyle(.secondary)
+                    Text(Loc.t("ConfirmSize")).foregroundColor(.secondary)
                     Text(request.size).fontWeight(.semibold)
                     if !request.detail.isEmpty {
-                        Text(request.detail).foregroundStyle(.secondary).padding(.leading, 14)
+                        Text(request.detail).foregroundColor(.secondary).padding(.leading, 14)
                     }
                 }
             }
@@ -60,19 +61,19 @@ struct ConfirmSheet: View {
                     Button(Loc.t("Cancel")) { request.resolve(false) }
                         .keyboardShortcut(.defaultAction)
                     Button(Loc.t("BtnDeletePerm")) { request.resolve(true) }
-                        .tint(Theme.danger)
-                        .buttonStyle(.bordered)
-                        .foregroundStyle(Theme.danger)
+                        .compatibleTint(Theme.danger)
+                        .buttonStyle(BorderedButtonStyle())
+                        .foregroundColor(Theme.danger)
                 } else {
                     Button(Loc.t("Cancel")) { request.resolve(false) }
                         .keyboardShortcut(.cancelAction)
                     Button(Loc.t("BtnTrash")) { request.resolve(true) }
                         .keyboardShortcut(.defaultAction)
-                        .tint(Theme.danger)
-                        .buttonStyle(.borderedProminent)
+                        .compatibleTint(Theme.danger)
+                        .compatibleProminentButton()
                 }
             }
-            .controlSize(.large)
+            .compatibleControlSize(.large)
             .padding(.top, 22)
 
             // Esc luôn là Hủy (kể cả khi Return đã gán cho nút Hủy)
@@ -97,7 +98,7 @@ private struct Notice: View {
     var body: some View {
         Text(text)
             .fontWeight(bold ? .semibold : .regular)
-            .foregroundStyle(color)
+            .foregroundColor(color)
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 12)

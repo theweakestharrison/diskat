@@ -20,16 +20,16 @@ enum Theme {
         a.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? rgb(0x5FD38D) : rgb(0x146C36)
     }
 
-    static let accent = Color(nsColor: accentNS)
-    static let danger = Color(nsColor: dangerNS)
-    static let amber = Color(nsColor: amberNS)
+    static let accent = Color( accentNS)
+    static let danger = Color( dangerNS)
+    static let amber = Color( amberNS)
 
     /// Rãnh của thanh tiến trình mảnh
     static let trackNS = NSColor(name: nil) { appearance in
         appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
             ? NSColor.white.withAlphaComponent(0.12) : rgb(0xE6EAF1)
     }
-    static let track = Color(nsColor: trackNS)
+    static let track = Color( trackNS)
 
     private static let bars = [rgb(0x4CAF7D), rgb(0x7CB342), rgb(0xE8A317), rgb(0xEF7B2D), rgb(0xE04A3F)]
 

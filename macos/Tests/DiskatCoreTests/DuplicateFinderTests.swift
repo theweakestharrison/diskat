@@ -1,5 +1,5 @@
 import Foundation
-import Testing
+import XCTest
 @testable import DiskatCore
 
 /// Dữ liệu ngẫu nhiên (TempTree.file mỗi lần ghi một nội dung khác, nên tự ghi nội dung giống nhau ở đây).
@@ -29,8 +29,8 @@ private func findDups(_ root: String, minSize: Int64 = 1, skipSystem: Bool = fal
                              cancel: DuplicateFinder.CancelFlag())
 }
 
-@Suite struct DuplicateFinderTests {
-    @Test func identicalFilesInDifferentFoldersFormOneGroup() throws {
+final class DuplicateFinderTests: XCTestCase {
+    func testIdenticalFilesInDifferentFoldersFormOneGroup() throws {
         let t = try TempTree()
         let data = randomData(100_000)
         let a = try writeFile(t, "a/one.bin", data, modified: 1_600_000_000)
@@ -41,21 +41,21 @@ private func findDups(_ root: String, minSize: Int64 = 1, skipSystem: Bool = fal
 
         let progress = DuplicateFinder.Progress()
         let r = try findDups(t.root, progress: progress)
-        #expect(r.files == 5)
-        #expect(r.unreadable == 0)
-        #expect(r.cloudSkipped == 0)
-        #expect(r.groups.count == 1)
-        let g = try #require(r.groups.first)
-        #expect(g.size == 100_000)
-        #expect(g.wasted == 200_000)
-        #expect(g.files.map(\.path) == [b, c, a]) // mới sửa nhất trước
-        #expect(g.files.allSatisfy { !$0.isHardLinked && !$0.isClone && $0.otherNames.isEmpty && $0.linkCount == 1 })
-        #expect(g.files[0].modified == 1_700_000_000)
-        #expect(progress.stage == 2)
-        #expect(progress.found == 5)
+        XCTAssertTrue(r.files == 5)
+        XCTAssertTrue(r.unreadable == 0)
+        XCTAssertTrue(r.cloudSkipped == 0)
+        XCTAssertTrue(r.groups.count == 1)
+        let g = try XCTUnwrap(r.groups.first)
+        XCTAssertTrue(g.size == 100_000)
+        XCTAssertTrue(g.wasted == 200_000)
+        XCTAssertTrue(g.files.map(\.path) == [b, c, a]) // mới sửa nhất trước
+        XCTAssertTrue(g.files.allSatisfy { !$0.isHardLinked && !$0.isClone && $0.otherNames.isEmpty && $0.linkCount == 1 })
+        XCTAssertTrue(g.files[0].modified == 1_700_000_000)
+        XCTAssertTrue(progress.stage == 2)
+        XCTAssertTrue(progress.found == 5)
     }
 
-    @Test func groupsAreSortedByWasted() throws {
+    func testGroupsAreSortedByWasted() throws {
         let t = try TempTree()
         let small = randomData(50_000), big = randomData(40_000)
         try writeFile(t, "s1.bin", small)
@@ -63,20 +63,20 @@ private func findDups(_ root: String, minSize: Int64 = 1, skipSystem: Bool = fal
         for i in 0..<3 { try writeFile(t, "b\(i).bin", big) }
 
         let r = try findDups(t.root)
-        #expect(r.groups.map(\.wasted) == [80_000, 50_000])
-        #expect(r.groups.map(\.files.count) == [3, 2])
+        XCTAssertTrue(r.groups.map(\.wasted) == [80_000, 50_000])
+        XCTAssertTrue(r.groups.map(\.files.count) == [3, 2])
     }
 
-    @Test func sameSizeDifferentContentIsNotGrouped() throws {
+    func testSameSizeDifferentContentIsNotGrouped() throws {
         let t = try TempTree()
         try t.file("x.bin", bytes: 70_000)
         try t.file("sub/y.bin", bytes: 70_000)
         let r = try findDups(t.root)
-        #expect(r.files == 2)
-        #expect(r.groups.isEmpty)
+        XCTAssertTrue(r.files == 2)
+        XCTAssertTrue(r.groups.isEmpty)
     }
 
-    @Test func sameHeadDifferentTailIsNotGrouped() throws {
+    func testSameHeadDifferentTailIsNotGrouped() throws {
         let t = try TempTree()
         let size = 300_000
         let d1 = randomData(size)
@@ -91,15 +91,15 @@ private func findDups(_ root: String, minSize: Int64 = 1, skipSystem: Bool = fal
 
         let progress = DuplicateFinder.Progress()
         let r = try findDups(t.root, progress: progress)
-        #expect(r.groups.count == 1)
-        #expect(Set(r.groups[0].files.map(\.path)) == [a, d])
-        #expect(r.groups[0].wasted == Int64(size))
+        XCTAssertTrue(r.groups.count == 1)
+        XCTAssertTrue(Set(r.groups[0].files.map(\.path)) == [a, d])
+        XCTAssertTrue(r.groups[0].wasted == Int64(size))
         // Cả bốn file cùng 64 KB đầu nên đều được băm phần còn lại
-        #expect(progress.total == 4 * Int64(size - DuplicateFinder.headSize))
-        #expect(progress.done == progress.total)
+        XCTAssertTrue(progress.total == 4 * Int64(size - DuplicateFinder.headSize))
+        XCTAssertTrue(progress.done == progress.total)
     }
 
-    @Test func minSizeFiltersSmallFiles() throws {
+    func testMinSizeFiltersSmallFiles() throws {
         let t = try TempTree()
         let small = randomData(1_000), big = randomData(10_000)
         try writeFile(t, "s1.bin", small)
@@ -110,16 +110,16 @@ private func findDups(_ root: String, minSize: Int64 = 1, skipSystem: Bool = fal
         try writeFile(t, "e2.bin", Data())
 
         let r = try findDups(t.root, minSize: 5_000)
-        #expect(r.files == 2)
-        #expect(r.groups.map(\.size) == [10_000])
+        XCTAssertTrue(r.files == 2)
+        XCTAssertTrue(r.groups.map(\.size) == [10_000])
 
         // minSize 0 vẫn bỏ file rỗng (giống nhau nhưng không tốn chỗ)
         let all = try findDups(t.root, minSize: 0)
-        #expect(all.files == 4)
-        #expect(all.groups.map(\.size) == [10_000, 1_000])
+        XCTAssertTrue(all.files == 4)
+        XCTAssertTrue(all.groups.map(\.size) == [10_000, 1_000])
     }
 
-    @Test func hardLinksAreMerged() throws {
+    func testHardLinksAreMerged() throws {
         let t = try TempTree()
         let data = randomData(80_000)
         let original = try writeFile(t, "one/f.bin", data)
@@ -129,21 +129,21 @@ private func findDups(_ root: String, minSize: Int64 = 1, skipSystem: Bool = fal
         let copy = try writeFile(t, "three/g.bin", data)
 
         let r = try findDups(t.root)
-        #expect(r.files == 3)
-        #expect(r.groups.count == 1)
-        let g = try #require(r.groups.first)
-        #expect(g.files.count == 2)
-        let linked = try #require(g.files.first { $0.path == original })
-        #expect(linked.otherNames == [link])
-        #expect(linked.linkCount == 2)
-        #expect(linked.isHardLinked)
-        let plain = try #require(g.files.first { $0.path == copy })
-        #expect(!plain.isHardLinked)
-        #expect(plain.otherNames.isEmpty)
-        #expect(g.wasted == 80_000)
+        XCTAssertTrue(r.files == 3)
+        XCTAssertTrue(r.groups.count == 1)
+        let g = try XCTUnwrap(r.groups.first)
+        XCTAssertTrue(g.files.count == 2)
+        let linked = try XCTUnwrap(g.files.first { $0.path == original })
+        XCTAssertTrue(linked.otherNames == [link])
+        XCTAssertTrue(linked.linkCount == 2)
+        XCTAssertTrue(linked.isHardLinked)
+        let plain = try XCTUnwrap(g.files.first { $0.path == copy })
+        XCTAssertTrue(!plain.isHardLinked)
+        XCTAssertTrue(plain.otherNames.isEmpty)
+        XCTAssertTrue(g.wasted == 80_000)
     }
 
-    @Test func groupWhereEveryFileIsHardLinkedIsDropped() throws {
+    func testGroupWhereEveryFileIsHardLinkedIsDropped() throws {
         let t = try TempTree()
         let data = randomData(60_000)
         // Hai file khác nhau (cùng nội dung), mỗi file có hai tên
@@ -156,11 +156,11 @@ private func findDups(_ root: String, minSize: Int64 = 1, skipSystem: Bool = fal
         try FileManager.default.linkItem(atPath: x, toPath: t.root + "/y.bin")
 
         let r = try findDups(t.root)
-        #expect(r.files == 6)
-        #expect(r.groups.isEmpty)
+        XCTAssertTrue(r.files == 6)
+        XCTAssertTrue(r.groups.isEmpty)
     }
 
-    @Test func symlinksAreNotFollowed() throws {
+    func testSymlinksAreNotFollowed() throws {
         let t = try TempTree()
         let real = try t.file("real/data.bin", bytes: 50_000)
         let fm = FileManager.default
@@ -169,11 +169,11 @@ private func findDups(_ root: String, minSize: Int64 = 1, skipSystem: Bool = fal
         try fm.createSymbolicLink(atPath: t.root + "/loop", withDestinationPath: t.root)
 
         let r = try findDups(t.root)
-        #expect(r.files == 1)
-        #expect(r.groups.isEmpty)
+        XCTAssertTrue(r.files == 1)
+        XCTAssertTrue(r.groups.isEmpty)
     }
 
-    @Test func skipSystemSkipsPackages() throws {
+    func testSkipSystemSkipsPackages() throws {
         let t = try TempTree()
         let data = randomData(40_000)
         let inApp = try writeFile(t, "Foo.app/Contents/Resources/x.bin", data)
@@ -183,85 +183,85 @@ private func findDups(_ root: String, minSize: Int64 = 1, skipSystem: Bool = fal
         try writeFile(t, "sub/.Trash/x.bin", data)
 
         let skipped = try findDups(t.root, skipSystem: true)
-        #expect(skipped.files == 1)
-        #expect(skipped.groups.isEmpty)
+        XCTAssertTrue(skipped.files == 1)
+        XCTAssertTrue(skipped.groups.isEmpty)
 
         let included = try findDups(t.root, skipSystem: false)
-        #expect(included.files == 3)
-        #expect(included.groups.count == 1)
+        XCTAssertTrue(included.files == 3)
+        XCTAssertTrue(included.groups.count == 1)
         let paths = Set(included.groups.first?.files.map(\.path) ?? [])
-        #expect(paths.contains(inApp))
-        #expect(paths.contains(doc))
-        #expect(!paths.contains { $0.contains("/.Trash") })
+        XCTAssertTrue(paths.contains(inApp))
+        XCTAssertTrue(paths.contains(doc))
+        XCTAssertTrue(!paths.contains { $0.contains("/.Trash") })
     }
 
-    @Test func packageDetectionUsesTypeConformance() {
-        #expect(DuplicateFinder.isPackage("Safari.app"))
-        #expect(DuplicateFinder.isPackage("Foo.FRAMEWORK"))
-        #expect(DuplicateFinder.isPackage("Photos Library.photoslibrary"))
-        #expect(!DuplicateFinder.isPackage("notes.txt"))
-        #expect(!DuplicateFinder.isPackage("Folder"))
-        #expect(!DuplicateFinder.isPackage(".app"))
-        #expect(!DuplicateFinder.isPackage("v1.2"))
+    func testPackageDetectionUsesTypeConformance() {
+        XCTAssertTrue(DuplicateFinder.isPackage("Safari.app"))
+        XCTAssertTrue(DuplicateFinder.isPackage("Foo.FRAMEWORK"))
+        XCTAssertTrue(DuplicateFinder.isPackage("Photos Library.photoslibrary"))
+        XCTAssertTrue(!DuplicateFinder.isPackage("notes.txt"))
+        XCTAssertTrue(!DuplicateFinder.isPackage("Folder"))
+        XCTAssertTrue(!DuplicateFinder.isPackage(".app"))
+        XCTAssertTrue(!DuplicateFinder.isPackage("v1.2"))
     }
 
-    @Test func clonesAreDetected() throws {
+    func testClonesAreDetected() throws {
         let t = try TempTree()
         let size = 300_000
         let data = randomData(size)
         let a = try writeFile(t, "a.bin", data)
         let b = t.root + "/b.bin"
-        try #require(clonefile(a, b, 0) == 0, "clonefile cần ổ APFS")
+        XCTAssertTrue(clonefile(a, b, 0) == 0, "clonefile cần ổ APFS")
         let c = try writeFile(t, "c.bin", data) // bản sao thật, không dùng chung khối
 
         let r = try findDups(t.root)
-        #expect(r.groups.count == 1)
-        let g = try #require(r.groups.first)
-        #expect(g.files.count == 3)
+        XCTAssertTrue(r.groups.count == 1)
+        let g = try XCTUnwrap(r.groups.first)
+        XCTAssertTrue(g.files.count == 3)
         let byPath = Dictionary(uniqueKeysWithValues: g.files.map { ($0.path, $0) })
-        #expect(byPath[a]?.isClone == true)
-        #expect(byPath[b]?.isClone == true)
-        #expect(byPath[c]?.isClone == false)
+        XCTAssertTrue(byPath[a]?.isClone == true)
+        XCTAssertTrue(byPath[b]?.isClone == true)
+        XCTAssertTrue(byPath[c]?.isClone == false)
         // a và b là một vùng dữ liệu: chỉ một bản thừa
-        #expect(g.wasted == Int64(size))
+        XCTAssertTrue(g.wasted == Int64(size))
     }
 
-    @Test func groupOfOnlyClonesWastesNothing() throws {
+    func testGroupOfOnlyClonesWastesNothing() throws {
         let t = try TempTree()
         let a = try t.file("a.bin", bytes: 200_000)
-        try #require(clonefile(a, t.root + "/b.bin", 0) == 0, "clonefile cần ổ APFS")
+        XCTAssertTrue(clonefile(a, t.root + "/b.bin", 0) == 0, "clonefile cần ổ APFS")
 
         let r = try findDups(t.root)
-        #expect(r.groups.count == 1)
-        let g = try #require(r.groups.first)
-        #expect(g.files.allSatisfy { $0.isClone })
-        #expect(g.wasted == 0)
+        XCTAssertTrue(r.groups.count == 1)
+        let g = try XCTUnwrap(r.groups.first)
+        XCTAssertTrue(g.files.allSatisfy { $0.isClone })
+        XCTAssertTrue(g.wasted == 0)
     }
 
-    @Test func clonesOutsideTheScanAreCounted() throws {
+    func testClonesOutsideTheScanAreCounted() throws {
         let t = try TempTree()
         let size = 150_000
         let data = randomData(size)
         // Clone nằm trong .Trash (không quét): xóa bản trong nhóm cũng không lấy lại được chỗ
         try t.dir(".Trash")
         let a = try writeFile(t, "a.bin", data)
-        try #require(clonefile(a, t.root + "/.Trash/a.bin", 0) == 0, "clonefile cần ổ APFS")
+        XCTAssertTrue(clonefile(a, t.root + "/.Trash/a.bin", 0) == 0, "clonefile cần ổ APFS")
         let c = try writeFile(t, "c.bin", data)
 
         var r = try findDups(t.root)
-        var g = try #require(r.groups.first)
-        #expect(g.files.first { $0.path == a }?.isClone == true)
-        #expect(g.files.first { $0.path == c }?.isClone == false)
-        #expect(g.wasted == Int64(size))
+        var g = try XCTUnwrap(r.groups.first)
+        XCTAssertTrue(g.files.first { $0.path == a }?.isClone == true)
+        XCTAssertTrue(g.files.first { $0.path == c }?.isClone == false)
+        XCTAssertTrue(g.wasted == Int64(size))
 
-        try #require(clonefile(c, t.root + "/.Trash/c.bin", 0) == 0)
+        XCTAssertTrue(clonefile(c, t.root + "/.Trash/c.bin", 0) == 0)
         r = try findDups(t.root)
-        g = try #require(r.groups.first)
-        #expect(g.files.allSatisfy { $0.isClone })
-        #expect(g.wasted == 0)
+        g = try XCTUnwrap(r.groups.first)
+        XCTAssertTrue(g.files.allSatisfy { $0.isClone })
+        XCTAssertTrue(g.wasted == 0)
     }
 
-    @Test func unreadableFilesAreCounted() throws {
+    func testUnreadableFilesAreCounted() throws {
         let t = try TempTree()
         let data = randomData(20_000)
         try writeFile(t, "a.bin", data)
@@ -270,28 +270,28 @@ private func findDups(_ root: String, minSize: Int64 = 1, skipSystem: Bool = fal
         defer { chmod(b, 0o644) }
 
         let r = try findDups(t.root)
-        #expect(r.files == 2)
-        #expect(r.unreadable == 1)
-        #expect(r.groups.isEmpty)
+        XCTAssertTrue(r.files == 2)
+        XCTAssertTrue(r.unreadable == 1)
+        XCTAssertTrue(r.groups.isEmpty)
     }
 
-    @Test func missingRootThrows() {
-        #expect(throws: POSIXError.self) {
-            try findDups("/nonexistent-diskat-\(UUID().uuidString)")
+    func testMissingRootThrows() {
+        XCTAssertThrowsError(try findDups("/nonexistent-diskat-\(UUID().uuidString)")) { error in
+            XCTAssertTrue(error is POSIXError)
         }
     }
 
-    @Test func cancellationThrows() throws {
+    func testCancellationThrows() throws {
         let t = try TempTree()
         let data = randomData(100_000)
         try writeFile(t, "a.bin", data)
         try writeFile(t, "b.bin", data)
         let cancel = DuplicateFinder.CancelFlag()
         cancel.cancel()
-        #expect(cancel.isCancelled)
-        #expect(throws: CancellationError.self) {
-            try DuplicateFinder.find(root: t.root, minSize: 1, skipSystem: false,
-                                     progress: DuplicateFinder.Progress(), cancel: cancel)
+        XCTAssertTrue(cancel.isCancelled)
+        XCTAssertThrowsError(try DuplicateFinder.find(root: t.root, minSize: 1, skipSystem: false,
+                                     progress: DuplicateFinder.Progress(), cancel: cancel)) { error in
+            XCTAssertTrue(error is CancellationError)
         }
     }
 }

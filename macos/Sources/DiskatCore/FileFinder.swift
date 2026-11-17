@@ -14,7 +14,7 @@ public struct FindResult: Sendable {
 public enum FileFinder {
     /// Số file khớp đã tìm thấy, giao diện đọc định kỳ để hiện tiến độ.
     public final class Counter: @unchecked Sendable {
-        private let lock = OSAllocatedUnfairLock(initialState: Int64(0))
+        private let lock = LockedState(initialState: Int64(0))
         public init() {}
         public var found: Int64 { lock.withLockUnchecked { $0 } }
         func set(_ n: Int64) { lock.withLockUnchecked { $0 = n } }

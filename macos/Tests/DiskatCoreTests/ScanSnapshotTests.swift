@@ -1,6 +1,6 @@
 import Foundation
 import os
-import Testing
+import XCTest
 @testable import DiskatCore
 
 /// Thư mục lưu tạm cho một test: đổi `ScanSnapshot.baseFolder`, gọi `restore()` (trong defer) để trả lại.
@@ -53,8 +53,8 @@ private func patched(_ data: Data, at offset: Int, _ value: Int32) -> Data {
 }
 
 // Cùng dùng ScanSnapshot.baseFolder nên chạy lần lượt
-@Suite(.serialized) struct ScanSnapshotTests {
-    @Test func saveReadAndList() async throws {
+final class ScanSnapshotTests: XCTestCase {
+    func testSaveReadAndList() async throws {
         let store = try TempSnapshots()
         defer { store.restore() }
         let t = try TempTree()
@@ -66,43 +66,43 @@ private func patched(_ data: Data, at offset: Int, _ value: Int32) -> Data {
 
         let when = Date(timeIntervalSince1970: 1_700_000_000.123)
         let info = try ScanSnapshot.save(root, scannedAt: when, errors: 2, appVersion: "1.2.3")
-        #expect((info.filePath as NSString).lastPathComponent == "20231114-221320-123.dsnap")
-        #expect((info.filePath as NSString).deletingLastPathComponent == ScanSnapshot.folder(for: t.root))
-        #expect(!FileManager.default.fileExists(atPath: info.filePath + ".tmp"))
-        #expect(info.rootPath == t.root)
-        #expect(info.scannedAt == when)
-        #expect(info.appVersion == "1.2.3")
-        #expect(info.totalSize == root.size)
-        #expect(info.fileCount == 3)
-        #expect(info.dirCount == 4)
-        #expect(info.nodeCount == 5)
-        #expect(info.errors == 2)
-        #expect(ScanSnapshot.readInfo(info.filePath) == info)
+        XCTAssertTrue((info.filePath as NSString).lastPathComponent == "20231114-221320-123.dsnap")
+        XCTAssertTrue((info.filePath as NSString).deletingLastPathComponent == ScanSnapshot.folder(for: t.root))
+        XCTAssertTrue(!FileManager.default.fileExists(atPath: info.filePath + ".tmp"))
+        XCTAssertTrue(info.rootPath == t.root)
+        XCTAssertTrue(info.scannedAt == when)
+        XCTAssertTrue(info.appVersion == "1.2.3")
+        XCTAssertTrue(info.totalSize == root.size)
+        XCTAssertTrue(info.fileCount == 3)
+        XCTAssertTrue(info.dirCount == 4)
+        XCTAssertTrue(info.nodeCount == 5)
+        XCTAssertTrue(info.errors == 2)
+        XCTAssertTrue(ScanSnapshot.readInfo(info.filePath) == info)
 
         let later = try ScanSnapshot.save(root, scannedAt: when.addingTimeInterval(60), errors: 0, appVersion: "1.2.4")
-        #expect(ScanSnapshot.list(t.root) == [later, info])
-        #expect(ScanSnapshot.list(t.root + "/") == [later, info])
-        #expect(ScanSnapshot.list(t.root + "/a").isEmpty)
+        XCTAssertTrue(ScanSnapshot.list(t.root) == [later, info])
+        XCTAssertTrue(ScanSnapshot.list(t.root + "/") == [later, info])
+        XCTAssertTrue(ScanSnapshot.list(t.root + "/a").isEmpty)
 
         // Cây không đổi: mọi thư mục đều tìm thấy, không có thay đổi
         let cmp = try ScanComparison.load(info.filePath, root: root)
-        #expect(cmp.info == info)
-        #expect(cmp.root === root)
+        XCTAssertTrue(cmp.info == info)
+        XCTAssertTrue(cmp.root === root)
         let all = allNodes(root)
-        #expect(all.count == 5)
+        XCTAssertTrue(all.count == 5)
         var seen = Set<Int>()
         for n in all {
             let i = cmp.index(of: n)
-            #expect(i >= 0)
+            XCTAssertTrue(i >= 0)
             seen.insert(i)
-            #expect(cmp.size(at: max(i, 0)) == n.size)
-            #expect(cmp.files(at: max(i, 0)) == n.fileCount)
-            #expect(cmp.sizeChange(n) == 0)
+            XCTAssertTrue(cmp.size(at: max(i, 0)) == n.size)
+            XCTAssertTrue(cmp.files(at: max(i, 0)) == n.fileCount)
+            XCTAssertTrue(cmp.sizeChange(n) == 0)
         }
-        #expect(seen.count == all.count)
+        XCTAssertTrue(seen.count == all.count)
     }
 
-    @Test func compareAfterChanges() async throws {
+    func testCompareAfterChanges() async throws {
         let store = try TempSnapshots()
         defer { store.restore() }
         let t = try TempTree()
@@ -119,37 +119,37 @@ private func patched(_ data: Data, at offset: Int, _ value: Int32) -> Data {
         let root = await scan(t.root)
         let cmp = try ScanComparison.load(info.filePath, root: root)
 
-        let keep = try #require(child(root, "keep"))
-        #expect(cmp.index(of: keep) >= 0)
-        #expect(cmp.sizeChange(keep) == 0)
+        let keep = try XCTUnwrap(child(root, "keep"))
+        XCTAssertTrue(cmp.index(of: keep) >= 0)
+        XCTAssertTrue(cmp.sizeChange(keep) == 0)
 
-        let grow = try #require(child(root, "grow"))
+        let grow = try XCTUnwrap(child(root, "grow"))
         let gi = cmp.index(of: grow)
-        #expect(gi >= 0)
-        #expect(cmp.sizeChange(grow) == TempTree.allocated(more))
-        #expect(cmp.sizeChange(grow) > 0)
-        #expect(cmp.files(at: gi) == 1)
-        #expect(cmp.index(of: grow) == gi) // lần hai lấy từ kết quả đã nhớ
+        XCTAssertTrue(gi >= 0)
+        XCTAssertTrue(cmp.sizeChange(grow) == TempTree.allocated(more))
+        XCTAssertTrue(cmp.sizeChange(grow) > 0)
+        XCTAssertTrue(cmp.files(at: gi) == 1)
+        XCTAssertTrue(cmp.index(of: grow) == gi) // lần hai lấy từ kết quả đã nhớ
 
-        let fresh = try #require(child(root, "fresh"))
-        let sub = try #require(child(fresh, "sub"))
-        #expect(cmp.index(of: fresh) == -1)
-        #expect(cmp.index(of: sub) == -1)
-        #expect(cmp.sizeChange(fresh) == fresh.size)
-        #expect(cmp.sizeChange(sub) == TempTree.allocated(added))
+        let fresh = try XCTUnwrap(child(root, "fresh"))
+        let sub = try XCTUnwrap(child(fresh, "sub"))
+        XCTAssertTrue(cmp.index(of: fresh) == -1)
+        XCTAssertTrue(cmp.index(of: sub) == -1)
+        XCTAssertTrue(cmp.sizeChange(fresh) == fresh.size)
+        XCTAssertTrue(cmp.sizeChange(sub) == TempTree.allocated(added))
 
-        #expect(cmp.index(of: root) == 0)
-        #expect(cmp.size(at: 0) == info.totalSize)
-        #expect(cmp.files(at: 0) == 3)
-        #expect(cmp.sizeChange(root) == root.size - info.totalSize)
-        #expect(cmp.sizeChange(root) == TempTree.allocated(more) + TempTree.allocated(added) - goneSize)
+        XCTAssertTrue(cmp.index(of: root) == 0)
+        XCTAssertTrue(cmp.size(at: 0) == info.totalSize)
+        XCTAssertTrue(cmp.files(at: 0) == 3)
+        XCTAssertTrue(cmp.sizeChange(root) == root.size - info.totalSize)
+        XCTAssertTrue(cmp.sizeChange(root) == TempTree.allocated(more) + TempTree.allocated(added) - goneSize)
 
         // Thư mục của cây khác (lần quét cũ) không thuộc gốc đang so
-        let oldKeep = try #require(child(old, "keep"))
-        #expect(cmp.index(of: oldKeep) == -1)
+        let oldKeep = try XCTUnwrap(child(old, "keep"))
+        XCTAssertTrue(cmp.index(of: oldKeep) == -1)
     }
 
-    @Test func manySiblingsAndConcurrentLookups() async throws {
+    func testManySiblingsAndConcurrentLookups() async throws {
         let store = try TempSnapshots()
         defer { store.restore() }
         let t = try TempTree()
@@ -157,28 +157,28 @@ private func patched(_ data: Data, at offset: Int, _ value: Int32) -> Data {
         let f = try t.file("many/d7/f.bin", bytes: 8_000)
         let root = await scan(t.root)
         let info = try ScanSnapshot.save(root, scannedAt: Date(), errors: 0, appVersion: "1.0")
-        #expect(info.nodeCount == 302)
+        XCTAssertTrue(info.nodeCount == 302)
 
-        let many = try #require(child(root, "many"))
+        let many = try XCTUnwrap(child(root, "many"))
         let kids = many.children
         let cmp = try ScanComparison.load(info.filePath, root: root)
         let indexes = kids.map { cmp.index(of: $0) }
-        #expect(indexes.allSatisfy { $0 > 1 })
-        #expect(Set(indexes).count == kids.count)
-        let d7 = try #require(child(many, "d7"))
-        #expect(cmp.size(at: cmp.index(of: d7)) == TempTree.allocated(f))
+        XCTAssertTrue(indexes.allSatisfy { $0 > 1 })
+        XCTAssertTrue(Set(indexes).count == kids.count)
+        let d7 = try XCTUnwrap(child(many, "d7"))
+        XCTAssertTrue(cmp.size(at: cmp.index(of: d7)) == TempTree.allocated(f))
 
         // Dò từ nhiều luồng cùng lúc trên một bản so sánh mới
         let fresh = try ScanComparison.load(info.filePath, root: root)
-        let results = OSAllocatedUnfairLock(initialState: [Int](repeating: -2, count: kids.count))
+        let results = LockedState(initialState: [Int](repeating: -2, count: kids.count))
         DispatchQueue.concurrentPerform(iterations: kids.count) { i in
             let v = fresh.index(of: kids[i])
             results.withLock { $0[i] = v }
         }
-        #expect(results.withLock { $0 } == indexes)
+        XCTAssertTrue(results.withLock { $0 } == indexes)
     }
 
-    @Test func pruneKeepsNewest() async throws {
+    func testPruneKeepsNewest() async throws {
         let store = try TempSnapshots()
         defer { store.restore() }
         let t = try TempTree()
@@ -199,9 +199,9 @@ private func patched(_ data: Data, at offset: Int, _ value: Int32) -> Data {
             saved.append(try ScanSnapshot.save(root, scannedAt: start.addingTimeInterval(Double(i) * 90),
                                                errors: 0, appVersion: "1", keep: 3))
         }
-        #expect(ScanSnapshot.list(t.root) == Array(saved.suffix(3).reversed()))
-        #expect(!FileOps.exists(staleTmp))
-        #expect(FileOps.exists(recentTmp))
+        XCTAssertTrue(ScanSnapshot.list(t.root) == Array(saved.suffix(3).reversed()))
+        XCTAssertTrue(!FileOps.exists(staleTmp))
+        XCTAssertTrue(FileOps.exists(recentTmp))
 
         // Mặc định giữ keepPerRoot lần
         for i in 5..<17 {
@@ -209,20 +209,20 @@ private func patched(_ data: Data, at offset: Int, _ value: Int32) -> Data {
                                                errors: 0, appVersion: "1"))
         }
         let listed = ScanSnapshot.list(t.root)
-        #expect(listed.count == ScanSnapshot.keepPerRoot)
-        #expect(listed == Array(saved.suffix(ScanSnapshot.keepPerRoot).reversed()))
+        XCTAssertTrue(listed.count == ScanSnapshot.keepPerRoot)
+        XCTAssertTrue(listed == Array(saved.suffix(ScanSnapshot.keepPerRoot).reversed()))
         let files = try FileManager.default.contentsOfDirectory(atPath: dir).filter { $0.hasSuffix(".dsnap") }
-        #expect(files.count == ScanSnapshot.keepPerRoot)
+        XCTAssertTrue(files.count == ScanSnapshot.keepPerRoot)
     }
 
-    @Test func usageAndDeleteAll() async throws {
+    func testUsageAndDeleteAll() async throws {
         let store = try TempSnapshots()
         defer { store.restore() }
         // Thư mục lưu chưa có
         try FileManager.default.removeItem(atPath: store.folder)
-        #expect(ScanSnapshot.usage().count == 0)
-        #expect(ScanSnapshot.usage().bytes == 0)
-        #expect(ScanSnapshot.deleteAll() == 0)
+        XCTAssertTrue(ScanSnapshot.usage().count == 0)
+        XCTAssertTrue(ScanSnapshot.usage().bytes == 0)
+        XCTAssertTrue(ScanSnapshot.deleteAll() == 0)
 
         let a = try TempTree()
         try a.file("x/1.bin", bytes: 2_000)
@@ -236,21 +236,21 @@ private func patched(_ data: Data, at offset: Int, _ value: Int32) -> Data {
             try ScanSnapshot.save(rootA, scannedAt: start.addingTimeInterval(1), errors: 0, appVersion: "1"),
             try ScanSnapshot.save(rootB, scannedAt: start, errors: 0, appVersion: "1"),
         ]
-        #expect(ScanSnapshot.folder(for: a.root) != ScanSnapshot.folder(for: b.root))
+        XCTAssertTrue(ScanSnapshot.folder(for: a.root) != ScanSnapshot.folder(for: b.root))
         let usage = ScanSnapshot.usage()
         let bytes = try saved.map { Int64(try Data(contentsOf: URL(fileURLWithPath: $0.filePath)).count) }.reduce(0, +)
-        #expect(usage.count == 3)
-        #expect(usage.bytes == bytes)
-        #expect(bytes > 0)
+        XCTAssertTrue(usage.count == 3)
+        XCTAssertTrue(usage.bytes == bytes)
+        XCTAssertTrue(bytes > 0)
 
-        #expect(ScanSnapshot.deleteAll() == 3)
-        #expect(ScanSnapshot.usage().count == 0)
-        #expect(ScanSnapshot.list(a.root).isEmpty)
-        #expect(ScanSnapshot.list(b.root).isEmpty)
-        #expect(try FileManager.default.contentsOfDirectory(atPath: store.folder).isEmpty)
+        XCTAssertTrue(ScanSnapshot.deleteAll() == 3)
+        XCTAssertTrue(ScanSnapshot.usage().count == 0)
+        XCTAssertTrue(ScanSnapshot.list(a.root).isEmpty)
+        XCTAssertTrue(ScanSnapshot.list(b.root).isEmpty)
+        XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: store.folder).isEmpty)
     }
 
-    @Test func corruptFilesAreRejected() async throws {
+    func testCorruptFilesAreRejected() async throws {
         let store = try TempSnapshots()
         defer { store.restore() }
         let t = try TempTree()
@@ -259,9 +259,9 @@ private func patched(_ data: Data, at offset: Int, _ value: Int32) -> Data {
         let root = await scan(t.root)
         let info = try ScanSnapshot.save(root, scannedAt: Date(), errors: 0, appVersion: "1.0")
         let good = try Data(contentsOf: URL(fileURLWithPath: info.filePath))
-        #expect(good.prefix(4) == Data("DSNP".utf8))
+        XCTAssertTrue(good.prefix(4) == Data("DSNP".utf8))
         let headerLength = try ScanSnapshot.parseHeader(good, file: info.filePath).length
-        #expect(good.count > headerLength)
+        XCTAssertTrue(good.count > headerLength)
         let dir = ScanSnapshot.folder(for: t.root)
 
         func write(_ name: String, _ data: Data) throws -> String {
@@ -285,8 +285,8 @@ private func patched(_ data: Data, at offset: Int, _ value: Int32) -> Data {
             try write("zerocount.dsnap", patched(good, at: headerLength - 8, 0)),
         ]
         for path in badHeaders {
-            #expect(ScanSnapshot.readInfo(path) == nil, "\(path)")
-            #expect(throws: (any Error).self, "\(path)") { try ScanComparison.load(path, root: root) }
+            XCTAssertTrue(ScanSnapshot.readInfo(path) == nil, "\(path)")
+            XCTAssertThrowsError(try ScanComparison.load(path, root: root), "\(path)")
         }
 
         // Phần đầu còn tốt nhưng phần thân hỏng: chỉ phát hiện khi nạp
@@ -298,54 +298,54 @@ private func patched(_ data: Data, at offset: Int, _ value: Int32) -> Data {
             try write("countlarge.dsnap", patched(good, at: headerLength - 8, 150_000_000)),
         ]
         for path in badBodies {
-            #expect(throws: (any Error).self, "\(path)") { try ScanComparison.load(path, root: root) }
+            XCTAssertThrowsError(try ScanComparison.load(path, root: root), "\(path)")
         }
-        #expect(throws: (any Error).self) { try ScanComparison.load(dir + "/missing.dsnap", root: root) }
+        XCTAssertThrowsError(try ScanComparison.load(dir + "/missing.dsnap", root: root))
 
         // Danh sách bỏ qua file có phần đầu hỏng; file tốt vẫn nạp được
         let listed = ScanSnapshot.list(t.root).map(\.filePath)
-        #expect(listed.contains(info.filePath))
-        for path in badHeaders { #expect(!listed.contains(path)) }
+        XCTAssertTrue(listed.contains(info.filePath))
+        for path in badHeaders { XCTAssertTrue(!listed.contains(path)) }
         let cmp = try ScanComparison.load(info.filePath, root: root)
-        #expect(cmp.sizeChange(root) == 0)
+        XCTAssertTrue(cmp.sizeChange(root) == 0)
     }
 
-    @Test func rootsAndFolderNames() throws {
+    func testRootsAndFolderNames() throws {
         let store = try TempSnapshots()
         defer { store.restore() }
         let t = try TempTree()
         try t.dir("x")
 
-        #expect(ScanSnapshot.normalize(t.root + "/") == t.root)
-        #expect(ScanSnapshot.sameRoot("/", "/"))
-        #expect(ScanSnapshot.sameRoot(t.root, t.root + "/"))
-        #expect(ScanSnapshot.sameRoot(t.root, t.root + "/x/.."))
-        #expect(!ScanSnapshot.sameRoot(t.root, "/"))
-        #expect(!ScanSnapshot.sameRoot(t.root, t.root + "/x"))
+        XCTAssertTrue(ScanSnapshot.normalize(t.root + "/") == t.root)
+        XCTAssertTrue(ScanSnapshot.sameRoot("/", "/"))
+        XCTAssertTrue(ScanSnapshot.sameRoot(t.root, t.root + "/"))
+        XCTAssertTrue(ScanSnapshot.sameRoot(t.root, t.root + "/x/.."))
+        XCTAssertTrue(!ScanSnapshot.sameRoot(t.root, "/"))
+        XCTAssertTrue(!ScanSnapshot.sameRoot(t.root, t.root + "/x"))
 
         // FNV-1a 64 bit: giá trị chuẩn
-        #expect(ScanSnapshot.nameHash("".utf8) == 0xcbf2_9ce4_8422_2325)
-        #expect(ScanSnapshot.nameHash("a".utf8) == 0xaf63_dc4c_8601_ec8c)
-        #expect(ScanSnapshot.nameHash("foobar".utf8) == 0x8594_4171_f739_67e8)
+        XCTAssertTrue(ScanSnapshot.nameHash("".utf8) == 0xcbf2_9ce4_8422_2325)
+        XCTAssertTrue(ScanSnapshot.nameHash("a".utf8) == 0xaf63_dc4c_8601_ec8c)
+        XCTAssertTrue(ScanSnapshot.nameHash("foobar".utf8) == 0x8594_4171_f739_67e8)
 
         let rootFolder = ScanSnapshot.folder(for: "/")
-        #expect((rootFolder as NSString).deletingLastPathComponent == store.folder)
-        #expect((rootFolder as NSString).lastPathComponent == "root-" + hex("/"))
+        XCTAssertTrue((rootFolder as NSString).deletingLastPathComponent == store.folder)
+        XCTAssertTrue((rootFolder as NSString).lastPathComponent == "root-" + hex("/"))
 
         try t.dir("My Folder (2)")
         let normal = ScanSnapshot.folder(for: t.root + "/My Folder (2)")
-        #expect((normal as NSString).deletingLastPathComponent == store.folder)
-        #expect((normal as NSString).lastPathComponent == "My_Folder__2_-" + hex(t.root + "/My Folder (2)"))
-        #expect(ScanSnapshot.folder(for: t.root + "/My Folder (2)/") == normal)
-        #expect(ScanSnapshot.folder(for: t.root + "/x") != ScanSnapshot.folder(for: t.root))
+        XCTAssertTrue((normal as NSString).deletingLastPathComponent == store.folder)
+        XCTAssertTrue((normal as NSString).lastPathComponent == "My_Folder__2_-" + hex(t.root + "/My Folder (2)"))
+        XCTAssertTrue(ScanSnapshot.folder(for: t.root + "/My Folder (2)/") == normal)
+        XCTAssertTrue(ScanSnapshot.folder(for: t.root + "/x") != ScanSnapshot.folder(for: t.root))
 
         let long = String(repeating: "x", count: 40)
         try t.dir(long)
-        #expect((ScanSnapshot.folder(for: t.root + "/" + long) as NSString).lastPathComponent
+        XCTAssertTrue((ScanSnapshot.folder(for: t.root + "/" + long) as NSString).lastPathComponent
             == String(repeating: "x", count: 32) + "-" + hex(t.root + "/" + long))
 
         try t.dir("Tài liệu")
-        #expect((ScanSnapshot.folder(for: t.root + "/Tài liệu") as NSString).lastPathComponent
+        XCTAssertTrue((ScanSnapshot.folder(for: t.root + "/Tài liệu") as NSString).lastPathComponent
             == "T_i_li_u-" + hex(t.root + "/Tài liệu"))
     }
 }

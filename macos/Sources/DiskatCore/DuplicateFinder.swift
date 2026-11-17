@@ -116,7 +116,7 @@ public enum DuplicateFinder {
             var total: Int64 = 0
         }
 
-        private let state = OSAllocatedUnfairLock(initialState: State())
+        private let state = LockedState(initialState: State())
 
         public init() {}
 
@@ -158,7 +158,7 @@ public enum DuplicateFinder {
     }
 
     public final class CancelFlag: Sendable {
-        private let flag = OSAllocatedUnfairLock(initialState: false)
+        private let flag = LockedState(initialState: false)
 
         public init() {}
 
@@ -353,7 +353,7 @@ public enum DuplicateFinder {
         }
     }
 
-    private static let packageCache = OSAllocatedUnfairLock(initialState: [String: Bool]())
+    private static let packageCache = LockedState(initialState: [String: Bool]())
 
     /// Thư mục có phần mở rộng là gói / bundle (theo UTType, nhớ kết quả theo phần mở rộng).
     static func isPackage(_ name: String) -> Bool {
@@ -479,7 +479,7 @@ public enum DuplicateFinder {
     /// Trong lúc chạy, luồng không được tải file iCloud về: đọc một file "dataless" sẽ thất bại.
     private static func parallel(_ items: [Entry], threads: Int, bufferSize: Int, cancel: CancelFlag,
                                  _ body: (Entry, UnsafeMutableRawPointer) -> Void) throws {
-        let next = OSAllocatedUnfairLock(initialState: 0)
+        let next = LockedState(initialState: 0)
         DispatchQueue.concurrentPerform(iterations: min(threads, items.count)) { _ in
             let buffer = UnsafeMutableRawPointer.allocate(byteCount: bufferSize, alignment: 16)
             defer { buffer.deallocate() }
@@ -575,11 +575,17 @@ public enum DuplicateFinder {
         attrs.bitmapcount = u_short(ATTR_BIT_MAP_COUNT)
         attrs.commonattr = attrgroup_t(ATTR_CMN_RETURNED_ATTRS)
         // Với FSOPT_ATTR_CMN_EXTENDED, nhóm forkattr được hiểu là các thuộc tính ATTR_CMNEXT_*
-        attrs.forkattr = attrgroup_t(ATTR_CMNEXT_CLONEID) | attrgroup_t(ATTR_CMNEXT_CLONE_REFCNT)
+        // ATTR_CMNEXT_CLONE_REFCNT from Apple's sys/attr.h; absent from older SDKs.
+        let cloneRefCount: attrgroup_t = 0x00001000
+        attrs.forkattr = attrgroup_t(ATTR_CMNEXT_CLONEID) | attrgroup_t(ATTR_CMNEXT_EXT_FLAGS) | cloneRefCount
         var storage = (UInt64(0), UInt64(0), UInt64(0), UInt64(0), UInt64(0), UInt64(0), UInt64(0), UInt64(0))
         return withUnsafeMutableBytes(of: &storage) { buf -> (UInt64, UInt32) in
-            guard let base = buf.baseAddress,
-                  fgetattrlist(fd, &attrs, base, buf.count, UInt32(FSOPT_ATTR_CMN_EXTENDED)) == 0 else { return (0, 0) }
+            guard let base = buf.baseAddress else { return (0, 0) }
+            if fgetattrlist(fd, &attrs, base, buf.count, UInt32(FSOPT_ATTR_CMN_EXTENDED)) != 0 {
+                // Older kernels may reject the new attribute; retain clone ID detection.
+                attrs.forkattr = attrgroup_t(ATTR_CMNEXT_CLONEID) | attrgroup_t(ATTR_CMNEXT_EXT_FLAGS)
+                guard fgetattrlist(fd, &attrs, base, buf.count, UInt32(FSOPT_ATTR_CMN_EXTENDED)) == 0 else { return (0, 0) }
+            }
             // Độ dài, các thuộc tính trả về, rồi các thuộc tính theo thứ tự bit
             var field = base + 4
             let returned = field.loadUnaligned(as: attribute_set_t.self)
@@ -590,9 +596,17 @@ public enum DuplicateFinder {
                 id = field.loadUnaligned(as: UInt64.self)
                 field += 8
             }
-            if returned.forkattr & attrgroup_t(ATTR_CMNEXT_CLONE_REFCNT) != 0 {
+            var sharesBlocks = false
+            if returned.forkattr & attrgroup_t(ATTR_CMNEXT_EXT_FLAGS) != 0 {
+                sharesBlocks = field.loadUnaligned(as: UInt64.self) & UInt64(EF_MAY_SHARE_BLOCKS) != 0
+                field += 8
+            }
+            if returned.forkattr & cloneRefCount != 0 {
                 refs = field.loadUnaligned(as: UInt32.self)
             }
+            // Without a reference count, shared storage may also have copies outside this scan.
+            // Keep estimates conservative on Big Sur/Monterey.
+            if refs == 0 && sharesBlocks { refs = UInt32.max }
             return (id, refs)
         }
     }

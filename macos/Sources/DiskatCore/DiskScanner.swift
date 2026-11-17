@@ -37,7 +37,7 @@ public final class DiskScanner: @unchecked Sendable {
     private var heaps: [TopFileHeap] = []
     private var stats: [WorkerStats] = []
     /// File có nhiều hard link chỉ được tính dung lượng một lần.
-    private let seenLinks = OSAllocatedUnfairLock(initialState: Set<UInt64>())
+    private let seenLinks = LockedState(initialState: Set<UInt64>())
 
     public init(path: String) {
         let full = FileOps.resolvedPath(path)

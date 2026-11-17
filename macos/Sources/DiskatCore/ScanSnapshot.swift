@@ -44,7 +44,7 @@ public enum ScanSnapshot {
     /// File hỏng không được làm cấp phát quá lớn khi đọc.
     static let maxNodes = 200_000_000
 
-    private static let base = OSAllocatedUnfairLock(initialState: defaultBaseFolder())
+    private static let base = LockedState(initialState: defaultBaseFolder())
 
     /// Thư mục chứa mọi lần quét đã lưu (test đổi sang thư mục tạm).
     public static var baseFolder: String {
@@ -318,7 +318,7 @@ public final class ScanComparison: @unchecked Sendable {
     private let hashes: [UInt64]
     private let order: [Int32]
     /// Kết quả dò đã nhớ. Giữ luôn node: ObjectIdentifier của node đã giải phóng có thể bị dùng lại cho node khác.
-    private let found = OSAllocatedUnfairLock(initialState: [ObjectIdentifier: (node: DirNode, index: Int)]())
+    private let found = LockedState(initialState: [ObjectIdentifier: (node: DirNode, index: Int)]())
 
     private init(info: SnapshotInfo, root: DirNode, sizes: [Int64], fileCounts: [Int64], firstChild: [Int32],
                  childCount: [Int32], hashes: [UInt64], order: [Int32]) {

@@ -31,40 +31,66 @@ private struct StatTable: View {
     let boldLabel: Bool
     let menuTitle: String
     let action: (StatRow) -> Void
+    @State private var selection: Set<String> = []
+
+    var body: some View {
+        if #available(macOS 13, *) {
+            ModernStatTable(rows: rows, firstColumn: firstColumn, boldLabel: boldLabel, menuTitle: menuTitle, action: action)
+        } else { compatibleBody }
+    }
+
+    private var compatibleBody: some View {
+        AppKitTable(rows: rows.map { AppKitTableRow(id: $0.id, cells: [$0.label, String(format: "%.1f %%", $0.percent), FileOps.formatSize($0.size), FileOps.formatCount($0.count)]) },
+                    columns: [firstColumn, Loc.t("ColShare"), Loc.t("ColSize"), Loc.t("ColFiles")], selection: $selection,
+                    onOpen: { ids in if let row = rows.first(where: { ids.contains($0.id) }) { action(row) } },
+                    menu: { ids in
+                        guard let row = rows.first(where: { ids.contains($0.id) }) else { return [] }
+                        return [AppKitTableAction(title: menuTitle, action: { action(row) })]
+                    })
+    }
+}
+
+@available(macOS 13, *)
+private struct ModernStatTable: View {
+    let rows: [StatRow]
+    let firstColumn: String
+    let boldLabel: Bool
+    let menuTitle: String
+    let action: (StatRow) -> Void
     @State private var selection: String?
 
     var body: some View {
         Table(rows, selection: $selection) {
-            TableColumn(firstColumn) { r in
+            TableColumn(firstColumn) { (r: StatRow) in
                 HStack(spacing: 8) {
                     RoundedRectangle(cornerRadius: 3).fill(r.color).frame(width: 10, height: 10)
                     Text(r.label).fontWeight(boldLabel ? .semibold : .regular).lineLimit(1)
                 }
             }
             .width(min: 90, ideal: 150)
-            TableColumn(Loc.t("ColShare")) { r in
+            TableColumn(Loc.t("ColShare")) { (r: StatRow) in
                 HStack(spacing: 8) {
                     SlimBar(fraction: r.percent / 100, color: r.color).frame(width: 78, height: 7)
                     Text(String(format: "%.1f %%", r.percent)).font(.caption).foregroundStyle(.secondary).monospacedDigit()
                 }
             }
             .width(min: 120, ideal: 150)
-            TableColumn(Loc.t("ColSize")) { r in
+            TableColumn(Loc.t("ColSize")) { (r: StatRow) in
                 Text(FileOps.formatSize(r.size)).fontWeight(.semibold).monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .width(min: 64, ideal: 88)
-            TableColumn(Loc.t("ColFiles")) { r in
+            TableColumn(Loc.t("ColFiles")) { (r: StatRow) in
                 Text(FileOps.formatCount(r.count)).foregroundStyle(.secondary).monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .width(min: 60, ideal: 90)
         }
-        .contextMenu(forSelectionType: String.self) { ids in
+        .contextMenu(forSelectionType: String.self) { (ids: Set<String>) in
             if let id = ids.first, let row = rows.first(where: { $0.id == id }) {
                 Button(menuTitle) { action(row) }
             }
-        } primaryAction: { ids in
+        } primaryAction: { (ids: Set<String>) in
             if let id = ids.first, let row = rows.first(where: { $0.id == id }) { action(row) }
         }
     }
@@ -72,7 +98,7 @@ private struct StatTable: View {
 
 /// Tab Loại file: tổng theo phần mở rộng trong lần quét. Nhấp đúp để liệt kê mọi file của loại đó.
 struct TypesPane: View {
-    @Environment(AppModel.self) private var model
+    @EnvironmentObject private var model: AppModel
 
     private var rows: [StatRow] {
         let total = model.fileTypes.reduce(Int64(0)) { $0 + $1.size }
@@ -87,7 +113,7 @@ struct TypesPane: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(model.typesNote)
                 .font(.callout)
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 9)
@@ -100,7 +126,7 @@ struct TypesPane: View {
 
 /// Tab Tuổi file: dung lượng theo lần sửa cuối. Nhấp đúp để tìm file cũ hơn mốc đó.
 struct AgesPane: View {
-    @Environment(AppModel.self) private var model
+    @EnvironmentObject private var model: AppModel
 
     private var rows: [StatRow] {
         let total = model.ageStats.reduce(Int64(0)) { $0 + $1.size }
@@ -114,7 +140,7 @@ struct AgesPane: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(model.agesNote)
                 .font(.callout)
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 12)
                 .padding(.top, 9)
@@ -123,7 +149,7 @@ struct AgesPane: View {
             let rows = rows
             GeometryReader { geo in
                 HStack(spacing: 0) {
-                    ForEach(rows.filter { $0.size > 0 }) { r in
+                    ForEach(rows.filter { $0.size > 0 }) { (r: StatRow) in
                         Rectangle().fill(r.color)
                             .frame(width: geo.size.width * r.percent / 100)
                             .help("\(r.label): \(FileOps.formatSize(r.size))")

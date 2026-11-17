@@ -29,7 +29,7 @@ enum DebugHooks {
     }
 
     private static func wait(_ seconds: Double) async {
-        try? await Task.sleep(for: .seconds(seconds))
+        try? await Task.sleep(nanoseconds: UInt64(max(0, seconds) * 1_000_000_000))
     }
 
     // ================= Tự kiểm tra =================

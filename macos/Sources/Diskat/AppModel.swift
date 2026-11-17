@@ -1,5 +1,5 @@
 import AppKit
-import Observation
+import Combine
 import DiskatCore
 
 enum RightTab: Hashable, CaseIterable { case map, largest, types, ages, duplicates }
@@ -66,117 +66,119 @@ struct ConfirmRequest: Identifiable {
 /// Trạng thái và logic của cửa sổ chính (tương ứng MainWindow.*.cs của bản Windows).
 /// Cây thư mục và bản đồ là view AppKit; model gọi trực tiếp vào chúng qua `tree` / `map`.
 @MainActor
-@Observable
-final class AppModel {
+final class AppModel: ObservableObject {
     static let shared = AppModel()
     static let maxFilesPerFolder = 1000
 
     // ================= Quét =================
 
-    @ObservationIgnored private(set) var scanner: DiskScanner?
-    @ObservationIgnored private var scanTask: Task<Void, Never>?
-    @ObservationIgnored private var scanGeneration = 0
-    @ObservationIgnored private var scanStart = ContinuousClock.now
-    @ObservationIgnored private var scanEnd: ContinuousClock.Instant?
-    @ObservationIgnored private var timer: Timer?
-    @ObservationIgnored private var tick = 0
+    private(set) var scanner: DiskScanner?
+    private var scanTask: Task<Void, Never>?
+    private var scanGeneration = 0
+    private var scanStart = ProcessInfo.processInfo.systemUptime
+    private var scanEnd: TimeInterval?
+    private var timer: Timer?
+    private var tick = 0
 
-    private(set) var root: DirNode?
-    private(set) var isScanning = false
-    var isRescanning = false
+    @Published private(set) var root: DirNode?
+    @Published private(set) var isScanning = false
+    @Published var isRescanning = false
     /// Đang xóa / quét lại một thư mục: chỉ một thao tác tại một thời điểm
-    var isBusy = false
+    @Published var isBusy = false
     /// Lớp phủ khi đang xóa
-    var busyText: String?
-    var pathText = ""
-    var pathFieldFocused = false
+    @Published var busyText: String?
+    @Published var pathText = ""
+    @Published var pathFieldFocused = false
     /// Dòng trạng thái dưới dạng hàm để có thể dịch lại khi đổi ngôn ngữ
-    private(set) var status: () -> String = { Loc.t("Ready") }
+    @Published private(set) var status: () -> String = { Loc.t("Ready") }
     /// Tăng mỗi khi số liệu (dung lượng, số file...) thay đổi để các nhãn phụ thuộc được vẽ lại
-    private(set) var valuesRevision = 0
+    @Published private(set) var valuesRevision = 0
 
     // ================= Cây =================
 
-    @ObservationIgnored weak var tree: TreeController?
-    private(set) var selection: AnyObject?
-    private(set) var sortKey: SortKey = .size
-    private(set) var sortDescending = true
+    weak var tree: TreeController?
+    @Published private(set) var selection: AnyObject?
+    @Published private(set) var sortKey: SortKey = .size
+    @Published private(set) var sortDescending = true
     // Giữ tham chiếu mạnh tới thư mục để ObjectIdentifier không bị dùng lại khi còn trong bộ đệm
-    @ObservationIgnored private var childCache: [ObjectIdentifier: (owner: DirNode, items: [AnyObject])] = [:]
-    @ObservationIgnored private var fileRowCache: [ObjectIdentifier: (owner: DirNode, rows: [FileRow])] = [:]
+    private var childCache: [ObjectIdentifier: (owner: DirNode, items: [AnyObject])] = [:]
+    private var fileRowCache: [ObjectIdentifier: (owner: DirNode, rows: [FileRow])] = [:]
 
     // ================= Bản đồ =================
 
-    @ObservationIgnored weak var map: TreemapView? {
+    weak var map: TreemapView? {
         didSet { map?.setRoot(mapRoot) }
     }
-    private(set) var mapRoot: DirNode?
-    var mapHoverText: String?
+    @Published private(set) var mapRoot: DirNode?
+    @Published var mapHoverText: String?
     /// True khi ô vừa nhấp trên bản đồ khớp đúng một dòng trong cây. Nếu không (ô "[N file]",
     /// "[N mục khác]", file ngoài danh sách) thì không mở menu chuột phải để tránh xóa nhầm cả thư mục chứa.
-    @ObservationIgnored private(set) var mapClickExact = false
-    @ObservationIgnored private var selectingFromMap = false
+    private(set) var mapClickExact = false
+    private var selectingFromMap = false
 
     // ================= File lớn nhất =================
 
-    var topFiles: [TopFile] = []
-    var topSelection: Set<String> = []
-    var rightTab: RightTab = .map
-    var activePane: ActivePane = .tree
+    @Published var topFiles: [TopFile] = []
+    @Published var topSelection: Set<String> = []
+    @Published var rightTab: RightTab = .map
+    @Published var activePane: ActivePane = .tree
 
     // ================= Loại file / tuổi file / tìm file =================
 
-    var fileTypes: [TypeStat] = []
-    var ageStats: [AgeStat] = []
+    @Published var fileTypes: [TypeStat] = []
+    @Published var ageStats: [AgeStat] = []
     /// Sau khi xóa / quét lại một phần, thống kê loại file và tuổi file (tính lúc quét) có thể lệch
-    var statsStale = false
+    @Published var statsStale = false
     /// Lần quét gần nhất bị dừng giữa chừng
-    private(set) var scanStopped = false
+    @Published private(set) var scanStopped = false
     /// Kết quả tìm kiếm đang hiển thị thay cho danh sách file lớn nhất (nil = đang xem file lớn nhất)
-    var searchResults: [TopFile]?
-    var searchCapped = false
+    @Published var searchResults: [TopFile]?
+    @Published var searchCapped = false
     /// Tăng mỗi khi danh sách ở tab File lớn nhất được thay bằng danh sách khác
-    var searchGeneration = 0
-    var findText = ""
-    var findSizeIndex = 0
-    var findAgeIndex = 0
+    @Published var searchGeneration = 0
+    @Published var findText = ""
+    @Published var findSizeIndex = 0
+    @Published var findAgeIndex = 0
     /// Đang tìm: số file khớp đã thấy (nil = không tìm)
-    var findProgress: Int64?
-    var findError: String?
-    @ObservationIgnored var findToken: CancelToken?
+    @Published var findProgress: Int64?
+    @Published var findError: String?
+    var findToken: CancelToken?
 
     // ================= Khác =================
 
-    private(set) var volumes: [VolumeInfo] = []
-    private(set) var hasFullDiskAccess = true
-    var confirm: ConfirmRequest?
+    @Published private(set) var volumes: [VolumeInfo] = []
+    @Published private(set) var hasFullDiskAccess = true
+    @Published var confirm: ConfirmRequest?
     // ================= So sánh với lần quét trước =================
 
     /// Lần quét đã lưu đang được so sánh (cột "Thay đổi", nhãn "mới", thanh tóm tắt)
-    var comparison: ScanComparison?
+    @Published var comparison: ScanComparison?
     /// Lần quét đã chọn để so: giữ lại để so tiếp sau khi quét lại đúng thư mục đó
-    @ObservationIgnored var compareWith: SnapshotInfo?
+    var compareWith: SnapshotInfo?
     /// Các lần lưu nối tiếp nhau, chạy ở luồng nền
-    @ObservationIgnored var snapshotTask: Task<Void, Never>?
+    var snapshotTask: Task<Void, Never>?
     /// Các lần quét đã lưu của thư mục đang xem (mới nhất trước) và tổng số lần đã lưu, cho menu
-    var savedScans: [SnapshotInfo] = []
-    var savedScanCount = 0
+    @Published var savedScans: [SnapshotInfo] = []
+    @Published var savedScanCount = 0
 
     // ================= Trùng lặp =================
 
     let duplicates = DuplicatesModel()
 
-    var theme: AppTheme = Settings.theme
-    var checkingUpdates = false
-    var autoCheckUpdates = Settings.checkForUpdatesOnStartup {
+    @Published var theme: AppTheme = Settings.theme
+    @Published var checkingUpdates = false
+    @Published var autoCheckUpdates = Settings.checkForUpdatesOnStartup {
         didSet { Settings.checkForUpdatesOnStartup = autoCheckUpdates }
     }
-    var saveScanHistory = Settings.saveScanHistory {
+    @Published var saveScanHistory = Settings.saveScanHistory {
         didSet { Settings.saveScanHistory = saveScanHistory }
     }
-    @ObservationIgnored private(set) var launchOptions = LaunchOptions()
+    private(set) var launchOptions = LaunchOptions()
 
-    private init() {}
+    private var duplicateChanges: AnyCancellable?
+    private init() {
+        duplicateChanges = duplicates.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }
+    }
 
     func launched() {
         loadVolumes()
@@ -184,11 +186,11 @@ final class AppModel {
         let ws = NSWorkspace.shared.notificationCenter
         for name in [NSWorkspace.didMountNotification, NSWorkspace.didUnmountNotification, NSWorkspace.didRenameVolumeNotification] {
             ws.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
-                MainActor.assumeIsolated { self?.loadVolumes() }
+                Task { @MainActor [weak self] in self?.loadVolumes() }
             }
         }
         NotificationCenter.default.addObserver(forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated {
+            Task { @MainActor [weak self] in
                 self?.refreshFullDiskAccess()
                 self?.loadVolumes()
             }
@@ -322,7 +324,7 @@ final class AppModel {
         setMapRoot(sc.root)
 
         setScanning(true)
-        scanStart = .now
+        scanStart = ProcessInfo.processInfo.systemUptime
         scanEnd = nil
         tick = 0
         startTimer()
@@ -334,7 +336,7 @@ final class AppModel {
         // Một lần quét mới đã bắt đầu trong lúc chờ: để lần đó xử lý
         guard generation == scanGeneration else { return }
         stopTimer()
-        scanEnd = .now
+        scanEnd = ProcessInfo.processInfo.systemUptime
         setScanning(false)
         onScanFinished(cancelled: sc.isCancelled)
     }
@@ -347,7 +349,7 @@ final class AppModel {
     private func startTimer() {
         timer?.invalidate()
         let t = Timer(timeInterval: 0.2, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { self?.onTick() }
+            Task { @MainActor [weak self] in self?.onTick() }
         }
         RunLoop.main.add(t, forMode: .common)
         timer = t
@@ -375,9 +377,7 @@ final class AppModel {
     }
 
     var scanSeconds: Double {
-        let end = scanEnd ?? .now
-        let d = scanStart.duration(to: end)
-        return Double(d.components.seconds) + Double(d.components.attoseconds) / 1e18
+        return (scanEnd ?? ProcessInfo.processInfo.systemUptime) - scanStart
     }
 
     var statsText: String {
@@ -486,31 +486,34 @@ final class AppModel {
 
     private func sortEntry(_ item: AnyObject) -> SortEntry {
         if let d = item as? DirNode {
-            let n: Double = switch sortKey {
-            case .size: Double(d.size)
-            case .files: Double(d.fileCount)
-            case .dirs: Double(d.dirCount)
-            case .date: d.modified
-            case .name: 0
-            case .change: comparisonChange(d).map(Double.init) ?? -.greatestFiniteMagnitude
+            let n: Double
+            switch sortKey {
+            case .size: n = Double(d.size)
+            case .files: n = Double(d.fileCount)
+            case .dirs: n = Double(d.dirCount)
+            case .date: n = d.modified
+            case .name: n = 0
+            case .change: n = comparisonChange(d).map(Double.init) ?? -.greatestFiniteMagnitude
             }
             return SortEntry(group: 0, number: n, name: d.name, item: d)
         }
         let f = item as! FileRow
         if f.kind == .summary {
-            let n: Double = switch sortKey {
-            case .files: Double(f.count)
-            case .size: Double(f.size)
-            default: -1
+            let n: Double
+            switch sortKey {
+            case .files: n = Double(f.count)
+            case .size: n = Double(f.size)
+            default: n = -1
             }
             return SortEntry(group: 2, number: n, name: "", item: f)
         }
-        let n: Double = switch sortKey {
-        case .size: Double(f.size)
-        case .files: 1
-        case .dirs: -1
-        case .date: f.modified
-        case .name, .change: 0
+        let n: Double
+        switch sortKey {
+        case .size: n = Double(f.size)
+        case .files: n = 1
+        case .dirs: n = -1
+        case .date: n = f.modified
+        case .name, .change: n = 0
         }
         // Sắp theo tên hoặc theo thay đổi: file nằm sau thư mục (file không có số liệu cũ để so)
         return SortEntry(group: sortKey == .name || sortKey == .change ? 1 : 0, number: n, name: f.name, item: f)
@@ -519,7 +522,7 @@ final class AppModel {
     private func sortItems(_ items: [AnyObject]) -> [AnyObject] {
         guard items.count > 1 else { return items }
         // Chụp nhanh khóa trước khi sắp xếp vì dung lượng có thể thay đổi trong lúc quét
-        let entries = items.map(sortEntry)
+        let entries = items.map { sortEntry($0) }
         let byName = sortKey == .name
         let desc = sortDescending
         return entries.sorted { a, b in

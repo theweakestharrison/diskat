@@ -1,11 +1,11 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 5.7
 import PackageDescription
 
 // Diskat cho macOS. Mở thư mục này bằng Xcode (File > Open > Package.swift) để chạy/gỡ lỗi,
 // hoặc dùng scripts/build-app.sh để tạo Diskat.app.
 let package = Package(
     name: "Diskat",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS(.v11)],
     products: [
         .executable(name: "Diskat", targets: ["Diskat"]),
     ],
@@ -18,5 +18,5 @@ let package = Package(
         .executableTarget(name: "make-icon", dependencies: ["DiskatCore"], path: "Tools/make-icon"),
         .testTarget(name: "DiskatCoreTests", dependencies: ["DiskatCore"]),
     ],
-    swiftLanguageModes: [.v5]
+    swiftLanguageVersions: [.v5]
 )

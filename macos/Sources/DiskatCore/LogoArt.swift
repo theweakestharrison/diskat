@@ -42,10 +42,6 @@ public enum LogoArt {
         return g
     }()
 
-    private static let ring = head.subtracting(face)
-    private static let freePart = ring.subtracting(usedWedge).subtracting(gaps)
-    private static let usedPart = ring.intersection(usedWedge).subtracting(gaps)
-
     private static func color(_ hex: UInt32) -> CGColor {
         CGColor(srgbRed: CGFloat((hex >> 16) & 0xFF) / 255, green: CGFloat((hex >> 8) & 0xFF) / 255,
                 blue: CGFloat(hex & 0xFF) / 255, alpha: 1)
@@ -76,12 +72,21 @@ public enum LogoArt {
         ctx.restoreGState()
 
         // Phần còn trống (trắng) và phần đã dùng (vàng)
+        ctx.saveGState()
+        ctx.addPath(head)
+        ctx.addPath(face)
+        ctx.clip(using: .evenOdd)
+        let exclusions = CGMutablePath()
+        exclusions.addRect(CGRect(x: -10, y: -10, width: 60, height: 60))
+        exclusions.addPath(gaps)
+        ctx.addPath(exclusions)
+        ctx.clip(using: .evenOdd)
         ctx.setFillColor(color(0xFFFFFF))
-        ctx.addPath(freePart)
-        ctx.fillPath()
+        ctx.fill(CGRect(x: 0, y: 0, width: 36, height: 36))
         ctx.setFillColor(color(0xFFB938))
-        ctx.addPath(usedPart)
+        ctx.addPath(usedWedge)
         ctx.fillPath()
+        ctx.restoreGState()
 
         // Mắt
         ctx.setFillColor(color(0xFFFFFF))

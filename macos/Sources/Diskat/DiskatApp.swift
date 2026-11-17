@@ -5,7 +5,7 @@ import DiskatCore
 @main
 struct DiskatApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @State private var model = AppModel.shared
+    @StateObject private var model = AppModel.shared
 
     init() {
         // AppKit mặc định coi đường dẫn trên dòng lệnh là "mở tài liệu" và khi đó SwiftUI không mở cửa sổ chính.
@@ -16,16 +16,21 @@ struct DiskatApp: App {
     }
 
     var body: some Scene {
-        Window(Loc.t("WindowTitle"), id: "main") {
-            MainView()
-                .environment(model)
-                .frame(minWidth: 980, minHeight: 600)
+        // WindowGroup is available on Big Sur; the New Window command remains replaced below.
+        WindowGroup(Loc.t("WindowTitle")) {
+            mainContent.frame(idealWidth: 1360, idealHeight: 840)
         }
-        .defaultSize(width: 1360, height: 840)
         .commands { DiskatCommands(model: model) }
+    }
+
+    private var mainContent: some View {
+        MainView()
+            .environmentObject(model)
+            .frame(minWidth: 980, minHeight: 600)
     }
 }
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let services = ServiceProvider()
 
@@ -35,19 +40,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Cần khi chạy trực tiếp file thực thi (swift run) thay vì gói .app
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
-        MainActor.assumeIsolated { AppModel.shared.launched() }
+        AppModel.shared.launched()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
 
     func applicationWillTerminate(_ notification: Notification) {
-        MainActor.assumeIsolated { AppModel.shared.stopScan() }
+        AppModel.shared.stopScan()
     }
 }
 
 /// Thanh menu: phím tắt theo quy ước của Finder (⌘⌫ chuyển vào Thùng rác, ⌥⌘⌫ xóa ngay, ⌥⌘C sao chép đường dẫn).
 struct DiskatCommands: Commands {
-    let model: AppModel
+    @ObservedObject var model: AppModel
 
     var body: some Commands {
         CommandGroup(replacing: .appInfo) {
@@ -101,10 +106,12 @@ struct DiskatCommands: Commands {
                 .keyboardShortcut(.upArrow)
                 .disabled(!model.canMapUp || model.pathFieldFocused)
             Divider()
+            Group {
             Picker(Loc.t("LangTip"), selection: Binding(get: { Loc.lang }, set: { model.setLanguage($0) })) {
                 ForEach(Loc.languages, id: \.code) { Text($0.name).tag($0.code) }
             }
             ThemePicker(model: model)
+            }
             if !model.hasFullDiskAccess {
                 Button(Loc.t("FullDiskAccess") + "…") { model.requestFullDiskAccess() }
             }
